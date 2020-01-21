@@ -1,11 +1,11 @@
 import io
 
-from cv.io import open, save
+from cv.io import open_image, save
 
 
 class Image:
     def __init__(self, path):
-        self._img = open(path)
+        self._img = open_image(path)
 
     def height(self):
         return self._img.shape[0]
