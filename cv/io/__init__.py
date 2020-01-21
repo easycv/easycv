@@ -1,2 +1,2 @@
-from cv.io.input import open
+from cv.io.input import openImage, downloadImage
 from cv.io.output import save
