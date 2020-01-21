@@ -1,7 +1,8 @@
-from PIL import Image
-from cv.errors.io import ImageDownloadError, InvalidPathError
 import requests
+import numpy as np
+from PIL import Image
 
+from cv.errors.io import ImageDownloadError, InvalidPathError
 
 def openImage(img_dir):
     try:
