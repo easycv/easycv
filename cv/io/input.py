@@ -4,12 +4,13 @@ from PIL import Image
 
 from cv.errors.io import ImageDownloadError, InvalidPathError
 
+
 def openImage(img_dir):
     try:
         img = Image.open(img_dir)
     except IOError as ioe:
         raise InvalidPathError('Invalid Path')
-    return img
+    return np.array(img)
 
 
 def downloadImage(url, path):
