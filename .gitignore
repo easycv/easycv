@@ -133,3 +133,10 @@ dmypy.json
 
 #My image tests
 test-images/
+
+#notebooks
+*.ipynb
+
+#images
+*.jpg
+*.png
