@@ -3,11 +3,11 @@ import numpy as np
 from cv.errors.transforms import InvalidMethodError, InvalidArgsError
 
 
-def gray_scale(image, method=None):
+def gray_scale(image, method):
     if method == 'averaging':
         return np.average(image, axis=2).astype(np.uint8)
     elif method == 'luma':
-        return np.average(image, weights=[0.3, 0.59, 0.11], axis=2).astype(np.uint8)
+        return np.average(image, weights=[0.299, 0.587, 0.114], axis=2).astype(np.uint8)
     elif method == 'desaturation':
         return ((image.max(axis=2) + image.min(axis=2)) / 2).astype(np.uint8)
     elif method == 'decomposition_max':
@@ -15,13 +15,13 @@ def gray_scale(image, method=None):
     elif method == 'decomposition_min':
         return image.min(axis=2).astype(np.uint8)
     else:
-        raise InvalidMethodError(['Averaging', 'Luma', 'Desaturation', 'Decomposition_max', 'Decomposition_min'])
+        raise InvalidMethodError(('averaging', 'luma', 'desaturation', 'decomposition_max', 'decomposition_min'))
 
 
-def filter_channels(image, channels=None):
+def filter_channels(image, channels):
     channels = np.array(channels)
     if any(channels > 2) or any(channels < 0):
-        raise InvalidArgsError(['Channels'])
+        raise InvalidArgsError(('channels',))
     image[:, :, channels] = 0
     return image
 
