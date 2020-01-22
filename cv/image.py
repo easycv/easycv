@@ -2,6 +2,7 @@ import io
 
 import numpy as np
 
+from cv.pipeline import Pipeline
 from cv.io import open_image, save
 
 
