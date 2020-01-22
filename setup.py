@@ -27,5 +27,5 @@ setup(
     keywords='cv computer vision ai',
     packages=find_packages(),
     setup_requires=['setuptools>=38.6.0'],
-    install_requires=['numpy', 'pillow', 'requests', 'scipy']
+    install_requires=['numpy', 'pillow', 'requests', 'scipy', 'matplotlib']
 )
