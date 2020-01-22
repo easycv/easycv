@@ -3,8 +3,8 @@ from io import BytesIO
 
 import numpy as np
 import requests
-from PIL import Image
-from requests.exceptions import MissingSchema
+from PIL import Image, UnidentifiedImageError
+from requests.exceptions import InvalidSchema, MissingSchema
 
 from cv.errors.io import ImageDownloadError, InvalidPathError
 
@@ -20,9 +20,8 @@ def open_image(path):
             img = Image.open(BytesIO(response.content))
         return np.array(img)
 
-    except ConnectionError:
-        raise InvalidPathError('Path to file is invalid.') from None
+    except (ConnectionError, InvalidSchema, MissingSchema):
+        raise InvalidPathError('File path is invalid.') from None
 
-    except MissingSchema:
-        raise InvalidPathError('Path to file is invalid.') from None
-
+    except UnidentifiedImageError:
+        raise InvalidPathError('The given path is not an image.') from None
