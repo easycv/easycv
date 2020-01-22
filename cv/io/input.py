@@ -1,24 +1,28 @@
-import requests
+import os
 from io import BytesIO
 
 import numpy as np
+import requests
 from PIL import Image
+from requests.exceptions import MissingSchema
 
 from cv.errors.io import ImageDownloadError, InvalidPathError
 
 
-def open_image(img_dir):
+def open_image(path):
     try:
-        img = Image.open(img_dir)
-    except IOError as ioe:
-        raise InvalidPathError('Invalid Path')
-    return np.array(img)
+        if os.path.isfile(path):
+            img = Image.open(path)
+        else:
+            response = requests.get(path, allow_redirects=True)
+            if response.status_code != 200:
+                raise ImageDownloadError(f'Failed to Download file, error {response.status_code}.')
+            img = Image.open(BytesIO(response.content))
+        return np.array(img)
 
+    except ConnectionError:
+        raise InvalidPathError('Path to file is invalid.') from None
 
-def download_image(url):
-    response = requests.get(url, allow_redirects=True)
-    if response.status_code != 200:
-        raise ImageDownloadError('Invalid Download')
-    img = Image.open(BytesIO(response.content))
-    return np.array(img)
+    except MissingSchema:
+        raise InvalidPathError('Path to file is invalid.') from None
 
