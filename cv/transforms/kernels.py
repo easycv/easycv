@@ -48,15 +48,15 @@ def gradient_kernel(operator='sobel'):
     else:
         raise
     kernel_sum = np.abs(np.sum(kernel_x[:, :1])*2)
-    kernel_x /= kernel_sum
+    kernel_x = np.true_divide(kernel_x, kernel_sum)
     kernel_sum = np.abs(np.sum(kernel_y[:1, :])*2)
-    kernel_y /= kernel_sum
+    kernel_y = np.true_divide(kernel_y, kernel_sum)
     return kernel_x, kernel_y
 
 
-def smooth_gradient_kernel(size=3, operator='sobel', axis='x', sigma=3):
+def smooth_gradient_kernel(size=3, operator='sobel', sigma=3):
     gauss = gaussian_kernel(size=size, sig=sigma)
-    gradient = gradient_kernel(operator, axis)
+    gradient = gradient_kernel(operator=operator)
     kernel_x = Convolve(kernel=gradient[0]).apply(gauss)
     kernel_y = Convolve(kernel=gradient[1]).apply(gauss)
-    return kernel_x,kernel_y
+    return kernel_x, kernel_y
