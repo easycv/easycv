@@ -1,18 +1,20 @@
-from scipy import signal,ndimage
+from scipy import signal
 import numpy as np
 
 from cv.transforms.base import Transform
 
 
+class Correlate(Transform):
+    arguments = {'kernel': None, 'mode': 'full'}
 
-def correlate(image, kernel, method='constant'):
-    image = ndimage.correlate(image, kernel, mode=method)
-    return image.astype(np.uint8)
+    def apply(self, image):
+        image = signal.correlate(image, self.arguments['kernel'], mode=self.arguments['mode'], method='fft')
+        return image
 
 
 class Convolve(Transform):
-    arguments = {'image': None, 'kernel': None, 'method': 'same'}
+    arguments = {'kernel': None, 'mode': 'full'}
 
     def apply(self, image):
-        image = signal.fftconvolve(image, self.arguments['kernel'][:, :, np.newaxis], mode=self.arguments['method'])
+        image = signal.convolve(image, self.arguments['kernel'], mode=self.arguments['mode'], method='fft')
         return image
