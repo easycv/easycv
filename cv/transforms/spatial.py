@@ -1,4 +1,4 @@
-from cv.errors.transforms import InvalidArgsError
+from cv.errors.transforms import InvalidArgumentError
 
 
 def crop_image(image, box=None):
@@ -6,5 +6,5 @@ def crop_image(image, box=None):
         if box[0][1] == box[1][1] and box[2][1] == box[3][1] and box[0][1] >= 0 and box[3][1] <= image.shape[0]:
             if box[0][0] == box[2][0] and box[1][0] == box[3][0] and box[0][0] >= 0 and box[1][0] <= image.shape[1]:
                 return image[:box[3][1], :box[3][0], :][box[0][1]:, box[0][1]:, :]
-    raise InvalidArgsError(['Box'])
+    raise InvalidArgumentError(['Box'])
 

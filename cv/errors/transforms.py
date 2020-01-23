@@ -1,4 +1,4 @@
-class InvalidArgsError(Exception):
+class InvalidArgumentError(Exception):
     """Raised when a transform is called with invalid arguments"""
     def __init__(self, args):
         super().__init__(f'Invalid Argument(s): {", ".join(str(arg) for arg in args)}')
