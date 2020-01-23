@@ -1,10 +1,9 @@
 class Transform:
     arguments = {}
-    mandatory = []
 
     def __init__(self, **kwargs):
-        for mandatory_arg in self.mandatory:
-            if mandatory_arg not in kwargs:
+        for arg in self.arguments:
+            if self.arguments[arg] is None and arg not in kwargs:
                 raise ValueError('')
 
         self.arguments.update(kwargs)
