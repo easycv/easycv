@@ -9,24 +9,30 @@ class Transform:
             if self.default_args[arg] is None and arg not in kwargs:
                 raise ArgumentNotProvidedError(arg)
 
-        self.args = dict(self.default_args)
-        self.args.update(kwargs)
+        self._args = dict(self.default_args)
+        self._args.update(kwargs)
+
+    def args(self):
+        return self._args
 
     def apply(self, image, **kwargs):
         pass
 
     def process(self, image):
-        return self.apply(image, **self.args)
+        return self.apply(image, **self._args)
 
     def __call__(self, image):
         return self.process(image)
 
     def __str__(self):
         args_str = []
-        for arg in self.args:
-            value = self.args[arg] if isinstance(self.args[arg], (str, int, float)) else '(...)'
+        for arg in self._args:
+            value = self._args[arg] if isinstance(self._args[arg], (str, int, float)) else '(...)'
             args_str.append(f'{arg}={value}')
         return f'{self.__class__.__name__} ({", ".join(args_str)})'
 
     def __repr__(self):
         return str(self)
+
+    def __eq__(self, other):
+        return isinstance(other, Transform) and self.args() == other.args()

@@ -51,6 +51,11 @@ class Pipeline(object):
     def transforms(self):
         return self._transforms
 
+    def __eq__(self, other):
+        return isinstance(other, Pipeline) and self.name() == other.name() \
+               and self.num_transforms() == other.num_transforms() \
+               and all(t1 == t2 for t1, t2 in zip(self.transforms(), other.transforms()))
+
     def __str__(self):
         return self.description()
 
