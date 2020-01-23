@@ -1,7 +1,7 @@
 import numpy as np
 
 from cv.transforms.base import Transform
-from cv.errors.transforms import InvalidMethodError, InvalidArgumentError
+from cv.errors.transforms import InvalidArgumentError
 
 
 class GrayScale(Transform):
