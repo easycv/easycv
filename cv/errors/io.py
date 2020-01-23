@@ -16,3 +16,13 @@ class ImageDecodeError(Exception):
 class ImageSaveError(Exception):
     """Raised when saving the image fails"""
     pass
+
+
+class InvalidPipelineInputSource(Exception):
+    def __init__(self):
+        super().__init__('Pipelines can only be created from a list of transforms or a saved pipeline')
+
+
+class InvalidImageInputSource(Exception):
+    def __init__(self):
+        super().__init__('Images can only be created from a path/url or a numpy array representing the image')
