@@ -15,7 +15,7 @@ class SaltAndPepper(Transform):
 
 
 class Impulse(Transform):
-    arguments = {'prob': 0.05}
+    arguments = {'prob': None}
 
     def apply(self, image):
         probabilities = np.random.rand(image.shape[0], image.shape[1])
@@ -24,8 +24,7 @@ class Impulse(Transform):
 
 
 class Gaussian(Transform):
-    arguments = {'mu': 0, 'sigma': 1, 'grayscale': False, 'method': 'clip'}
-    mandatory = ['sigma']
+    arguments = {'mu': 0, 'sigma': 20, 'grayscale': False, 'method': 'clip'}
 
     def apply(self, image):
         noise_dim = 1 if self.arguments['grayscale'] else 3
