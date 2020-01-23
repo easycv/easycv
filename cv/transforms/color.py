@@ -7,6 +7,7 @@ from cv.errors.transforms import InvalidArgumentError
 class GrayScale(Transform):
     arguments = {'method': 'luma'}
 
+
     def apply(self, image):
         if self.arguments['method'] == 'averaging':
             return np.average(image, axis=2).astype(np.uint8)

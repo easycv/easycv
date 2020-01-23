@@ -1,7 +1,13 @@
-from scipy import signal
+from scipy import signal,ndimage
 import numpy as np
 
 from cv.transforms.base import Transform
+
+
+
+def correlate(image, kernel, method='constant'):
+    image = ndimage.correlate(image, kernel, mode=method)
+    return image.astype(np.uint8)
 
 
 class Convolve(Transform):
