@@ -1,20 +1,27 @@
 import os
 import pickle
 
+from cv.errors.io import InvalidPipelineInputSource
+
 
 class Pipeline(object):
     def __init__(self, source, name=None):
-        if type(source) == list:
+        if isinstance(source, list):
             self._name = name if name else 'pipeline'
             self._transforms = source
-        elif type(source) == str and os.path.isfile(source):
-            with open(source, 'rb') as f:
-                saved = pickle.load(f)
-                if type(saved) == Pipeline:
-                    self._name = name if name else saved.name()
-                    self._transforms = saved.transforms()
+        elif isinstance(source, str) and os.path.isfile(source):
+            try:
+                with open(source, 'rb') as f:
+                    saved = pickle.load(f)
+                    if isinstance(saved, Pipeline):
+                        self._name = name if name else saved.name()
+                        self._transforms = saved.transforms()
+                    else:
+                        raise InvalidPipelineInputSource()
+            except pickle.UnpicklingError:
+                raise InvalidPipelineInputSource() from None
         else:
-            pass
+            raise InvalidPipelineInputSource()
 
     def name(self):
         return self._name

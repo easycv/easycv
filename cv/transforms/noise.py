@@ -15,7 +15,7 @@ class SaltAndPepper(Transform):
 
 
 class Impulse(Transform):
-    arguments = {'prob': None}
+    arguments = {'prob': 0.05}
 
     def apply(self, image):
         probabilities = np.random.rand(image.shape[0], image.shape[1])
