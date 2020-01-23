@@ -140,3 +140,6 @@ test-images/
 #images
 *.jpg
 *.png
+
+#pipelines
+*.pipe

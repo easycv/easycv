@@ -3,6 +3,7 @@ import io
 import numpy as np
 
 from cv.io import open_image, save
+from cv.errors.io import InvalidImageInputSource
 
 
 class Image:
@@ -12,7 +13,7 @@ class Image:
         elif type(source) == np.ndarray:
             self._img = source
         else:
-            pass
+            raise InvalidImageInputSource()
 
     @property
     def height(self):
