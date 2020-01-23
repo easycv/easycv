@@ -18,8 +18,11 @@ class Transform:
         return self.apply(image)
 
     def __str__(self):
-        args_str = ", ".join(f'{arg}={self.arguments[arg]}' for arg in self.arguments)
-        return f'{self.__class__.__name__} ({args_str})'
+        args_str = []
+        for arg in self.arguments:
+            value = self.arguments[arg] if isinstance(self.arguments[arg], (str, int)) else '(...)'
+            args_str.append(f'{arg}={value}')
+        return f'{self.__class__.__name__} ({", ".join(args_str)})'
 
     def __repr__(self):
         return str(self)

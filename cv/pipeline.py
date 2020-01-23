@@ -7,7 +7,7 @@ from cv.errors.io import InvalidPipelineInputSource
 
 class Pipeline(object):
     def __init__(self, source, name=None):
-        if isinstance(source, list) and all([isinstance(x, Transform) or isinstance(x, Pipeline) for x in source]):
+        if isinstance(source, list) and all([isinstance(x, (Transform, Pipeline)) for x in source]):
             self._name = name if name else 'pipeline'
             self._transforms = source
         elif isinstance(source, str) and os.path.isfile(source):
