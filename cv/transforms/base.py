@@ -15,8 +15,11 @@ class Transform:
     def apply(self, image, **kwargs):
         pass
 
-    def __call__(self, image):
+    def process(self, image):
         return self.apply(image, **self.args)
+
+    def __call__(self, image):
+        return self.process(image)
 
     def __str__(self):
         args_str = []
