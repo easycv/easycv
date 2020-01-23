@@ -29,8 +29,8 @@ def gaussian_kernel(size=21, sig=3):
 
 def gradient_kernel(operator='sobel'):
     if operator == 'sobel':
-        kernel_x = (Convolve(kernel=np.array([[-1, 0, 1]])).apply(np.array([[1, 2, 1]]).T))
-        kernel_y = Convolve(kernel=np.array([[-1, 0, 1]]).T).apply(np.array([[1, 2, 1]]))
+        kernel_x = (Convolve(kernel=np.array([[-1, 0, 1]])).process(np.array([[1, 2, 1]]).T))
+        kernel_y = Convolve(kernel=np.array([[-1, 0, 1]]).T).process(np.array([[1, 2, 1]]))
     elif operator == 'prewitt':
         kernel_x = np.ones((3, 3))
         kernel_y = np.ones((3, 3))
@@ -57,6 +57,7 @@ def gradient_kernel(operator='sobel'):
 def smooth_gradient_kernel(size=3, operator='sobel', sigma=3):
     gauss = gaussian_kernel(size=size, sig=sigma)
     gradient = gradient_kernel(operator=operator)
-    kernel_x = Convolve(kernel=gradient[0]).apply(gauss)
-    kernel_y = Convolve(kernel=gradient[1]).apply(gauss)
+    view_kernel(gradient[0])
+    kernel_x = Convolve(kernel=gradient[0]).process(gauss)
+    kernel_y = Convolve(kernel=gradient[1]).process(gauss)
     return kernel_x, kernel_y
