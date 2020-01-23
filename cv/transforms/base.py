@@ -16,3 +16,10 @@ class Transform:
 
     def __call__(self, image):
         return self.apply(image)
+
+    def __str__(self):
+        args_str = ", ".join(f'{arg}={self.arguments[arg]}' for arg in self.arguments)
+        return f'{self.__class__.__name__} ({args_str})'
+
+    def __repr__(self):
+        return str(self)

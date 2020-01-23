@@ -27,8 +27,35 @@ class Pipeline(object):
     def name(self):
         return self._name
 
+    def description(self, level=0, start=1):
+        index = str(start) + ': ' if start > 1 else ''
+        indent = '    ' + '|    ' * (level-1) if level > 1 else '    ' * level
+        r = [indent + index + f'Pipeline ({self._name}) with {self.num_transforms()} transforms']
+        for i, t in enumerate(self._transforms):
+            if isinstance(t, Pipeline):
+                r.append(t.description(level=level+1, start=i+1))
+            else:
+                indent = '    ' + '|    ' * level
+                r.append(f'{indent}{i + 1}: {str(t)}')
+        return '\n'.join(r)
+
+    def num_transforms(self):
+        num = 0
+        for t in self._transforms:
+            if isinstance(t, Pipeline):
+                num += t.num_transforms()
+            else:
+                num += 1
+        return num
+
     def transforms(self):
         return self._transforms
+
+    def __str__(self):
+        return self.description()
+
+    def __repr__(self):
+        return str(self)
 
     def __call__(self, image):
         for transform in self._transforms:
