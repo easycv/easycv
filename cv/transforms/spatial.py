@@ -4,7 +4,7 @@ from cv.errors.transforms import InvalidArgumentError, InvalidMethodError
 from cv.transforms.base import Transform
 
 
-class CropImage(Transform):
+class Crop(Transform):
     arguments = {'box': []}
 
     def apply(self, image):
@@ -16,20 +16,23 @@ class CropImage(Transform):
         raise InvalidArgumentError(('Box',))
 
 
-def shift_image(image, direction=(1, 1), fill_mode='fill', fill_value=0):
-    non = lambda s: s if s < 0 else None
-    pop = lambda s: s if s > 0 else None
-    ox, oy = direction
-    image = np.roll(image, oy, axis=0)
-    image = np.roll(image, ox, axis=1)
-    if fill_mode == 'fill':
-        if 0 <= fill_value <= 255:
-            image[non(oy):pop(oy), :, :] = fill_value
-            image[:, non(ox):pop(ox), :] = fill_value
-            return image
-        raise InvalidArgumentError(('fill_value',))
+class Shift(Transform):
+    arguments = {'direction': (1, 1), 'fill_mode': 'fill', 'fill_value': 0}
 
-    elif fill_mode == 'warp':
-        return image
-    else:
-        raise InvalidMethodError(('Fill', 'Warp'))
+    def apply(self, image):
+        non = lambda s: s if s < 0 else None
+        pop = lambda s: s if s > 0 else None
+        ox, oy = self.arguments['direction']
+        image = np.roll(image, oy, axis=0)
+        image = np.roll(image, ox, axis=1)
+        if self.arguments['fill_mode'] == 'fill':
+            if 0 <= self.arguments['fill_value'] <= 255:
+                image[non(oy):pop(oy), :, :] = self.arguments['fill_value']
+                image[:, non(ox):pop(ox), :] = self.arguments['fill_value']
+                return image
+            raise InvalidArgumentError(('fill_value',))
+
+        elif self.arguments['fill_mode'] == 'warp':
+            return image
+        else:
+            raise InvalidMethodError(('Fill', 'Warp'))
