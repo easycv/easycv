@@ -3,7 +3,7 @@ import numpy as np
 from cv.errors.transforms import InvalidMethodError, InvalidArgsError
 
 
-def gray_scale(image, method):
+def gray_scale(image, method='luma'):
     if len(image.shape) != 3:
         return image
     if method == 'averaging':
