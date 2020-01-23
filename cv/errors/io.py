@@ -20,7 +20,7 @@ class ImageSaveError(Exception):
 
 class InvalidPipelineInputSource(Exception):
     def __init__(self):
-        super().__init__('Pipelines can only be created from a list of transforms or a saved pipeline')
+        super().__init__('Pipelines can only be created from a list of transforms/pipelines or a saved pipeline')
 
 
 class InvalidImageInputSource(Exception):
