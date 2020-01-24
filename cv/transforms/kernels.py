@@ -57,7 +57,6 @@ def gradient_kernel(operator='sobel'):
 def smooth_gradient_kernel(size=3, operator='sobel', sigma=3):
     gauss = gaussian_kernel(size=size, sig=sigma)
     gradient = gradient_kernel(operator=operator)
-    view_kernel(gradient[0])
     kernel_x = Convolve(kernel=gradient[0]).process(gauss)
     kernel_y = Convolve(kernel=gradient[1]).process(gauss)
     return kernel_x, kernel_y

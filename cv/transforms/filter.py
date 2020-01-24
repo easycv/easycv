@@ -16,6 +16,5 @@ class Convolve(Transform):
     default_args = {'kernel': None, 'mode': 'full'}
 
     def apply(self, image, **kwargs):
-        print(kwargs)
         image = signal.convolve(image, kwargs['kernel'], mode=kwargs['mode'], method='fft')
         return image
