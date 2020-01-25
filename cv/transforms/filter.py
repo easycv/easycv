@@ -1,20 +1,20 @@
-from scipy import signal
+from scipy.ndimage import correlate1d
 import numpy as np
 
 from cv.transforms.base import Transform
 
 
-class Correlate(Transform):
-    default_args = {'kernel': None, 'mode': 'full'}
+class Correlate1d(Transform):
+    default_args = {'kernel': None, 'mode': 'reflect', 'axis': 0}
 
     def apply(self, image, **kwargs):
-        image = signal.correlate(image, kwargs['kernel'], mode=kwargs['mode'], method='fft')
+        image = correlate1d(image, kwargs['kernel'], axis=kwargs['axis'], mode=kwargs['mode'])
         return image
 
 
-class Convolve(Transform):
-    default_args = {'kernel': None, 'mode': 'full'}
+class Convolve1d(Transform):
+    default_args = {'kernel': None, 'mode': 'reflect', 'axis': 0}
 
     def apply(self, image, **kwargs):
-        image = signal.convolve(image, kwargs['kernel'], mode=kwargs['mode'], method='fft')
-        return image
+        kwargs['kernel'] = kwargs['kernel'][::-1]
+        return Correlate1d(**kwargs).process(image)

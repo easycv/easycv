@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from cv.transforms.filter import Convolve
+from scipy.ndimage import sobel
 
 
 def view_kernel(kernel, size=(5, 5), legend=False):
@@ -14,17 +14,15 @@ def view_kernel(kernel, size=(5, 5), legend=False):
     plt.show()
 
 
-def uniform_kernel(size=21):
-    """Returns a 2D uniform kernel."""
-    return np.ones((size, size)) / size ** 2
+def uniform_1d(radius=3):
+    return np.ones(radius*2 + 1) / radius*2 + 1
 
 
-def gaussian_kernel(size=21, sig=3):
-    """Returns a 2D Gaussian kernel."""
-    ax = np.linspace(-(size - 1) / 2, (size - 1) / 2, size)
-    xx, yy = np.meshgrid(ax, ax)
-    kernel = np.exp(-0.5 * (np.square(xx) + np.square(yy)) / np.square(sig))
-    return kernel / np.sum(kernel)
+def gaussian_1d(sigma, radius):
+    x = np.arange(-radius, radius+1)
+    variance = sigma * sigma
+    gaussian = np.exp(-0.5 * (x ** 2) / variance)
+    return gaussian / gaussian.sum()
 
 
 def gradient_kernel(operator='sobel'):
