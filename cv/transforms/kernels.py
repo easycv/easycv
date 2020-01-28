@@ -25,26 +25,25 @@ def gaussian_1d(sigma, radius):
     return gaussian / gaussian.sum()
 
 
-def gradient_kernel(operator='sobel'):
+def gradient_kernel(operator='sobel', direction='x', axis=0):
     if operator == 'sobel':
-        kernel = ([1, 2, 1], [-1, 0, 1])
-    elif operator == 'prewitt':
-        kernel = ([1, 1, 1], [1, 0, -1])
-    #elif operator == 'roberts':
-    #    kernel_x = np.zeros((2, 2))
-    #    kernel_y = np.zeros((2, 2))
-    #    kernel_x[0, 1] = 1
-    #    kernel_x[1, 0] = -1
-    #    kernel_y[0, 0] = 1
-    #    kernel_y[1, 1] = -1# todo change to x,y vectors to convolve/correlate
-    else:
-        raise
+        if direction == 'x':
+            if not axis:
+                kernel = [1, 2, 1]
+            else:
+                kernel = [1, 0, -1]
+        else:
+            if not axis:
+                kernel = [-1, 0, 1]
+            else:
+                kernel = [1, 2, 1]
     return kernel
 
 
-def smooth_gradient_kernel(size=3, operator='sobel', sigma=3):
+def smooth_gradient_kernel(size=3, operator='sobel', direction='x', sigma=3):
     gauss = gaussian_1d(radius=size, sigma=sigma)
-    gradient = gradient_kernel(operator=operator)
-    kernel_x = Convolve1d(kernel=gradient[0]).process(gauss)
-    kernel_y = Convolve1d(kernel=gradient[1]).process(gauss)
+    gradient_x = gradient_kernel(operator=operator, direction=direction, axis=0)
+    gradient_y = gradient_kernel(operator=operator, direction=direction, axis=1)
+    kernel_x = Convolve1d(kernel=gradient_x).process(gauss)
+    kernel_y = Convolve1d(kernel=gradient_y).process(gauss)
     return kernel_x, kernel_y
