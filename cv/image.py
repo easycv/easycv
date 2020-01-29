@@ -11,7 +11,7 @@ class Image:
         if type(source) == str:
             self._img = open_image(source)
         elif type(source) == np.ndarray:
-            self._img = source.astype(np.uint8)
+            self._img = np.clip(source, 0, 255).astype(np.uint8)
         else:
             raise InvalidImageInputSource()
 
