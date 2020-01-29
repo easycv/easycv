@@ -11,7 +11,7 @@ class Image:
         if type(source) == str:
             self._img = open_image(source)
         elif type(source) == np.ndarray:
-            self._img = np.clip(source, 0, 255).astype(np.uint8)
+            self._img = np.clip(source, 0, 1).astype(np.float32)
         else:
             raise InvalidImageInputSource()
 
@@ -31,5 +31,6 @@ class Image:
 
     def _repr_png_(self):
         b = io.BytesIO()
-        save(self._img, b, 'PNG')
+        img = (self._img*255).astype(np.uint8)
+        save(img, b, 'PNG')
         return b.getvalue()

@@ -9,15 +9,15 @@ class GrayScale(Transform):
 
     def apply(self, image, **kwargs):
         if kwargs['method'] == 'averaging':
-            return np.average(image, axis=2).astype(np.uint8)
+            return np.average(image, axis=2)
         elif kwargs['method'] == 'luma':
-            return np.average(image, weights=[0.299, 0.587, 0.114], axis=2).astype(np.uint8)
+            return np.average(image, weights=[0.299, 0.587, 0.114], axis=2)
         elif kwargs['method'] == 'desaturation':
-            return ((image.max(axis=2) + image.min(axis=2)) / 2).astype(np.uint8)
+            return ((image.max(axis=2) + image.min(axis=2)) / 2)
         elif kwargs['method'] == 'decomposition_max':
-            return image.max(axis=2).astype(np.uint8)
+            return image.max(axis=2)
         elif kwargs['method'] == 'decomposition_min':
-            return image.min(axis=2).astype(np.uint8)
+            return image.min(axis=2)
 
 
 class FilterChannels(Transform):

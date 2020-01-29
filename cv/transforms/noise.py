@@ -10,7 +10,7 @@ class SaltAndPepper(Transform):
     def apply(self, image, **kwargs):
         probabilities = np.random.rand(image.shape[0], image.shape[1])
         image[probabilities < kwargs['prob']] = 0
-        image[probabilities > 1 - kwargs['prob']] = 255
+        image[probabilities > 1 - kwargs['prob']] = 1
         return image
 
 
@@ -32,11 +32,10 @@ class Gaussian(Transform):
                                  (image.shape[0], image.shape[1], noise_dim))
         noisy_image = noise + image
         if kwargs['method'] == 'clip':
-            noisy_image[noisy_image < 0] = 0
-            noisy_image[noisy_image > 255] = 255
+            noisy_image = np.clip(noisy_image, 0, 1)
         elif kwargs['method'] == 'normalize':
-            noisy_image = 255 * (noisy_image - noisy_image.min(axis=(0, 1))) / (
+            noisy_image = (noisy_image - noisy_image.min(axis=(0, 1))) / (
                         noisy_image.max(axis=(0, 1)) - noisy_image.min(axis=(0, 1)))
         else:
             raise InvalidMethodError(('clip', 'normalize'))
-        return noisy_image.astype(np.uint8)
+        return noisy_image
