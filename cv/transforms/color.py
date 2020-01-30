@@ -1,11 +1,13 @@
 import numpy as np
 
+from cv.validators import Option, List, Number
 from cv.transforms.base import Transform
-from cv.errors.transforms import InvalidArgumentError
 
 
 class GrayScale(Transform):
-    default_args = {'method': 'luma'}
+    default_args = {
+        'method': Option(['luma', 'averaging', 'desaturation', 'decomposition_max', 'decomposition_min'], default=0)
+    }
 
     def apply(self, image, **kwargs):
         if kwargs['method'] == 'averaging':
@@ -13,7 +15,7 @@ class GrayScale(Transform):
         elif kwargs['method'] == 'luma':
             return np.average(image, weights=[0.299, 0.587, 0.114], axis=2)
         elif kwargs['method'] == 'desaturation':
-            return ((image.max(axis=2) + image.min(axis=2)) / 2)
+            return (image.max(axis=2) + image.min(axis=2)) / 2
         elif kwargs['method'] == 'decomposition_max':
             return image.max(axis=2)
         elif kwargs['method'] == 'decomposition_min':
@@ -21,11 +23,11 @@ class GrayScale(Transform):
 
 
 class FilterChannels(Transform):
-    default_args = {'channels': []}
+    default_args = {
+        'channels': List(Number(min_value=0, max_value=2, only_integer=True))
+    }
 
     def apply(self, image, **kwargs):
         channels = np.array(kwargs['channels'])
-        if any(channels > 2) or any(channels < 0):
-            raise InvalidArgumentError(('channels',))
         image[:, :, channels] = 0
         return image

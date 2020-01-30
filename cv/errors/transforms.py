@@ -6,8 +6,8 @@ class ArgumentNotProvidedError(Exception):
 
 class InvalidArgumentError(Exception):
     """Raised when a transform is called with an invalid argument"""
-    def __init__(self, argument):
-        super().__init__(f'Invalid value for argument: {argument}')
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class InvalidMethodError(Exception):

@@ -1,3 +1,4 @@
+from cv.validators import Validator
 from cv.errors.transforms import ArgumentNotProvidedError
 
 
@@ -8,6 +9,9 @@ class Transform:
         for arg in self.default_args:
             if self.default_args[arg] is None and arg not in kwargs:
                 raise ArgumentNotProvidedError(arg)
+            elif isinstance(self.default_args[arg], Validator):
+                validator = self.default_args[arg]
+                kwargs[arg] = validator.check(arg, kwargs.get(arg))
 
         self._args = dict(self.default_args)
         self._args.update(kwargs)
