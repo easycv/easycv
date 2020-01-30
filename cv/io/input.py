@@ -18,7 +18,7 @@ def open_image(path):
             if response.status_code != 200:
                 raise ImageDownloadError(f'Failed to Download file, error {response.status_code}.')
             img = Image.open(BytesIO(response.content))
-        return np.array(img)
+        return np.array(img)/255
 
     except (ConnectionError, InvalidSchema, MissingSchema):
         raise InvalidPathError('File path is invalid.') from None
