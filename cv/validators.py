@@ -1,4 +1,7 @@
 from math import inf
+
+import numpy as np
+
 from cv.errors import ArgumentNotProvidedError, InvalidArgumentError
 
 
@@ -39,7 +42,7 @@ class Number(Validator):
         self.only_integer = only_integer
         super().__init__(default=default)
 
-    def validate(self, arg_name, arg, inside_list=True):
+    def validate(self, arg_name, arg, inside_list=False):
         allowed_types = (int,) if self.only_integer else (int, float)
         if not isinstance(arg, allowed_types) or not (self._min_value <= arg <= self._max_value):
             if inside_list:
@@ -50,14 +53,30 @@ class Number(Validator):
         return arg
 
 
+class Type(Validator):
+    def __init__(self, arg_type, default=None):
+        self.arg_type = arg_type
+        super().__init__(default=default)
+
+    def validate(self, arg_name, arg, inside_list=False):
+        if not isinstance(arg, self.arg_type):
+            prefix = "a list/tuple of objects" if inside_list else "an object"
+            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} from class {self.arg_type.__name__}')
+        return arg
+
+
 class List(Validator):
-    def __init__(self, validator, default=None):
+    def __init__(self, validator, length=None, default=None):
         self._validator = validator
+        self._length = length
         super().__init__(default=default)
 
     def validate(self, arg_name, arg):
-        if not isinstance(arg, (list, tuple)):
+        if not isinstance(arg, (list, tuple, np.array)):
             raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be a list or tuple.')
-        for e in arg:
+        if self._length is not None and len(arg) != self._length:
+            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {self._length} elements long.')
+
+        for e in list(arg):
             self._validator.validate(arg_name, e, inside_list=True)
         return arg
