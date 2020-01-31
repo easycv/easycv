@@ -59,6 +59,9 @@ class Image:
             result = Image(self._pending(self._img), lazy=True)
             return result
 
+    def __eq__(self, other):
+        return isinstance(other, Image) and other.array() == self.array() and self.pending() == other.pending()
+
     def __repr__(self):
         return f"<image size={self.height}x{self.width} at 0x{id(self._img)}>"
 
