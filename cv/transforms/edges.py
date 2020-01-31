@@ -8,6 +8,7 @@ from cv.transforms.kernels import gradient_kernel
 def normalize(x):
     return (x-x.min())/(x.max()-x.min())
 
+
 def non_max_supression(image, gradient_magnitude, gradient_direction, threshold=0):
     image_row, image_col = gradient_magnitude.shape
 

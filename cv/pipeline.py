@@ -48,8 +48,20 @@ class Pipeline(object):
                 num += 1
         return num
 
+    def add_transform(self, transform):
+        if isinstance(transform, (Transform, Pipeline)):
+            self._transforms += [transform]
+        else:
+            raise ValueError('Pipelines can only contain Transforms or other pipelines')
+
     def transforms(self):
         return self._transforms
+
+    def copy(self):
+        return Pipeline(self._transforms.copy(), name=self._name)
+
+    def clear(self):
+        self._transforms = []
 
     def __eq__(self, other):
         return isinstance(other, Pipeline) and self.name() == other.name() \
