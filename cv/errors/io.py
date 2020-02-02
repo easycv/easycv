@@ -26,3 +26,8 @@ class InvalidPipelineInputSource(Exception):
 class InvalidImageInputSource(Exception):
     def __init__(self):
         super().__init__('Images can only be created from a path/url or a numpy array representing the image')
+
+
+class ImageNotLoaded(Exception):
+    def __init__(self):
+        super().__init__('Images can only be created from a path/url or a numpy array representing the image')
