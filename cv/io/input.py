@@ -1,27 +1,46 @@
 import os
-from io import BytesIO
 
+from urllib.error import URLError
+from urllib.request import urlopen
+
+import cv2
 import numpy as np
-import requests
-from PIL import Image, UnidentifiedImageError
-from requests.exceptions import InvalidSchema, MissingSchema
 
 from cv.errors.io import ImageDownloadError, InvalidPathError
+
+
+def valid_image_array(image_array):
+    source_is_grayscale = len(image_array.shape) == 2
+    source_is_color = len(image_array.shape) == 3 and image_array.shape[2] == 3
+    return source_is_grayscale or source_is_color
+
+
+def valid_image_source(source):
+    source_is_str = isinstance(source, str)
+    source_is_array = isinstance(source, np.ndarray)
+    return source_is_str or (source_is_array and valid_image_array)
 
 
 def open_image(path):
     try:
         if os.path.isfile(path):
-            img = Image.open(path)
+            img = cv2.imread(path)
         else:
-            response = requests.get(path, allow_redirects=True)
-            if response.status_code != 200:
+            response = urlopen(path)
+            img = np.asarray(bytearray(response.read()), dtype="uint8")
+            if response.getcode() != 200:
                 raise ImageDownloadError(f'Failed to Download file, error {response.status_code}.')
-            img = Image.open(BytesIO(response.content))
-        return np.array(img)/255
+            img = cv2.imdecode(img, cv2.IMREAD_COLOR)
+            if not isinstance(img, np.ndarray):
+                raise InvalidPathError('The given path is not an image.')
+        return img
 
-    except (ConnectionError, InvalidSchema, MissingSchema):
+    except URLError:
         raise InvalidPathError('File path is invalid.') from None
 
-    except UnidentifiedImageError:
-        raise InvalidPathError('The given path is not an image.') from None
+
+def get_image_array(image_source):
+    if isinstance(image_source, str):
+        return open_image(image_source)
+    else:
+        return np.copy(image_source)

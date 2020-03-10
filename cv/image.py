@@ -1,31 +1,10 @@
 import io
 
-import numpy as np
+import cv2
 
 from cv.pipeline import Pipeline
-from cv.io import open_image, save
 from cv.errors.io import InvalidImageInputSource
-
-
-def valid_image_array(image_array):
-    source_is_grayscale = len(image_array.shape) == 2
-    source_is_color = len(image_array.shape) == 3 and image_array.shape[2] == 3
-    return source_is_grayscale or source_is_color
-
-
-def valid_image_source(source):
-    source_is_str = isinstance(source, str)
-    source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array)
-
-
-def get_image_array(image_source):
-    if isinstance(image_source, str):
-        return open_image(image_source)
-    else:
-        image = np.copy(image_source)
-        np.clip(image, 0, 1, out=image).astype(np.float32)
-        return image
+from cv.io import save, valid_image_source, get_image_array
 
 
 def auto_compute(decorated, *args):
@@ -58,6 +37,7 @@ class Image:
             self._loaded = True
             self._pending.clear()
             self._img = self._pending(get_image_array(source))
+            print(type(self._img))
 
     @property
     def loaded(self):
@@ -119,6 +99,6 @@ class Image:
 
     def _repr_png_(self):
         b = io.BytesIO()
-        img = (self._img*255).astype(np.uint8)
-        save(img, b, 'PNG')
+        image = cv2.cvtColor(self._img, cv2.COLOR_BGR2RGB)
+        save(image, b, 'PNG')
         return b.getvalue()
