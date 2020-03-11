@@ -1,10 +1,8 @@
 import io
 
-import cv2
-
 from cv.pipeline import Pipeline
 from cv.errors.io import InvalidImageInputSource
-from cv.io import save, valid_image_source, get_image_array
+from cv.io import save, valid_image_source, get_image_array, prepare_image_to_output
 
 
 def auto_compute(decorated, *args):
@@ -37,7 +35,7 @@ class Image:
             self._loaded = True
             self._pending.clear()
             self._img = self._pending(get_image_array(source))
-            print(type(self._img))
+
 
     @property
     def loaded(self):
@@ -99,6 +97,5 @@ class Image:
 
     def _repr_png_(self):
         b = io.BytesIO()
-        image = cv2.cvtColor(self._img, cv2.COLOR_BGR2RGB)
-        save(image, b, 'PNG')
+        save(prepare_image_to_output(self._img), b, 'PNG')
         return b.getvalue()
