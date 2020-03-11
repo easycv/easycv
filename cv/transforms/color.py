@@ -7,7 +7,10 @@ from cv.transforms.base import Transform
 
 class GrayScale(Transform):
     def apply(self, image, **kwargs):
-        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        if len(image.shape) == 3:
+            return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        else:
+            return image
 
 
 class FilterChannels(Transform):

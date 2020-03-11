@@ -1,12 +1,29 @@
+import cv2
 import numpy as np
 
 from cv.transforms.base import Transform
+from cv.transforms.color import GrayScale
 from cv.transforms.filter import Convolve1d
 from cv.transforms.kernels import gradient_kernel
+from cv.validators import Option, Number
 
 
-def normalize(x):
-    return (x-x.min())/(x.max()-x.min())
+class Gradient(Transform):
+    default_args = {
+        'axis': Option(['x', 'y'], default=0),
+        'method': Option(['sobel', 'laplace'], default=0),
+        'size': Number(min_value=0, max_value=31, only_integer=True, only_odd=True, default=5)
+    }
+
+    def apply(self, image, **kwargs):
+        image = GrayScale().process(image)
+        if kwargs['method'] == 'sobel':
+            if kwargs['axis'] == 'x':
+                return cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs['size'])
+            else:
+                return cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs['size'])
+        else:
+            return cv2.Laplacian(image, cv2.CV_64F)
 
 
 def non_max_supression(image, gradient_magnitude, gradient_direction, threshold=0):
