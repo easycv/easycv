@@ -36,7 +36,8 @@ class Option(Validator):
 
 
 class Number(Validator):
-    def __init__(self, min_value=-inf, max_value=inf, only_integer=False, default=None):
+    def __init__(self, min_value=-inf, max_value=inf, only_integer=False, only_odd='any', default=None):
+        self._only_odd = only_odd
         self._min_value = min_value
         self._max_value = max_value
         self.only_integer = only_integer
@@ -44,12 +45,17 @@ class Number(Validator):
 
     def validate(self, arg_name, arg, inside_list=False):
         allowed_types = (int,) if self.only_integer else (int, float)
-        if not isinstance(arg, allowed_types) or not (self._min_value <= arg <= self._max_value):
+        if not isinstance(arg, allowed_types) or not (self._min_value <= arg <= self._max_value) \
+                or self._only_odd and arg % 2 == 0:
             if inside_list:
                 prefix = "a list/tuple of " + ("integers" if self.only_integer else "numbers")
             else:
-                prefix = "an integer" if self.only_integer else "a number"
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} between {self._min_value} and {self._max_value}.')
+                if self.only_integer:
+                    prefix = "an odd integer" if self._only_odd else "an integer"
+                else:
+                    prefix = "an odd number" if self._only_odd else "a number"
+            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} '
+                                       f'between {self._min_value} and {self._max_value}.')
         return arg
 
 
@@ -61,7 +67,8 @@ class Type(Validator):
     def validate(self, arg_name, arg, inside_list=False):
         if not isinstance(arg, self.arg_type):
             prefix = "a list/tuple of objects" if inside_list else "an object"
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} from class {self.arg_type.__name__}')
+            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} '
+                                       f'from class {self.arg_type.__name__}')
         return arg
 
 
