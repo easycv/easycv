@@ -36,7 +36,7 @@ class Option(Validator):
 
 
 class Number(Validator):
-    def __init__(self, min_value=-inf, max_value=inf, only_integer=False, only_odd='any', default=None):
+    def __init__(self, min_value=-inf, max_value=inf, only_integer=False, only_odd=False, default=None):
         self._only_odd = only_odd
         self._min_value = min_value
         self._max_value = max_value

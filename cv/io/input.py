@@ -29,7 +29,7 @@ def open_image(path):
             response = urlopen(path)
             img = np.asarray(bytearray(response.read()), dtype="uint8")
             if response.getcode() != 200:
-                raise ImageDownloadError(f'Failed to Download file, error {response.status_code}.')
+                raise ImageDownloadError(f'Failed to Download file, error {response.getcode()}.')
             img = cv2.imdecode(img, cv2.IMREAD_COLOR)
             if not isinstance(img, np.ndarray):
                 raise InvalidPathError('The given path is not an image.')
