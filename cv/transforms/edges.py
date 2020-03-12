@@ -47,3 +47,12 @@ class GradientAngle(Transform):
         y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs['size'])
         return np.arctan2(x, y)
 
+
+class Canny(Transform):
+    default_args = {
+        'low': Number(min_value=0, max_value=255, only_integer=True, default=100),
+        'high': Number(min_value=0, max_value=255, only_integer=True, default=200),
+    }
+
+    def apply(self, image, **kwargs):
+        return cv2.Canny(image, kwargs['low'], kwargs['high'])
