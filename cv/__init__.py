@@ -2,3 +2,4 @@
 __version__ = '0.1.0'
 
 from cv.image import Image
+from cv.pipeline import Pipeline

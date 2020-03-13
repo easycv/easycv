@@ -2,7 +2,7 @@ import io
 
 from cv.pipeline import Pipeline
 from cv.errors.io import InvalidImageInputSource
-from cv.io import save, valid_image_source, get_image_array, prepare_image_to_output
+from cv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated, *args):
@@ -35,7 +35,6 @@ class Image:
             self._loaded = True
             self._pending.clear()
             self._img = self._pending(get_image_array(source))
-
 
     @property
     def loaded(self):
@@ -88,6 +87,10 @@ class Image:
             return result
 
     @auto_compute
+    def show(self):
+        show(self._img)
+
+    @auto_compute
     def __eq__(self, other):
         return isinstance(other, Image) and other.array() == self.array() and self.pending() == other.pending()
 
@@ -97,5 +100,5 @@ class Image:
 
     def _repr_png_(self):
         b = io.BytesIO()
-        save(prepare_image_to_output(self._img), b, 'PNG')
+        save(self._img, b, 'PNG')
         return b.getvalue()
