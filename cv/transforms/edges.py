@@ -10,7 +10,7 @@ class Gradient(Transform):
     default_args = {
         'axis': Option(['x', 'y'], default=0),
         'method': Option(['sobel', 'laplace'], default=0),
-        'size': Number(min_value=0, max_value=31, only_integer=True, only_odd=True, default=5)
+        'size': Number(min_value=1, max_value=31, only_integer=True, only_odd=True, default=5)
     }
 
     def apply(self, image, **kwargs):
@@ -26,7 +26,7 @@ class Gradient(Transform):
 
 class GradientMagnitude(Transform):
     default_args = {
-        'size': Number(min_value=0, max_value=31, only_integer=True, only_odd=True, default=5)
+        'size': Number(min_value=1, max_value=31, only_integer=True, only_odd=True, default=5)
     }
 
     def apply(self, image, **kwargs):
@@ -38,7 +38,7 @@ class GradientMagnitude(Transform):
 
 class GradientAngle(Transform):
     default_args = {
-        'size': Number(min_value=0, max_value=31, only_integer=True, only_odd=True, default=5)
+        'size': Number(min_value=1, max_value=31, only_integer=True, only_odd=True, default=5)
     }
 
     def apply(self, image, **kwargs):
@@ -50,8 +50,8 @@ class GradientAngle(Transform):
 
 class Canny(Transform):
     default_args = {
-        'low': Number(min_value=0, max_value=255, only_integer=True, default=100),
-        'high': Number(min_value=0, max_value=255, only_integer=True, default=200),
+        'low': Number(min_value=1, max_value=255, only_integer=True, default=100),
+        'high': Number(min_value=1, max_value=255, only_integer=True, default=200),
     }
 
     def apply(self, image, **kwargs):
