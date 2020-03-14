@@ -1,10 +1,12 @@
 
 import cv2
 from PIL import Image
+from matplotlib import pyplot as plt
+
+from cv.utils import nearest_square_side
 
 
 def prepare_image_to_output(img_arr, rgb=True):
-
     if img_arr.min() >= 0 and img_arr.max() <= 255:
         if img_arr.dtype.kind != 'i':
             img_arr = img_arr.astype('uint8')
@@ -34,3 +36,18 @@ def show(img_arr, name='Image', wait_time=500):
         if (key_code & 0xFF) == ord("q"):
             cv2.destroyAllWindows()
             break
+
+
+def show_grid(images, titles=(), size='auto'):
+    if size == 'auto':
+        side = nearest_square_side(len(images))
+        size = (side, side)
+    for i in range(len(images)):
+        img = prepare_image_to_output(images[i].array)
+        plt.subplot(size[0], size[1], i+1)
+        plt.imshow(img)
+        plt.xticks([])
+        plt.yticks([])
+        if len(titles) == len(images):
+            plt.title(titles[i])
+    plt.show()
