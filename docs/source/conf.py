@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'cv'
-copyright = '2020, André Alves'
-author = 'André Alves'
+copyright = '2020, Resi Coders'
+author = 'Resi Coders'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'

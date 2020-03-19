@@ -1,4 +1,6 @@
-cv.image module
+.. module:: cv.image
+
+Image
 ---------------
 
 .. automodule:: cv.image
