@@ -145,8 +145,7 @@ class Image:
         Returns a new Image with all the pending operations applied.
         If `in_place` is *True* the pending operations will be applied to the current image instead.
 
-        :param in_place: `True` to change the current image, `False` to return a new one with the
-        pending transforms applied, defaults to `False`
+        :param in_place: `True` to change the current image, `False` to return a new one with the pending transforms applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
         :rtype: :class:`~cv.image.Image`
