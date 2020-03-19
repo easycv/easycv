@@ -30,10 +30,16 @@ release = '0.0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-	"sphinx.ext.autodoc"
-]
 
+autoclass_content = 'both'
+pygments_style = 'sphinx'
+autodoc_member_order = 'bysource'
+html4_writer=True
+extensions = [
+	"sphinx.ext.autodoc",
+	"sphinx.ext.intersphinx"
+]
+intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -50,7 +56,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_theme_path = ["_themes", ]
+html_theme_path = ["../_themes" ]
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
