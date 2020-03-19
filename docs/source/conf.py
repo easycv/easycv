@@ -30,7 +30,7 @@ release = '0.0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-
+master_doc = 'index'
 autoclass_content = 'both'
 pygments_style = 'sphinx'
 autodoc_member_order = 'bysource'
