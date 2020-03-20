@@ -12,6 +12,7 @@ def auto_compute(decorated, *args):
     def wrapper(image):
         image.compute(in_place=True)
         return decorated(image, *args)
+
     return wrapper
 
 
@@ -21,6 +22,7 @@ def auto_compute_property(decorated, *args):
     def wrapper(image):
         image.compute(in_place=True)
         return decorated(image, *args)
+
     return wrapper
 
 
@@ -33,11 +35,13 @@ class Image:
     If the Image is lazy, computations will be delayed until needed or until the image is computed.
     This can facilitate large scale processing and distributed computation.
 
-    :param source: Image data source. An array representing the image or a path/link to a file containing the image
+    :param source: Image data source. An array representing the image or a path/link to a file
+    containing the image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
     :param pipeline: Pipeline to be applied to the image at creation time, defaults to None
     :type pipeline: :class:`~cv.pipeline.Pipeline`, optional
-    :param lazy: `True` if the image is lazy (computations are delayed until needed), defaults to False
+    :param lazy: `True` if the image is lazy (computations are delayed until needed),
+     defaults to False
     :type lazy: :class:`boolean`, optional
     """
 
@@ -115,12 +119,15 @@ class Image:
     def apply(self, transform, in_place=False):
         """
         Returns a new Image with the Transform or Pipeline applied.
-        If the image is lazy the transform/pipeline will be stored as a pending operation (no computation is done).
-        If `in_place` is *True* the operation will change the current image instead of returning a new Image.
+        If the image is lazy the transform/pipeline will be stored as a pending operation
+        (no computation is done).
+        If `in_place` is *True* the operation will change the current image instead of returning
+        a new Image.
 
         :param transform: Transform/Pipeline to be applied
         :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
-        :param in_place: `True` to change the current image, `False` to return a new one with the transform applied, defaults to `False`
+        :param in_place: `True` to change the current image, `False` to return a new one with
+        the transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
         :rtype: :class:`~cv.image.Image`
@@ -143,9 +150,11 @@ class Image:
     def compute(self, in_place=False):
         """
         Returns a new Image with all the pending operations applied.
-        If `in_place` is *True* the pending operations will be applied to the current image instead.
+        If `in_place` is *True* the pending operations will be applied
+        to the current image instead.
 
-        :param in_place: `True` to change the current image, `False` to return a new one with the pending transforms applied, defaults to `False`
+        :param in_place: `True` to change the current image, `False` to return a new one with the
+         pending transforms applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
         :rtype: :class:`~cv.image.Image`
@@ -164,13 +173,19 @@ class Image:
 
     @auto_compute
     def __eq__(self, other):
-        return isinstance(other, Image) and other.array() == self.array() and self.pending() == other.pending()
+        return (
+            isinstance(other, Image)
+            and other.array() == self.array()
+            and self.pending() == other.pending()
+        )
 
     @auto_compute
     def __repr__(self):
-        return "<image size={}x{} at 0x{}>".format(self.height, self.width, id(self._img))
+        return "<image size={}x{} at 0x{}>".format(
+            self.height, self.width, id(self._img)
+        )
 
     def _repr_png_(self):
         b = io.BytesIO()
-        save(self._img, b, 'PNG')
+        save(self._img, b, "PNG")
         return b.getvalue()

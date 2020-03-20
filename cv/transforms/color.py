@@ -15,13 +15,13 @@ class GrayScale(Transform):
 
 class FilterChannels(Transform):
     default_args = {
-        'channels': List(Number(min_value=0, max_value=2, only_integer=True)),
-        'scheme': Option(['rgb', 'bgr'], default=0)
+        "channels": List(Number(min_value=0, max_value=2, only_integer=True)),
+        "scheme": Option(["rgb", "bgr"], default=0),
     }
 
     def apply(self, image, **kwargs):
-        channels = np.array(kwargs['channels'])
-        if kwargs['scheme'] == 'rgb':
+        channels = np.array(kwargs["channels"])
+        if kwargs["scheme"] == "rgb":
             channels = 2 - channels
         if len(channels) > 0:
             image[:, :, channels] = 0
