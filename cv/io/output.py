@@ -9,6 +9,8 @@ from cv.utils import nearest_square_side
 def prepare_image_to_output(img_arr, rgb=True):
     if img_arr.min() >= 0 and img_arr.max() <= 255:
         if img_arr.dtype.kind != 'i':
+            if img_arr.min() >= 0 and img_arr.max() <= 1:
+                img_arr = img_arr * 255
             img_arr = img_arr.astype('uint8')
     else:
         img_arr = cv2.normalize(img_arr, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
