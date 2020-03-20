@@ -16,12 +16,12 @@ jobs:
     - stage: "Code Quality Review"
       script: flake8 --count
     - stage: "Code Tests"
-      python:
+    - python:
         - "3.4"
         - "3.5"
       script: pytest --cov=./
+      - codecov
     - stage: "Code Coverage"
-      script: codecov
     - stage: "Send notifications"
       script: wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
               chmod +x send.sh
