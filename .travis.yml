@@ -10,6 +10,8 @@ install:
   - pip install pytest pytest-cov
   - pip install codecov
   - pip install .
+before_script:
+  - flake8 --count
 script:
   - pytest --cov=./
 after_success:
