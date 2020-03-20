@@ -1,56 +1,34 @@
 language: python
 python:
-#  - "3.4"
-#  - "3.5"
+  - "3.4"
+  - "3.5"
   - "3.6"
   - "3.7"
-#  - "3.8"
+  - "3.8"
 #  - "3.8-dev"  # 3.8 development branch
-run_per_provider: false
+
 install:
   - pip install pytest pytest-cov flake8
   - pip install codecov
   - pip install .
 
 script:
-  - curl -Lo travis_after_all.py https://raw.github.com/dmakhno/travis_after_all/master/travis_after_all.py
   - flake8 --count
   - pytest --cov=./
 
-after_success:
-  - python travis_after_all.py https://api.travis-ci.com
-  - export $(cat .to_export_back)
-  - |
-      if [ "$BUILD_LEADER" = "YES" ]; then
-        if [ "$BUILD_AGGREGATE_STATUS" = "others_succeeded" ]; then
-          echo "All jobs succeeded!"
-          wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-          chmod +x send.sh
-          ./send.sh success $WEBHOOK_URL
-        else
-          echo "Some jobs failed!"
-          wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-          chmod +x send.sh
-          ./send.sh failure $WEBHOOK_URL
-        fi
-      fi
-after_failure:
-  - python travis_after_all.py https://api.travis-ci.com
-  - export $(cat .to_export_back)
-  - |
-      if [ "$BUILD_LEADER" = "YES" ]; then
-        if [ "$BUILD_AGGREGATE_STATUS" = "others_failed" ]; then
-          echo "All jobs failed!"
-          wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-          chmod +x send.sh
-          ./send.sh failure $WEBHOOK_URL
-        else
-          echo "Some jobs failed!"
-          wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-          chmod +x send.sh
-          ./send.sh failure $WEBHOOK_URL
-        fi
-      fi
+jobs:
+  include:
+    - stage: "Send notification"
+      python: "3.6"
+      script:
+        - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+        - chmod +x send.sh
+        - ./send.sh success $WEBHOOK_URL
 
-after_script:
-  - echo leader=$BUILD_LEADER status=$BUILD_AGGREGATE_STATUS
+#after_success:
+#  - codecov
+
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_URL
