@@ -38,5 +38,5 @@ def test_save():
     p.save()
     assert os.path.exists("test.pipe")
     p2 = Pipeline("test.pipe")
-    assert p != p2
+    assert p == p2
     os.remove("test.pipe")
