@@ -6,9 +6,9 @@ from cv.transforms.noise import SaltAndPepper, Impulse, Gaussian
 
 def test_name():
     p = Pipeline([SaltAndPepper(), Impulse(), Gaussian()])
-    assert p.name() == 'pipeline'
-    p = Pipeline([SaltAndPepper(), Gaussian()], name='test-pipeline')
-    assert p.name() == 'test-pipeline'
+    assert p.name() == "pipeline"
+    p = Pipeline([SaltAndPepper(), Gaussian()], name="test-pipeline")
+    assert p.name() == "test-pipeline"
 
 
 def test_description():
@@ -32,7 +32,9 @@ def test_transforms():
 
 
 def test_save():
-    p = Pipeline([SaltAndPepper(prob=0.1512), Impulse(), Gaussian(sigma=5)], name='test')
+    p = Pipeline(
+        [SaltAndPepper(prob=0.1512), Impulse(), Gaussian(sigma=5)], name="test"
+    )
     p.save()
     assert os.path.exists("test.pipe")
     p2 = Pipeline("test.pipe")

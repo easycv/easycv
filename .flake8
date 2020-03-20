@@ -1,0 +1,4 @@
+[flake8]
+ignore = E203, W503
+max-line-length = 99
+exclude = .git, docs/_themes/sphinx_rtd_theme/__init__.py
