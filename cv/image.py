@@ -168,7 +168,7 @@ class Image:
 
     @auto_compute
     def __repr__(self):
-        return f"<image size={self.height}x{self.width} at 0x{id(self._img)}>"
+        return "<image size={}x{} at 0x{}>".format(self.height, self.width, id(self._img))
 
     def _repr_png_(self):
         b = io.BytesIO()

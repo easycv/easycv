@@ -13,4 +13,4 @@ class InvalidArgumentError(Exception):
 class InvalidMethodError(Exception):
     """Raised when a transform is called with an invalid method"""
     def __init__(self, args):
-        super().__init__(f'Invalid Method. Available methods: {", ".join(str(arg) for arg in args)}')
+        super().__init__('Invalid Method. Available methods: {}'.format(", ".join(str(arg) for arg in args)))
