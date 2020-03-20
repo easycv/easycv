@@ -33,7 +33,7 @@ class Transform:
         for arg in self._args:
             value = self._args[arg] if isinstance(self._args[arg], (str, int, float)) else '(...)'
             args_str.append(f'{arg}={value}')
-        return f'{self.__class__.__name__} ({", ".join(args_str)})'
+        return '{} ({})'.format(self.__class__.__name__,  ", ".join(args_str))
 
     def __repr__(self):
         return str(self)
