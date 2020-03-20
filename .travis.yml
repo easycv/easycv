@@ -10,15 +10,20 @@ install:
   - pip install pytest pytest-cov flake8
   - pip install codecov
   - pip install .
-before_script:
-  - flake8 --count
-script:
-  - pytest --cov=./
-after_success:
-  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-  - chmod +x send.sh
-  - ./send.sh success $WEBHOOK_URL
-  - codecov
+
+jobs:
+  include:
+    - stage: "Code Quality Review"
+      script: flake8 --count
+    - stage: "Code Tests"
+      script: pytest --cov=./
+    - stage: "Code Coverage"
+      script: codecov
+    - stage: "Send notifications"
+      script: wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+              chmod +x send.sh
+              ./send.sh success $WEBHOOK_URL
+
 after_failure:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
