@@ -36,7 +36,7 @@ class Pipeline(object):
                 r.append(t.description(level=level+1, start=i+1))
             else:
                 indent = '    ' + '|    ' * level
-                r.append(f'{indent}{i + 1}: {str(t)}')
+                r.append('{}{}: {}'.format(indent, i + 1, str(t)))
         return '\n'.join(r)
 
     def num_transforms(self):
