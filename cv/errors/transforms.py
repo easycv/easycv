@@ -1,7 +1,7 @@
 class ArgumentNotProvidedError(Exception):
     """Raised when a transform is called without a mandatory argument"""
     def __init__(self, argument):
-        super().__init__(f'Must provide a value for argument: {argument}')
+        super().__init__('Must provide a value for argument: {}'.format(argument))
 
 
 class InvalidArgumentError(Exception):
