@@ -8,7 +8,7 @@ class SaltAndPepper(Transform):
     default_args = {'prob': 0.05}
 
     def apply(self, image, **kwargs):
-        a = f'test-ci'
+        a = f'test-cighjk'
         return image
 
 
