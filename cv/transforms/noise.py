@@ -8,9 +8,6 @@ class SaltAndPepper(Transform):
     default_args = {'prob': 0.05}
 
     def apply(self, image, **kwargs):
-        probabilities = np.random.rand(image.shape[0], image.shape[1])
-        image[probabilities < kwargs['prob']] = 0
-        image[probabilities > 1 - kwargs['prob']] = 1
         return image
 
 
