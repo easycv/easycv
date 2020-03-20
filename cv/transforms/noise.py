@@ -1,39 +1,29 @@
-import numpy as np
-
 from cv.transforms.base import Transform
-from cv.errors.transforms import InvalidMethodError
+from cv.validators import Option,Number,Type
+from skimage.util import random_noise
 
 
-class SaltAndPepper(Transform):
-    default_args = {'prob': 0.05}
+class Noise(Transform):
+    default_args = {
+        'method': Option(['gaussian', 'localvar', 'poisson', 'salt', 'pepper', 's&p', 'speckle'], default=0),
+        'seed': Number(min_value=0, max_value=2**32-1),
+        'clip': Type(bool, default=True),
+        'mean': Type(float, default=0)
 
-    def apply(self, image, **kwargs):
-        a = f'test-cighjk'
-        return image
-
-
-class Impulse(Transform):
-    default_args = {'prob': 0.05}
-
-    def apply(self, image, **kwargs):
-        probabilities = np.random.rand(image.shape[0], image.shape[1])
-        image[probabilities < kwargs['prob']] = 0
-        return image
-
-
-class Gaussian(Transform):
-    default_args = {'mu': 0, 'sigma': 20, 'grayscale': False, 'method': 'clip'}
+        }
 
     def apply(self, image, **kwargs):
-        noise_dim = 1 if kwargs['grayscale'] else 3
-        noise = np.random.normal(kwargs['mu'], kwargs['sigma'],
-                                 (image.shape[0], image.shape[1], noise_dim))
-        noisy_image = noise + image
-        if kwargs['method'] == 'clip':
-            noisy_image = np.clip(noisy_image, 0, 1)
-        elif kwargs['method'] == 'normalize':
-            noisy_image = (noisy_image - noisy_image.min(axis=(0, 1))) / (
-                        noisy_image.max(axis=(0, 1)) - noisy_image.min(axis=(0, 1)))
-        else:
-            raise InvalidMethodError(('clip', 'normalize'))
-        return noisy_image
+        if kwargs['method'] == 'gaussian':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'], clip=kwargs['clip'], mean=kwargs['mean'])
+        elif kwargs['method'] == 'localvar':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'])
+        elif kwargs['method'] == 'poisson':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'], clip=kwargs['clip'])
+        elif kwargs['method'] == 'salt':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'])
+        elif kwargs['method'] == 'pepper':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'])
+        elif kwargs['method'] == 's&p':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'])
+        elif kwargs['method'] == 'speckle':
+            return random_noise(image, mode=kwargs['method'], seed=kwargs['seed'], clip=kwargs['clip'])
