@@ -16,9 +16,8 @@ jobs:
     - stage: "Code Quality Review"
       script: flake8 --count
     - stage: "Code Tests"
-    - python:
-        - "3.4"
-        - "3.5"
+    - python: "3.4"
+    - python: "3.5"
       script: pytest --cov=./
       - codecov
     - stage: "Code Coverage"
