@@ -30,7 +30,8 @@ class Option(Validator):
 
     def validate(self, arg_name, arg):
         if arg not in self.options:
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Possible values: {", ".join(self.options)}')
+            raise InvalidArgumentError('Invalid value for "{}". '.format(arg_name) +
+                                       'Possible values: {}'.format(", ".join(self.options)))
         else:
             return arg
 
@@ -54,8 +55,8 @@ class Number(Validator):
                     prefix = "an odd integer" if self._only_odd else "an integer"
                 else:
                     prefix = "an odd number" if self._only_odd else "a number"
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} '
-                                       f'between {self._min_value} and {self._max_value}.')
+            raise InvalidArgumentError('Invalid value for "{}". Must be {} '.format(arg_name, prefix) +
+                                       'between {} and {}.'.format(self._min_value, self._max_value))
         return arg
 
 
@@ -67,8 +68,8 @@ class Type(Validator):
     def validate(self, arg_name, arg, inside_list=False):
         if not isinstance(arg, self.arg_type):
             prefix = "a list/tuple of objects" if inside_list else "an object"
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {prefix} '
-                                       f'from class {self.arg_type.__name__}')
+            raise InvalidArgumentError('Invalid value for "{}". '.format(arg_name) +
+                                       'Must be {} from class {}'.format(prefix, self.arg_type.__name__))
         return arg
 
 
@@ -80,9 +81,9 @@ class List(Validator):
 
     def validate(self, arg_name, arg):
         if not isinstance(arg, (list, tuple, np.array)):
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be a list or tuple.')
+            raise InvalidArgumentError('Invalid value for "{}". Must be a list or tuple.'.format(arg_name))
         if self._length is not None and len(arg) != self._length:
-            raise InvalidArgumentError(f'Invalid value for "{arg_name}". Must be {self._length} elements long.')
+            raise InvalidArgumentError('Invalid value for "{}". Must be {} elements long.'.format(arg_name, self._length))
 
         for e in list(arg):
             self._validator.validate(arg_name, e, inside_list=True)
