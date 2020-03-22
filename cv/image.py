@@ -1,5 +1,6 @@
 import io
 
+import numpy as np
 from functools import wraps
 
 from cv.pipeline import Pipeline
@@ -7,19 +8,19 @@ from cv.errors.io import InvalidImageInputSource
 from cv.io import save, valid_image_source, get_image_array, show
 
 
-def auto_compute(decorated, *args):
+def auto_compute(decorated):
     @wraps(decorated)
-    def wrapper(image):
+    def wrapper(image, *args):
         image.compute(in_place=True)
         return decorated(image, *args)
 
     return wrapper
 
 
-def auto_compute_property(decorated, *args):
+def auto_compute_property(decorated):
     @property
     @wraps(decorated)
-    def wrapper(image):
+    def wrapper(image, *args):
         image.compute(in_place=True)
         return decorated(image, *args)
 
@@ -175,8 +176,8 @@ class Image:
     def __eq__(self, other):
         return (
             isinstance(other, Image)
-            and other.array() == self.array()
-            and self.pending() == other.pending()
+            and np.array_equal(other.array, self.array)
+            and self.pending == other.pending
         )
 
     @auto_compute
