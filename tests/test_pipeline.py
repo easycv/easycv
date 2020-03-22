@@ -8,9 +8,9 @@ def test_name():
     p = Pipeline(
         [Noise(method="gaussian"), Noise(method="pepper"), Noise(method="s&p")]
     )
-    assert p.name() == "pipeline"
+    assert p.name == "pipeline"
     p = Pipeline([Noise(method="s&p"), Noise(method="gaussian")], name="test-pipeline")
-    assert p.name() == "test-pipeline"
+    assert p.name == "test-pipeline"
 
 
 def test_description():

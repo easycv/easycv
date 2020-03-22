@@ -137,9 +137,5 @@ test-images/
 #notebooks
 *.ipynb
 
-#images
-*.jpg
-*.png
-
 #pipelines
 *.pipe
