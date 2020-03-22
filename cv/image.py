@@ -30,19 +30,18 @@ def auto_compute_property(decorated):
 class Image:
     """
     This class represents an **image**.
-
     Images can be created from a NumPy array containing the image data, a path to a local file
     or a link to an image on the web. Transforms and pipelines can easily be applied to any image.
     If the Image is lazy, computations will be delayed until needed or until the image is computed.
     This can facilitate large scale processing and distributed computation.
 
-    :param source: Image data source. An array representing the image or a path/link to a file
+    :param source: Image data source. An array representing the image or a path/link to a file \
     containing the image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
     :param pipeline: Pipeline to be applied to the image at creation time, defaults to None
     :type pipeline: :class:`~cv.pipeline.Pipeline`, optional
-    :param lazy: `True` if the image is lazy (computations are delayed until needed),
-     defaults to False
+    :param lazy: `True` if the image is lazy (computations are delayed until needed), defaults to \
+    False
     :type lazy: :class:`boolean`, optional
     """
 
@@ -127,8 +126,8 @@ class Image:
 
         :param transform: Transform/Pipeline to be applied
         :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
-        :param in_place: `True` to change the current image, `False` to return a new one with
-        the transform applied, defaults to `False`
+        :param in_place: `True` to change the current image, `False` to return a new one with the \
+        transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
         :rtype: :class:`~cv.image.Image`

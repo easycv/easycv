@@ -6,9 +6,9 @@ from cv.transforms.noise import SaltAndPepper, Impulse, Gaussian
 
 def test_name():
     p = Pipeline([SaltAndPepper(), Impulse(), Gaussian()])
-    assert p.name() == "pipeline"
+    assert p.name == "pipeline"
     p = Pipeline([SaltAndPepper(), Gaussian()], name="test-pipeline")
-    assert p.name() == "test-pipeline"
+    assert p.name == "test-pipeline"
 
 
 def test_description():

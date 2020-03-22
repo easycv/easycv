@@ -1,7 +1,7 @@
-Image
+Pipeline
 ---------------
 
-.. automodule:: cv.image
+.. automodule:: cv.pipeline
    :members:
    :undoc-members:
    :show-inheritance:
