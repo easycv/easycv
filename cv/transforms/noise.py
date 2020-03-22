@@ -13,7 +13,7 @@ class Noise(Transform):
         "seed": Number(min_value=0, max_value=2 ** 32 - 1, default=False),
         "clip": Type(bool, default=True),
         "mean": Type(float, default=0),
-        "var": Number(min_value=0,max_value=1, default=0.01),
+        "var": Number(min_value=0, max_value=1, default=0.01),
         "amount": Number(min_value=0, max_value=1, default=0.05),
         "salt_vs_pepper": Number(min_value=0, max_value=1, default=0.5),
     }
