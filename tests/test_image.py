@@ -6,6 +6,8 @@ from cv.transforms.filter import Blur
 def test_image():
     image = Image("tests/images/lenna.png")
     assert image.array is not None
+    image = Image("https://images.dog.ceo/breeds/komondor/n02105505_2699.jpg")
+    assert image.array is not None
 
 
 def test_load():
