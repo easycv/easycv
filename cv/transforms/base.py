@@ -1,20 +1,36 @@
-from cv.validators import Validator
-from cv.errors.transforms import ArgumentNotProvidedError
+from cv.validators import Method
 
 
 class Transform:
     default_args = {}
+    methods = None
 
     def __init__(self, **kwargs):
-        for arg in self.default_args:
-            if self.default_args[arg] is None and arg not in kwargs:
-                raise ArgumentNotProvidedError(arg)
-            elif isinstance(self.default_args[arg], Validator):
-                validator = self.default_args[arg]
-                kwargs[arg] = validator.check(arg, kwargs.get(arg))
+        if self.methods is not None:
+            self._add_unspecified_args()
+        self._args = self._get_arguments(kwargs)
 
-        self._args = dict(self.default_args)
-        self._args.update(kwargs)
+    def _add_unspecified_args(self):
+        specified_args = set(sum(self.methods.values(), []))
+        not_specified = set(self.default_args) - specified_args - {"method"}
+        if not_specified:
+            for method in self.methods:
+                self.methods[method].extend(not_specified)
+
+    def _get_arguments(self, kwargs):
+        if self.methods is not None:
+            validator = Method(self.methods, default=self.default_args.get("method"))
+            method = validator.check("method", kwargs)
+            kwargs["method"] = method
+            valid_arguments = self.methods[method]
+        else:
+            valid_arguments = self.default_args
+
+        for arg in valid_arguments:
+            validator = self.default_args[arg]
+            kwargs[arg] = validator.check(arg, kwargs)
+
+        return kwargs
 
     def args(self):
         return self._args
