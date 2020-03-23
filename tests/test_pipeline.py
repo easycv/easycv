@@ -18,7 +18,7 @@ def test_description():
     p2 = Pipeline([Noise(method="pepper"), Noise(method="gaussian", var=0.2)])
     assert p.description() == p2.description()
     p3 = Pipeline([Noise(method="pepper"), Noise(method="gaussian")])
-    p4 = Pipeline([Noise(method="pepper", ammount=0.125), Noise(method="gaussian")])
+    p4 = Pipeline([Noise(method="pepper", amount=0.125), Noise(method="gaussian")])
     assert p3.description() != str(p4)
 
 
