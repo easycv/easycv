@@ -34,5 +34,6 @@ setup(
         "scipy",
         "matplotlib",
         "opencv-python",
+        "scikit-image",
     ],
 )
