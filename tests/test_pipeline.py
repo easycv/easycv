@@ -30,6 +30,16 @@ def test_num_transforms():
     assert p2.num_transforms() == 5
 
 
+def test_add_transform():
+    p1 = Pipeline([Noise(method="s&p")])
+    p2 = Pipeline([Noise(method="s&p"), Noise(method="gaussian")])
+    p1.add_transform(Noise(method="gaussian"))
+    assert p1 == p2
+    p3 = Pipeline([Noise(method="s&p"), Noise(method="salt"), Noise(method="gaussian")])
+    p2.add_transform(Noise(method="salt"), index=1)
+    assert p2 == p3
+
+
 def test_transforms():
     p = Pipeline(
         [Noise(method="s&p"), Noise(method="pepper"), Noise(method="gaussian")]

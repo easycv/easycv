@@ -95,15 +95,20 @@ class Pipeline:
                 num += 1
         return num
 
-    def add_transform(self, transform):
+    def add_transform(self, transform, index=None):
         """
         Adds a Transform/Pipeline to the Pipeline. The new Transform/Pipeline is added in the end.
 
         :param transform: Transform/Pipeline to be added
         :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
+        :param index: Index to add the transform, end of the list by default
+        :type index: :class:`int`, optional
         """
         if isinstance(transform, (Transform, Pipeline)):
-            self._transforms += [transform]
+            if index is not None:
+                self._transforms.insert(index, transform)
+            else:
+                self._transforms.append(transform)
         else:
             raise ValueError("Pipelines can only contain Transforms or other pipelines")
 
