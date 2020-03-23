@@ -17,7 +17,7 @@ class Validator:
         else:
             return self.validate(arg_name, kwargs)
 
-    def validate(self, arg_name, kwargs):
+    def validate(self, arg_name, kwargs, inside_list=False):
         pass
 
 
@@ -27,7 +27,7 @@ class Option(Validator):
         default = None if default is None else options[default]
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs):
+    def validate(self, arg_name, kwargs, inside_list=False):
         arg = kwargs.get(arg_name)
         if arg not in self.options:
             raise InvalidArgumentError(
@@ -43,7 +43,7 @@ class Method(Validator):
         self.options = options
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs):
+    def validate(self, arg_name, kwargs, inside_list=False):
         arg = kwargs.pop(arg_name)
         if arg not in self.options:
             raise InvalidArgumentError(
@@ -120,7 +120,7 @@ class List(Validator):
         self._length = length
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs):
+    def validate(self, arg_name, kwargs, inside_list=False):
         arg = kwargs.get(arg_name)
         if not isinstance(arg, (list, tuple, np.array)):
             raise InvalidArgumentError(
