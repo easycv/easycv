@@ -6,3 +6,5 @@ Reference
 
    image
    pipeline
+   io/index.rst
+   errors/index.rst
