@@ -38,27 +38,8 @@ class Option(Validator):
             return arg
 
 
-class Method(Validator):
-    def __init__(self, options, default=None):
-        self.options = options
-        super().__init__(default=default)
-
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.pop(arg_name)
-        if arg not in self.options:
-            raise InvalidArgumentError(
-                "Invalid method. Available methods: {}".format(", ".join(self.options))
-            )
-        if any(a not in self.options[arg] for a in kwargs):
-            raise InvalidArgumentError(
-                'Invalid arguments for method "{}". '.format(arg)
-                + "Allowed arguments: {}".format(", ".join(self.options[arg]))
-            )
-        else:
-            return arg
-
-
 class Number(Validator):
+
     def __init__(
         self,
         min_value=-float("inf"),
@@ -96,6 +77,25 @@ class Number(Validator):
                 + "between {} and {}.".format(self._min_value, self._max_value)
             )
         return arg
+
+class Method(Validator):
+    def __init__(self, options, default=None):
+        self.options = options
+        super().__init__(default=default)
+
+    def validate(self, arg_name, kwargs, inside_list=False):
+        arg = kwargs.pop(arg_name)
+        if arg not in self.options:
+            raise InvalidArgumentError(
+                "Invalid method. Available methods: {}".format(", ".join(self.options))
+            )
+        if any(a not in self.options[arg] for a in kwargs):
+            raise InvalidArgumentError(
+                'Invalid arguments for method "{}". '.format(arg)
+                + "Allowed arguments: {}".format(", ".join(self.options[arg]))
+            )
+        else:
+            return arg
 
 
 class Type(Validator):
