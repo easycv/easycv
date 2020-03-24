@@ -8,16 +8,14 @@ from cv.transforms.color import GrayScale
 
 class Gradient(Transform):
     """
-    This class represents an **Gradient**.
-
     Gradient is a transform that computes the gradient of an image
 
-    :param axis: Axis to do gradient
-    :type axis: :class:`str`
-    :param method: Method to use on gradients
-    :type method: :class:`str`
-    :param size: Type of image abstraction
-    :type size: :class:`int`
+    :param axis: Axis to do gradient, defaults to "x"
+    :type axis: :class:`str`, optional
+    :param method: Method to use on gradients, defaults to "sobel"
+    :type method: :class:`str`, optional
+    :param size: Type of image abstraction, defaults to 5
+    :type size: :class:`int`, optional
     """
 
     default_args = {
@@ -41,12 +39,10 @@ class Gradient(Transform):
 
 class GradientMagnitude(Transform):
     """
-    This class represents an **GradientMagnitude**.
-
     GradientMagnitude is a transform that computes the gradient magnitude of an image
 
-    :param size: Size of operator
-    :type size: :class:`int`
+    :param size: Size of operator, defaults to 5
+    :type size: :class:`int`, optional
     """
 
     default_args = {
@@ -64,12 +60,10 @@ class GradientMagnitude(Transform):
 
 class GradientAngle(Transform):
     """
-    This class represents an **GradientAngle**.
-
     GradientAngle is a transform that computes the angles of the gradients of an image
 
-    :param size: Size of operator
-    :type size: :class:`int`
+    :param size: Size of operator, defaults to 5
+    :type size: :class:`int`, optional
     """
 
     default_args = {
@@ -87,14 +81,12 @@ class GradientAngle(Transform):
 
 class Canny(Transform):
     """
-    This class represents an **Canny**.
-
     Canny is a transform that applies canny edge detection on an image
 
-    :param low: Low threshold
-    :type low: :class:`int`
-    :param high: High threshold
-    :type high: :class:`int`
+    :param low: Low threshold, defaults to 100
+    :type low: :class:`int`, optional
+    :param high: High threshold, defaults to 200
+    :type high: :class:`int`, optional
     """
 
     default_args = {

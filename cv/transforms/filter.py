@@ -6,20 +6,18 @@ from cv.validators import Option, Number
 
 class Blur(Transform):
     """
-    This class represents an **Blur**.
+    Blur is a transform that applies blur on a image
 
-    Blur is a transform applies blur on a image
-
-    :param method: Method of blur
-    :type method: :class:`str`
-    :param size: Size of operator
-    :type size: :class:`int`
-    :param sigma: Sigma value
-    :type sigma: :class:`int`
-    :param sigma_color: Sigma for color space
-    :type sigma_color: :class:`int`
-    :param sigma_space: Filter sigma in coordinate space
-    :type sigma_space: :class:`int`
+    :param method: Method of the blur to be aplied, defaults to "uniform"
+    :type method: :class:`str`, optional
+    :param size: Size of operator, defaults to 5
+    :type size: :class:`int`, optional
+    :param sigma: Sigma value, defaults to 0
+    :type sigma: :class:`int`, optional
+    :param sigma_color: Sigma for color space, defaults to 75
+    :type sigma_color: :class:`int`, optional
+    :param sigma_space: Filter sigma in coordinate space, defaults to 75
+    :type sigma_space: :class:`int`, optionals
     """
 
     default_args = {

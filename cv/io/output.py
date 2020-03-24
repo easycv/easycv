@@ -7,14 +7,15 @@ from cv.utils import nearest_square_side
 
 def prepare_image_to_output(img_arr, rgb=True):
     """
-    Formats the image array to be showeds
+    Formats the image array to be showed turning its values to be between 0 and 255 and puts image
+    in BGR abstraction
 
-    :param image_array: Image as an array
-    :type image_array: :class:`list`
-    :param rgb: Rgb flag
-    :type rgb: :class:`bool`
-    :return: Image array
-    :rtype: :class:`list`
+    :param img_arr: image array
+    :type img_arr: :class:`~numpy:numpy.ndarray`
+    :param rgb: If image is in RGB abstraction
+    :type rgb: :class:`bool`, optional
+    :return: image array
+    :rtype: :class:`~numpy:numpy.ndarray`
     """
     if img_arr.min() >= 0 and img_arr.max() <= 255:
         if img_arr.dtype.kind != "i":
@@ -35,9 +36,11 @@ def save(img_arr, filename, format=None):
     Saves an image to a file
 
     :param img_arr: Image as an array
-    :type img_arr: :class:`list`
+    :type img_arr: :class:`~numpy:numpy.ndarray`
     :param filename: Rgb flag
     :type filename: :class:`str`
+    :param format: File Format, defaults to None
+    :type format: :class:`str`, optional
     """
     img_arr = prepare_image_to_output(img_arr)
     im = Image.fromarray(img_arr)
@@ -46,14 +49,14 @@ def save(img_arr, filename, format=None):
 
 def show(img_arr, name="Image", wait_time=500):
     """
-    Creates a window and displays an image
+    Creates a cv2 window and displays the given image arrays
 
     :param img_arr: Image as an array
-    :type img_arr: :class:`list`
-    :param name: Window name
-    :type name: :class:`str`
-    :param wait_time: Wait time for key to close window
-    :type wait_time: :class:`int`
+    :type img_arr: :class:`~numpy:numpy.ndarray`
+    :param name: Window name, defaults to "Image"
+    :type name: :class:`str`, optional
+    :param wait_time: Time between cicles of waiting for end key, defaults to 500
+    :type wait_time: :class:`int`, optional
     """
     img_arr = prepare_image_to_output(img_arr, rgb=False)
     cv2.namedWindow(name, cv2.WINDOW_KEEPRATIO)
@@ -72,11 +75,11 @@ def show_grid(images, titles=(), size="auto"):
     Display images in a grid
 
     :param images: Array of Images
-    :type images: :class:`list`
+    :type images: :class:`np.array`
     :param titles: Image titles
     :type titles: :class:`tuple`
-    :param size: Size of a image
-    :type size: :class:`str`
+    :param size: Size of a image, defaults to "auto"
+    :type size: :class:`str`, optional
     """
     if size == "auto":
         side = nearest_square_side(len(images))

@@ -7,9 +7,7 @@ from cv.transforms.base import Transform
 
 class GrayScale(Transform):
     """
-    This class represents an **GrayScale**.
-
-    GrayScale is a transform that turns image into grayscale
+    GrayScale is a transform that turns an image into grayscale
     """
 
     def apply(self, image, **kwargs):
@@ -21,14 +19,12 @@ class GrayScale(Transform):
 
 class FilterChannels(Transform):
     """
-    This class represents an **FilterChannels**.
-
-    FilterChannels is a transform that removes channel(s)
+    FilterChannels is a transform that removes color channel(s)
 
     :param channels: List of channels to remove
     :type channels: :class:`list`
-    :param scheme: Type of image abstraction
-    :type scheme: :class:`str`
+    :param scheme: Type of image abstraction (rgb or bgr), defaults to "rgb"
+    :type scheme: :class:`str`, optional
     """
 
     default_args = {
