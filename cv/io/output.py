@@ -6,6 +6,16 @@ from cv.utils import nearest_square_side
 
 
 def prepare_image_to_output(img_arr, rgb=True):
+    """
+    Formats the image array to be showeds
+
+    :param image_array: Image as an array
+    :type image_array: :class:`list`
+    :param rgb: Rgb flag
+    :type rgb: :class:`bool`
+    :return: Image array
+    :rtype: :class:`list`
+    """
     if img_arr.min() >= 0 and img_arr.max() <= 255:
         if img_arr.dtype.kind != "i":
             if img_arr.min() >= 0 and img_arr.max() <= 1:
@@ -21,12 +31,30 @@ def prepare_image_to_output(img_arr, rgb=True):
 
 
 def save(img_arr, filename, format=None):
+    """
+    Saves an image to a file
+
+    :param img_arr: Image as an array
+    :type img_arr: :class:`list`
+    :param filename: Rgb flag
+    :type filename: :class:`str`
+    """
     img_arr = prepare_image_to_output(img_arr)
     im = Image.fromarray(img_arr)
     im.save(filename, format)
 
 
 def show(img_arr, name="Image", wait_time=500):
+    """
+    Creates a window and displays an image
+
+    :param img_arr: Image as an array
+    :type img_arr: :class:`list`
+    :param name: Window name
+    :type name: :class:`str`
+    :param wait_time: Wait time for key to close window
+    :type wait_time: :class:`int`
+    """
     img_arr = prepare_image_to_output(img_arr, rgb=False)
     cv2.namedWindow(name, cv2.WINDOW_KEEPRATIO)
     cv2.resizeWindow(name, img_arr.shape[0], img_arr.shape[1])
@@ -40,6 +68,16 @@ def show(img_arr, name="Image", wait_time=500):
 
 
 def show_grid(images, titles=(), size="auto"):
+    """
+    Display images in a grid
+
+    :param images: Array of Images
+    :type images: :class:`list`
+    :param titles: Image titles
+    :type titles: :class:`tuple`
+    :param size: Size of a image
+    :type size: :class:`str`
+    """
     if size == "auto":
         side = nearest_square_side(len(images))
         size = (side, side)

@@ -5,6 +5,23 @@ from cv.validators import Option, Number
 
 
 class Blur(Transform):
+    """
+    This class represents an **Blur**.
+
+    Blur is a transform applies blur on a image
+
+    :param method: Method of blur
+    :type method: :class:`str`
+    :param size: Size of operator
+    :type size: :class:`int`
+    :param sigma: Sigma value
+    :type sigma: :class:`int`
+    :param sigma_color: Sigma for color space
+    :type sigma_color: :class:`int`
+    :param sigma_space: Filter sigma in coordinate space
+    :type sigma_space: :class:`int`
+    """
+
     default_args = {
         "method": Option(["uniform", "gaussian", "median", "bilateral"], default=1),
         "size": Number(min_value=1, only_integer=True, only_odd=True, default=5),
