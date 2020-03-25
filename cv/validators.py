@@ -41,12 +41,12 @@ class Option(Validator):
 class Number(Validator):
 
     def __init__(
-        self,
-        min_value=-float("inf"),
-        max_value=float("inf"),
-        only_integer=False,
-        only_odd=False,
-        default=None,
+            self,
+            min_value=-float("inf"),
+            max_value=float("inf"),
+            only_integer=False,
+            only_odd=False,
+            default=None,
     ):
         self._only_odd = only_odd
         self._min_value = min_value
@@ -58,10 +58,10 @@ class Number(Validator):
         arg = kwargs.get(arg_name)
         allowed_types = (int,) if self.only_integer else (int, float)
         if (
-            not isinstance(arg, allowed_types)
-            or not (self._min_value <= arg <= self._max_value)
-            or self._only_odd
-            and arg % 2 == 0
+                not isinstance(arg, allowed_types)
+                or not (self._min_value <= arg <= self._max_value)
+                or self._only_odd
+                and arg % 2 == 0
         ):
             if inside_list:
                 prefix = "a list/tuple of " + (
@@ -77,6 +77,7 @@ class Number(Validator):
                 + "between {} and {}.".format(self._min_value, self._max_value)
             )
         return arg
+
 
 class Method(Validator):
     def __init__(self, options, default=None):
