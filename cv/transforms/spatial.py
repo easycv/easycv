@@ -70,7 +70,9 @@ class Rotate(Transform):
     default_args = {
         "degrees": Number(),
         "scale": Number(default=1),
-        "center": List(Number(), length=2, default="auto"),
+        "center": List(
+            Number(min_value=0, only_integer=True), length=2, default="auto"
+        ),
         "bounded": Type(bool, default=True),
     }
 
@@ -100,19 +102,35 @@ class Rotate(Transform):
 
 class Crop(Transform):
     default_args = {
-        "x": List(Number(min_value=0), length=2),
-        "y": List(Number(min_value=0), length=2),
+        "x": List(Number(min_value=0), length=2, default=(0, 0)),
+        "y": List(Number(min_value=0), length=2, default=(0, 0)),
+        "box": Type(bool, default=True),
     }
 
     def apply(self, image, **kwargs):
-        return image[kwargs["x"][0] : kwargs["x"][1], kwargs["y"][0] : kwargs["y"][1]]
+        # this is your box top_x
+        lx, rx, ty, by = kwargs["x"][0], kwargs["x"][1], kwargs["y"][0], kwargs["y"][1]
+
+        #  crops the image keeping the original size
+        if kwargs["original"]:
+
+            output = np.zeros_like(image, dtype=np.uint8)
+            output[:, :, -1] = 0
+
+            # copy image to output
+            output[ty:by, lx:rx] = image[ty:by, lx:rx]
+
+            cv2.addWeighted(image, 0, output, 1, 0, output)
+
+            return output
+
+        # crops and resizes the image to match the cropped area
+        else:
+            return image[ty:by, lx:rx]
 
 
 class Translate(Transform):
-    default_args = {
-        "x": Number(default=0),
-        "y": Number(default=0)
-    }
+    default_args = {"x": Number(default=0), "y": Number(default=0)}
 
     def apply(self, image, **kwargs):
         height, width = image.shape[:2]
