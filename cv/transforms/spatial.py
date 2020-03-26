@@ -104,7 +104,7 @@ class Crop(Transform):
     default_args = {
         "x": List(Number(min_value=0), length=2, default=(0, 0)),
         "y": List(Number(min_value=0), length=2, default=(0, 0)),
-        "box": Type(bool, default=True),
+        "original": Type(bool, default=True),
     }
 
     def apply(self, image, **kwargs):
