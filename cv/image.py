@@ -17,16 +17,6 @@ def auto_compute(decorated):
     return wrapper
 
 
-def auto_compute_property(decorated):
-    @property
-    @wraps(decorated)
-    def wrapper(image, *args):
-        image.compute(in_place=True)
-        return decorated(image, *args)
-
-    return wrapper
-
-
 class Image:
     """
     This class represents an **image**.
@@ -79,7 +69,8 @@ class Image:
         """
         return self._pending
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def height(self):
         """
         Returns image height.
@@ -89,7 +80,8 @@ class Image:
         """
         return self._img.shape[0]
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def width(self):
         """
         Returns image width.
@@ -99,7 +91,8 @@ class Image:
         """
         return self._img.shape[1]
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def array(self):
         """
         Returns a NumPy array that represents the image.
