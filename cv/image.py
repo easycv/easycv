@@ -168,8 +168,8 @@ class Image:
             return result
 
     @auto_compute
-    def show(self):
-        show(self._img)
+    def show(self, name="Image"):
+        show(self._img, name=name)
 
     @auto_compute
     def __eq__(self, other):
