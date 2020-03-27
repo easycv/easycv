@@ -4,10 +4,30 @@ from cv.errors import ArgumentNotProvidedError, InvalidArgumentError
 
 
 class Validator:
+    """
+    This class is the base for all Validators. All Validators should be child from this class \
+    and override the `validate` method.
+    If default is set to None the argument is required and the Validator will throw an \
+    :class:`~cv.errors.transforms.ArgumentNotProvidedError`.
+
+    :param default: Default value for the argument, defaults to None
+    :type default: :class:`object`, optional
+    """
     def __init__(self, default=None):
         self._default = default
 
     def check(self, arg_name, kwargs):
+        """
+        Check if an argument satisfies the Validator conditions. If the default value is None
+        the Validator throws an :class:`~cv.errors.transforms.ArgumentNotProvidedError`, otherwise
+        it calls the validate method to make sure all conditions are verified and if not, throws an
+        :class:`~cv.errors.transforms.InvalidArgumentError` with the appropriate error message.
+
+        :param arg_name: Name of the argument to validate
+        :type arg_name: :class:`str`
+        :param kwargs: Dictionary containing all arguments and their values
+        :type kwargs: :class:`dict`
+        """
         arg = kwargs.get(arg_name)
         if arg is None:
             if self._default is None:
@@ -18,47 +38,37 @@ class Validator:
             return self.validate(arg_name, kwargs)
 
     def validate(self, arg_name, kwargs, inside_list=False):
+        """
+        Every Validator should override this method. This method should validate the arguments \
+        named `arg_name` from `kwargs` by checking if it verifies the constrains. If the argument \
+        is invalid it should throw an :class:`~cv.errors.transforms.InvalidArgumentError` with a \
+        message clarifying what is invalid and how to correct it. If this Validator is inside a \
+        the message should reflect that.
+
+        :param arg_name: Name of the argument to validate
+        :type arg_name: :class:`str`
+        :param kwargs: Dictionary containing all arguments and their values
+        :type kwargs: :class:`dict`
+        :param inside_list: True if this Validator is inside a List, defaults to False
+        :type inside_list: :class:`bool`, optional
+        """
         pass
 
 
-class Option(Validator):
-    def __init__(self, options, default=None):
-        self.options = options
-        default = None if default is None else options[default]
-        super().__init__(default=default)
-
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
-        if arg not in self.options:
-            raise InvalidArgumentError(
-                'Invalid value for "{}". '.format(arg_name)
-                + "Possible values: {}".format(", ".join(self.options))
-            )
-        else:
-            return arg
-
-
-class Method(Validator):
-    def __init__(self, options, default=None):
-        self.options = options
-        super().__init__(default=default)
-
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.pop(arg_name)
-        if arg not in self.options:
-            raise InvalidArgumentError(
-                "Invalid method. Available methods: {}".format(", ".join(self.options))
-            )
-        if any(a not in self.options[arg] for a in kwargs):
-            raise InvalidArgumentError(
-                'Invalid arguments for method "{}". '.format(arg)
-                + "Allowed arguments: {}".format(", ".join(self.options[arg]))
-            )
-        else:
-            return arg
-
-
 class Number(Validator):
+    """
+    Validator to check if an argument is a number. More restrictions can be applied through \
+    the keyword arguments.
+
+    :param min_value: Minimum value allowed, defaults to -inf
+    :type min_value: :class:`int`/:class:`float`, optional
+    :param max_value: Maximum value allowed, defaults to inf
+    :type max_value: :class:`int`/:class:`float`, optional
+    :param only_integer: Allow only integers, defaults to False
+    :type only_integer: :class:`bool`, optional
+    :param only_odd: Allow only odd numbers, defaults to False
+    :type only_odd: :class:`bool`, optional
+    """
     def __init__(
         self,
         min_value=-float("inf"),
@@ -98,7 +108,63 @@ class Number(Validator):
         return arg
 
 
+class Option(Validator):
+    """
+    Validator to check if an argument one of the allowed options.
+
+    :param options: Allowed options
+    :type options: :class:`list`
+    """
+    def __init__(self, options, default=None):
+        self.options = options
+        default = None if default is None else options[default]
+        super().__init__(default=default)
+
+    def validate(self, arg_name, kwargs, inside_list=False):
+        arg = kwargs.get(arg_name)
+        if arg not in self.options:
+            raise InvalidArgumentError(
+                'Invalid value for "{}". '.format(arg_name)
+                + "Possible values: {}".format(", ".join(self.options))
+            )
+        else:
+            return arg
+
+
+class Method(Validator):
+    """
+    Validator to check if a method is valid and if the arguments called for that method are valid.
+
+    :param methods: Dictionary with methods as key and values are lists with valid args for the \
+    corresponding method
+    :type methods: :class:`dict`
+    """
+    def __init__(self, methods, default=None):
+        self.methods = methods
+        super().__init__(default=default)
+
+    def validate(self, arg_name, kwargs, inside_list=False):
+        arg = kwargs.pop(arg_name)
+        if arg not in self.methods:
+            raise InvalidArgumentError(
+                "Invalid method. Available methods: {}".format(", ".join(self.methods))
+            )
+        if any(a not in self.methods[arg] for a in kwargs):
+            raise InvalidArgumentError(
+                'Invalid arguments for method "{}". '.format(arg)
+                + "Allowed arguments: {}".format(", ".join(self.methods[arg]))
+            )
+        else:
+            return arg
+
+
 class Type(Validator):
+    """
+    Validator to check if an argument is from the specified type.
+
+    :param arg_type: Allowed type
+    :type arg_type: :class:`type`
+    """
     def __init__(self, arg_type, default=None):
         self.arg_type = arg_type
         super().__init__(default=default)
@@ -115,6 +181,15 @@ class Type(Validator):
 
 
 class List(Validator):
+    """
+    Validator to check if an argument is a list/tupple or a numpy array containing only elements \
+    that satisfies the given Validator.
+
+    :param validator: Validator to apply to each element
+    :type validator: :class:`Validator`
+    :param length: Mandatory length, defaults to None
+    :type length: :class:`int`, optional
+    """
     def __init__(self, validator, length=None, default=None):
         self._validator = validator
         self._length = length
