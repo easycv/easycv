@@ -15,8 +15,8 @@ class Resize(Transform):
     :type width: :class:`int`
     :param height: Output image height
     :type height: :class:`int`
-    :param method: Interpolation method, defaults to "cubic" if the image is to be upscaled and to
-    "area"  if downscaled
+    :param method: Interpolation method, defaults to "cubic" if the image is to be upscaled and \
+    to "area"  if downscaled
     :type method: :class:`str`, optional
     """
 
@@ -51,8 +51,8 @@ class Rescale(Transform):
         :type fx: :class:`int`
         :param fy: scale factor along the vertical axis
         :type fy: :class:`int`
-        :param method: Interpolation method, defaults to "cubic" if the image is to be upscaled and
-        to "area"  if downscaled
+        :param method: Interpolation method, defaults to "cubic" if the image is to be \
+        upscaled and to "area"  if downscaled
         :type method: :class:`str`, optional
     """
 
@@ -92,7 +92,7 @@ class Rotate(Transform):
             :type scale: :class:`int`
             :param center: center by which the image is rotated, defaults to the image center
             :type center: :class:'list'/'tuple', optional
-            :param bounded: adjusts the image size to contain the all image,if needed.
+            :param bounded: adjusts the image size to contain the all image,if needed. \
             Defaults to True
             :type bounded: :class:'bool', optional
         """
