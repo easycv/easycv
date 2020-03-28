@@ -3,22 +3,15 @@ import io
 import numpy as np
 from functools import wraps
 
-from cv.pipeline import Pipeline
-from cv.errors.io import InvalidImageInputSource
-from cv.io import save, valid_image_source, get_image_array, show
+from easycv.pipeline import Pipeline
+from easycv.errors.io import InvalidImageInputSource
+from easycv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated):
-    @wraps(decorated)
-    def wrapper(image, *args):
-        image.compute(in_place=True)
-        return decorated(image, *args)
+    """ Decorator to auto-compute image before running function. Add this to all functions that \
+    need the updated image array to function properly."""
 
-    return wrapper
-
-
-def auto_compute_property(decorated):
-    @property
     @wraps(decorated)
     def wrapper(image, *args):
         image.compute(in_place=True)
@@ -39,7 +32,7 @@ class Image:
     containing the image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
     :param pipeline: Pipeline to be applied to the image at creation time, defaults to None
-    :type pipeline: :class:`~cv.pipeline.Pipeline`, optional
+    :type pipeline: :class:`~easycv.pipeline.Pipeline`, optional
     :param lazy: `True` if the image is lazy (computations are delayed until needed), defaults to \
     False
     :type lazy: :class:`boolean`, optional
@@ -79,7 +72,8 @@ class Image:
         """
         return self._pending
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def height(self):
         """
         Returns image height.
@@ -89,7 +83,8 @@ class Image:
         """
         return self._img.shape[0]
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def width(self):
         """
         Returns image width.
@@ -99,7 +94,8 @@ class Image:
         """
         return self._img.shape[1]
 
-    @auto_compute_property
+    @property
+    @auto_compute
     def array(self):
         """
         Returns a NumPy array that represents the image.
@@ -125,7 +121,8 @@ class Image:
         a new Image.
 
         :param transform: Transform/Pipeline to be applied
-        :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
+        :type transform: :class:`~easycv.transforms.base.Transform`/\
+        :class:`~easycv.pipeline.Pipeline`
         :param in_place: `True` to change the current image, `False` to return a new one with the \
         transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional
@@ -168,8 +165,15 @@ class Image:
             return result
 
     @auto_compute
-    def show(self):
-        show(self._img)
+    def show(self, name="Image"):
+        """
+        Opens a popup window with the image displayed on it. This window is resizable and supports\
+        zoom/pan.
+
+        :param name: Window name, defaults to "Image"
+        :type name: :class:`str`, optional
+        """
+        show(self._img, name=name)
 
     @auto_compute
     def __eq__(self, other):

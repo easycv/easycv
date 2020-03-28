@@ -1,4 +1,4 @@
-from cv.transforms.base import Transform
+from easycv.transforms.base import Transform
 
 
 class Crop(Transform):

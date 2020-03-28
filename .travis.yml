@@ -1,34 +1,17 @@
 language: python
 python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7"
-  - "3.8"
-#  - "3.8-dev"  # 3.8 development branch
-
+- '3.4'
+- '3.5'
+- '3.6'
+- '3.7'
+- '3.8'
 install:
-  - pip install pytest pytest-cov flake8
-  - pip install codecov
-  - pip install .
-
+- pip install pytest pytest-cov flake8
+- pip install codecov
+- pip install .
 script:
-  - flake8 --count
-  - pytest --cov=./
-
-jobs:
-  include:
-    - stage: "Send notification"
-      python: "3.6"
-      script:
-        - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-        - chmod +x send.sh
-        - ./send.sh success $WEBHOOK_URL
-
-#after_success:
-#  - codecov
-
-after_failure:
-  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-  - chmod +x send.sh
-  - ./send.sh failure $WEBHOOK_URL
+- flake8 --count
+- pytest --cov=./
+notifications:
+  slack:
+    secure: P2xLpLP7O1PJ0vu205hbQkIhJRjJbflRScbM+WKOjhikUhDhyPBU+aduL64dxSpqn3/KvrFRSa4FXCGwEVQgP6mpPEi/X8BxD/VqRqcprxXQOjG8mTZ+8wK8JmdvC+T8w6vpTxW+BykmzOEE52YkRfXN/u7rYSp08Cn8pChmjasVcqZZNkaH/wQOzZ/FtnK8HG08yobb+1bbc9cffkpMb83vlY3othIilmxnVu58eXxqU4qYm6byzgltXMY0hmYj3+lEit5QG5UqM+6F+30g1+F1180eqAxKnwRob4BI2947YDW1VSjFbVdJquLiOz/lalciHVqbHOK5ZbN+utTqggbmM5kxvLUexVE10GpG0XvT+pgFc7ArxN65scCQQBbAgavGkWe/ef4HhB3fuvHfkC0VeIKZEt9Tf7lL/ULSKORFMePwc+kz/7qrWczBB7LifMKUNEnq4hEu4nlid+1BNT/sdSMO5pXV6CxE7T/yGx56Uq67SKotURwqnh2M4JUUp+zbJrMVrdfBfqjVqj7ja2MPcZwPgs/wxQD7UOHGkJkgr6ZpDYk+KHkQD47Z9l8BvIZyfmoDCgQXAFDkq9/wxRWbXLJuoJQN+pJFMznM79bE0ZKvWLldqcMkLiS993mD5us76N8iwTzNVfuF3Ud4CSXS8a+2jjzNw9XSiJCTcxE=

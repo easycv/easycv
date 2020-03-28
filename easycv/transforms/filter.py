@@ -1,7 +1,7 @@
 import cv2
 
-from cv.transforms.base import Transform
-from cv.validators import Option, Number
+from easycv.transforms.base import Transform
+from easycv.validators import Option, Number
 
 
 class Blur(Transform):
