@@ -1,7 +1,7 @@
 import os
 
-from cv.pipeline import Pipeline
-from cv.transforms.noise import Noise
+from easycv.pipeline import Pipeline
+from easycv.transforms.noise import Noise
 
 
 def test_name():

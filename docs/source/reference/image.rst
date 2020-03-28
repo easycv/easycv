@@ -42,12 +42,12 @@ Lazy images are only loaded/computed when their update array data is needed. Met
 the updated image need to have this decorator to ensure that the image is computed before their \
 execution.
 
-.. automodule:: cv.image
+.. automodule:: easycv.image
    :members: auto_compute
 
 Image Class
 ------------
-.. autoclass:: cv.image.Image
+.. autoclass:: easycv.image.Image
    :members:
    :undoc-members:
    :show-inheritance:

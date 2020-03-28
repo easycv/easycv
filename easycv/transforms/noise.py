@@ -1,6 +1,6 @@
-from cv.transforms.base import Transform
+from easycv.transforms.base import Transform
 
-from cv.validators import Number, Type
+from easycv.validators import Number, Type
 from skimage.util import random_noise
 
 

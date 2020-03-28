@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name="cv",
+    name="easycv",
     version="0.1.0",
     description="Cv is a computer vision library built for learning purposes.",
     long_description=long_description,
@@ -24,7 +24,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords="cv computer vision ai",
+    keywords="easycv computer vision ai",
     packages=find_packages(),
     setup_requires=["setuptools>=38.6.0"],
     install_requires=[

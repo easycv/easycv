@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from cv.transforms.filter import Convolve1d
+from easycv.transforms.filter import Convolve1d
 
 
 def view_kernel(kernel, size=(5, 5), legend=False):

@@ -3,9 +3,9 @@ import io
 import numpy as np
 from functools import wraps
 
-from cv.pipeline import Pipeline
-from cv.errors.io import InvalidImageInputSource
-from cv.io import save, valid_image_source, get_image_array, show
+from easycv.pipeline import Pipeline
+from easycv.errors.io import InvalidImageInputSource
+from easycv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated):
@@ -32,7 +32,7 @@ class Image:
     containing the image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
     :param pipeline: Pipeline to be applied to the image at creation time, defaults to None
-    :type pipeline: :class:`~cv.pipeline.Pipeline`, optional
+    :type pipeline: :class:`~easycv.pipeline.Pipeline`, optional
     :param lazy: `True` if the image is lazy (computations are delayed until needed), defaults to \
     False
     :type lazy: :class:`boolean`, optional
@@ -121,7 +121,8 @@ class Image:
         a new Image.
 
         :param transform: Transform/Pipeline to be applied
-        :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
+        :type transform: :class:`~easycv.transforms.base.Transform`/\
+        :class:`~easycv.pipeline.Pipeline`
         :param in_place: `True` to change the current image, `False` to return a new one with the \
         transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional

@@ -1,7 +1,7 @@
 Filter
 ---------------
 
-.. automodule:: cv.transforms.filter
+.. automodule:: easycv.transforms.filter
    :members:
    :undoc-members:
    :show-inheritance:

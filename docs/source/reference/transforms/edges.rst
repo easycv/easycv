@@ -1,7 +1,7 @@
 Edges
 ---------------
 
-.. automodule:: cv.transforms.edges
+.. automodule:: easycv.transforms.edges
    :members:
    :undoc-members:
    :show-inheritance:

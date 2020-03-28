@@ -1,5 +1,5 @@
-from cv.errors.transforms import InvalidArgumentError, ArgumentNotProvidedError
-from cv.errors.io import (
+from easycv.errors.transforms import InvalidArgumentError, ArgumentNotProvidedError
+from easycv.errors.io import (
     InvalidPathError,
     ImageDownloadError,
     ImageDecodeError,

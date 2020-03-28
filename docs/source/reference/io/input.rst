@@ -1,7 +1,7 @@
 input
 ---------------
 
-.. automodule:: cv.io.input
+.. automodule:: easycv.io.input
    :members:
    :undoc-members:
    :show-inheritance:

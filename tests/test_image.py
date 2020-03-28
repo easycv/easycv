@@ -1,6 +1,6 @@
-from cv import Image, Pipeline
-from cv.transforms.color import GrayScale, FilterChannels
-from cv.transforms.filter import Blur
+from easycv import Image, Pipeline
+from easycv.transforms.color import GrayScale, FilterChannels
+from easycv.transforms.filter import Blur
 
 
 def test_image():

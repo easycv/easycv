@@ -1,6 +1,6 @@
 import numpy as np
 
-from cv.errors import ArgumentNotProvidedError, InvalidArgumentError
+from easycv.errors import ArgumentNotProvidedError, InvalidArgumentError
 
 
 class Validator:
@@ -8,20 +8,22 @@ class Validator:
     This class is the base for all Validators. All Validators should be child from this class \
     and override the `validate` method.
     If default is set to None the argument is required and the Validator will throw an \
-    :class:`~cv.errors.transforms.ArgumentNotProvidedError`.
+    :class:`~easycv.errors.transforms.ArgumentNotProvidedError`.
 
     :param default: Default value for the argument, defaults to None
     :type default: :class:`object`, optional
     """
+
     def __init__(self, default=None):
         self._default = default
 
     def check(self, arg_name, kwargs):
         """
         Check if an argument satisfies the Validator conditions. If the default value is None
-        the Validator throws an :class:`~cv.errors.transforms.ArgumentNotProvidedError`, otherwise
-        it calls the validate method to make sure all conditions are verified and if not, throws an
-        :class:`~cv.errors.transforms.InvalidArgumentError` with the appropriate error message.
+        the Validator throws an :class:`~easycv.errors.transforms.ArgumentNotProvidedError`, \
+        otherwise it calls the validate method to make sure all conditions are verified and if \
+        not, throws an :class:`~easycv.errors.transforms.InvalidArgumentError` with the \
+        appropriate error message.
 
         :param arg_name: Name of the argument to validate
         :type arg_name: :class:`str`
@@ -41,9 +43,9 @@ class Validator:
         """
         Every Validator should override this method. This method should validate the arguments \
         named `arg_name` from `kwargs` by checking if it verifies the constrains. If the argument \
-        is invalid it should throw an :class:`~cv.errors.transforms.InvalidArgumentError` with a \
-        message clarifying what is invalid and how to correct it. If this Validator is inside a \
-        the message should reflect that.
+        is invalid it should throw an :class:`~easycv.errors.transforms.InvalidArgumentError` \
+        with a message clarifying what is invalid and how to correct it. If this Validator is \
+        inside a the message should reflect that.
 
         :param arg_name: Name of the argument to validate
         :type arg_name: :class:`str`
@@ -69,6 +71,7 @@ class Number(Validator):
     :param only_odd: Allow only odd numbers, defaults to False
     :type only_odd: :class:`bool`, optional
     """
+
     def __init__(
         self,
         min_value=-float("inf"),
@@ -115,6 +118,7 @@ class Option(Validator):
     :param options: Allowed options
     :type options: :class:`list`
     """
+
     def __init__(self, options, default=None):
         self.options = options
         default = None if default is None else options[default]
@@ -139,6 +143,7 @@ class Method(Validator):
     corresponding method
     :type methods: :class:`dict`
     """
+
     def __init__(self, methods, default=None):
         self.methods = methods
         super().__init__(default=default)
@@ -165,6 +170,7 @@ class Type(Validator):
     :param arg_type: Allowed type
     :type arg_type: :class:`type`
     """
+
     def __init__(self, arg_type, default=None):
         self.arg_type = arg_type
         super().__init__(default=default)
@@ -190,6 +196,7 @@ class List(Validator):
     :param length: Mandatory length, defaults to None
     :type length: :class:`int`, optional
     """
+
     def __init__(self, validator, length=None, default=None):
         self._validator = validator
         self._length = length

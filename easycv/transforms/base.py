@@ -1,4 +1,4 @@
-from cv.validators import Method
+from easycv.validators import Method
 
 
 class Transform:

@@ -2,7 +2,7 @@ import cv2
 from PIL import Image
 from matplotlib import pyplot as plt
 
-from cv.utils import nearest_square_side
+from easycv.utils import nearest_square_side
 
 
 def prepare_image_to_output(img_arr, rgb=True):

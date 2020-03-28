@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-from cv.validators import Option, Number
-from cv.transforms.base import Transform
-from cv.transforms.color import GrayScale
+from easycv.validators import Option, Number
+from easycv.transforms.base import Transform
+from easycv.transforms.color import GrayScale
 
 
 class Gradient(Transform):

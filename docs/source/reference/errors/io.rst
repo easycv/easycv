@@ -1,7 +1,7 @@
 io
 ---------------
 
-.. automodule:: cv.errors.io
+.. automodule:: easycv.errors.io
    :members:
    :undoc-members:
    :show-inheritance:

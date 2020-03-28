@@ -6,7 +6,7 @@ from urllib.request import urlopen
 import cv2
 import numpy as np
 
-from cv.errors.io import ImageDownloadError, InvalidPathError
+from easycv.errors.io import ImageDownloadError, InvalidPathError
 
 
 def valid_image_array(image_array):

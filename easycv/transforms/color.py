@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from cv.validators import Option, List, Number
-from cv.transforms.base import Transform
+from easycv.validators import Option, List, Number
+from easycv.transforms.base import Transform
 
 
 class GrayScale(Transform):

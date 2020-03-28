@@ -1,11 +1,11 @@
 Validators
 ---------------
 
-.. autoclass:: cv.validators.Validator
+.. autoclass:: easycv.validators.Validator
    :members:
    :undoc-members:
 
-.. automodule:: cv.validators
+.. automodule:: easycv.validators
    :exclude-members: validate, Validator
    :members:
    :undoc-members:

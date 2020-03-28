@@ -1,6 +1,6 @@
 import numpy as np
 
-from cv.transforms.base import Transform
+from easycv.transforms.base import Transform
 
 
 class MagnitudeSpectrum(Transform):
