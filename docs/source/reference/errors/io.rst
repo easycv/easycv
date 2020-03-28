@@ -1,7 +1,7 @@
-Pipeline
+io
 ---------------
 
-.. automodule:: easycv.pipeline
+.. automodule:: easycv.errors.io
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,7 +1,7 @@
-Pipeline
+transforms
 ---------------
 
-.. automodule:: easycv.pipeline
+.. automodule:: easycv.errors.transforms
    :members:
    :undoc-members:
    :show-inheritance:

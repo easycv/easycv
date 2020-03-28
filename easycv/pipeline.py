@@ -1,8 +1,8 @@
 import os
 import pickle
 
-from cv.transforms.base import Transform
-from cv.errors.io import InvalidPipelineInputSource
+from easycv.transforms.base import Transform
+from easycv.errors.io import InvalidPipelineInputSource
 
 
 class Pipeline:
@@ -100,7 +100,8 @@ class Pipeline:
         Adds a Transform/Pipeline to the Pipeline. The new Transform/Pipeline is added in the end.
 
         :param transform: Transform/Pipeline to be added
-        :type transform: :class:`~cv.transforms.base.Transform`/:class:`~cv.pipeline.Pipeline`
+        :type transform: :class:`~easycv.transforms.base.Transform`/\
+        :class:`~easycv.pipeline.Pipeline`
         :param index: Index to add the transform, end of the list by default
         :type index: :class:`int`, optional
         """
