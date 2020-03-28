@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-from cv.transforms.base import Transform
-from cv.validators import Number, Option, List, Type
-from cv.utils import interpolation_methods
+from easycv.transforms.base import Transform
+from easycv.validators import Number, Option, List, Type
+from easycv.utils import interpolation_methods
 
 
 class Resize(Transform):
