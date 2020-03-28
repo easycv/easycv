@@ -15,7 +15,7 @@ class Resize(Transform):
     :type width: :class:`int`
     :param height: Output image height
     :type height: :class:`int`
-    :param method: Interpolation method, defaults to "cubic" if the image is to be upscaled and \
+    :param  : Interpolation method, defaults to "cubic" if the image is to be upscaled and \
     to "area"  if downscaled
     :type method: :class:`str`, optional
     """
