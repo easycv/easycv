@@ -37,7 +37,7 @@ def save(img_arr, filename, format=None):
 
     :param img_arr: Image as an array
     :type img_arr: :class:`~numpy:numpy.ndarray`
-    :param filename: Rgb flag
+    :param filename: Filename
     :type filename: :class:`str`
     :param format: File Format, defaults to None
     :type format: :class:`str`, optional
@@ -75,10 +75,10 @@ def show_grid(images, titles=(), size="auto"):
     Display images in a grid
 
     :param images: Array of Images
-    :type images: :class:`np.array`
+    :type images: :class:`~numpy:numpy.ndarray`
     :param titles: Image titles
     :type titles: :class:`tuple`
-    :param size: Size of a image, defaults to "auto"
+    :param size: Size of grids
     :type size: :class:`str`, optional
     """
     if size == "auto":

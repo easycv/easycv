@@ -1,5 +1,6 @@
 Edges
 ---------------
+The Edges modules provides Transforms that allow the user to perform edge detection
 
 .. automodule:: cv.transforms.edges
    :members:
