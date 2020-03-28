@@ -7,3 +7,4 @@ Transforms
    color
    edges
    filter
+   spatial
