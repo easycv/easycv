@@ -17,7 +17,7 @@ def valid_image_array(image_array):
 
     :param image_array: Image as an array
     :type image_array: :class:`~numpy:numpy.ndarray`
-    :return: Returns `True` if an image is valid, otherwise `False`
+    :return: Returns `True` if an image array is valid, otherwise `False`
     :rtype: :class:`bool`
     """
     source_is_grayscale = len(image_array.shape) == 2
@@ -28,7 +28,7 @@ def valid_image_array(image_array):
 def valid_image_source(source):
     """
     Returns `True` if a source is valid
-    A source is valid if it is a string or a numpy array
+    A source is valid if it is a string or a :class:`~numpy:numpy.ndarray`
 
     :param source: Source of an image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
@@ -70,12 +70,10 @@ def open_image(path):
 
 def get_image_array(image_source):
     """
-
-
     :param image_source: Path/Link to an image or an array of an image
     :type image_source: :class:`~numpy:numpy.ndarray`/:class:`str`
     :return: image as an array
-    :rtype: ::class:`~numpy:numpy.ndarray`
+    :rtype: :class:`~numpy:numpy.ndarray`
     """
     if isinstance(image_source, str):
         return open_image(image_source)
