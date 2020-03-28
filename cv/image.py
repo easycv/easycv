@@ -9,6 +9,9 @@ from cv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated):
+    """ Decorator to auto-compute image before running function. Add this to all functions that \
+    need the updated image array to function properly."""
+
     @wraps(decorated)
     def wrapper(image, *args):
         image.compute(in_place=True)
@@ -162,6 +165,13 @@ class Image:
 
     @auto_compute
     def show(self, name="Image"):
+        """
+        Opens a popup window with the image displayed on it. This window is resizable and supports\
+        zoom/pan.
+
+        :param name: Window name, defaults to "Image"
+        :type name: :class:`str`, optional
+        """
         show(self._img, name=name)
 
     @auto_compute
