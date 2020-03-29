@@ -12,12 +12,12 @@ class Resize(Transform):
     method can be specified by the method parameter.
 
     :param width: Output image width
-    :type width: :class:`int`
+    :type width: : class:`int`
     :param height: Output image height
     :type height: :class:`int`
     :param  : Interpolation method, defaults to "cubic" if the image is to be upscaled and \
     to "area"  if downscaled
-    :type method: :class:`str`, optional
+    :type method: : class:`str`, optional
     """
 
     default_args = {
@@ -47,13 +47,13 @@ class Rescale(Transform):
         Rescale is a transform that rescales an image to a scale factor for x and y.
         The interpolation method can be specified by the method parameter.
 
-        :param fx: scale factor along the horizontal axis
-        :type fx: :class:`int`
-        :param fy: scale factor along the vertical axis
-        :type fy: :class:`int`
+        :param fx: Scale factor along the horizontal axis
+        :type fx: : class:`int`
+        :param fy: Scale factor along the vertical axis
+        :type fy: : class:`int`
         :param method: Interpolation method, defaults to "cubic" if the image is to be \
         upscaled and to "area"  if downscaled
-        :type method: :class:`str`, optional
+        :type method: : class:`str`, optional
     """
 
     default_args = {
@@ -83,18 +83,17 @@ class Rescale(Transform):
 class Rotate(Transform):
     """
             Rotate is a transform that rotates an image by degrees according to the provided
-            center. It can also be scaled. The user can decide whether to adjust the image size to
-            contain the all image,if needed.
+            center. It can also be scaled. The user can decide whether to adjust the output  image\
+            size to contain the all image, if needed.
 
-            :param degrees: degrees to rotate the image
-            :type degrees: :class:`int`
-            :param scale: scale factor, defaults to 1
-            :type scale: :class:`int`
-            :param center: center by which the image is rotated, defaults to the image center
-            :type center: :class:'list'/'tuple', optional
-            :param bounded: adjusts the image size to contain the all image,if needed. \
-            Defaults to True
-            :type bounded: :class:'bool', optional
+            :param degrees: Degrees to rotate the image
+            :type degrees: : class:`int`
+            :param scale: Scale factor, defaults to 1
+            :type scale: : class:`int`
+            :param center: Center of rotation, defaults to the image center
+            :type center: : class:'list'/'tuple', optional
+            :param bounded: Flag to decide whether the image is to be bounded, defaults to True
+            :type bounded: : class:'bool', optional
         """
 
     default_args = {
@@ -119,38 +118,35 @@ class Rotate(Transform):
             cos = np.abs(matrix[0, 0])
             sin = np.abs(matrix[0, 1])
 
-            nW = int((h * sin) + (w * cos))
+            n_w = int((h * sin) + (w * cos))
             h = int((h * cos) + (w * sin))
 
-            matrix[0, 2] += (nW / 2) - kwargs["center"][0]
+            matrix[0, 2] += (n_w / 2) - kwargs["center"][0]
             matrix[1, 2] += (h / 2) - kwargs["center"][1]
 
-            w = nW
+            w = n_w
 
         return cv2.warpAffine(image, matrix, (w, h))
 
 
 class Crop(Transform):
     """
-        Crop is a transform that crops an area given by x and y , if original is True then
-        the image size will be kept and the cropped area blacked
+        Crop is a transform that crops a rectangular portion of an image , if original is True then
+        the image size will be kept.
 
-        :param x: x beginning and end, given by a tuple or list (beginning,end)
-        :type x: :class:'list'/'tuple'
-        :param y: y beginning and end, given by a tuple or list (beginning,end)
-        :type y: :class: 'list'/'tuple'
-        :param original: center by which the image is rotated, defaults to the image center
-        :type original: :class:'list'/'tuple', optional
+        :param box: A 4-tuple defining the left, upper, right, and lower pixel coordinate.
+        :type box: :class:'list'/'tuple'
+        :param original: True to keep original image size, False to resize to cropped area
+        :type original: :class:'bool', optional
     """
 
     default_args = {
-        "x": List(Number(min_value=0), length=2, default=(0, 0)),
-        "y": List(Number(min_value=0), length=2, default=(0, 0)),
+        "box": List(Number(min_value=0), length=4),
         "original": Type(bool, default=True),
     }
 
     def apply(self, image, **kwargs):
-        lx, rx, ty, by = kwargs["x"][0], kwargs["x"][1], kwargs["y"][0], kwargs["y"][1]
+        lx, rx, ty, by = kwargs["x"][0], kwargs["x"][1], kwargs["x"][2], kwargs["x"][3]
 
         #  crops the image keeping the original size
         if kwargs["original"]:
@@ -174,9 +170,9 @@ class Translate(Transform):
     """
         Translate is a transform that translates the image according to a vector xy
 
-        :param x: x values of the vector
+        :param x: x value, defaults to 0
         :type x: :class:'int'
-        :param y: y values of the vector
+        :param y: y value, defaults to 0
         :type y: :class: 'int'
     """
 
