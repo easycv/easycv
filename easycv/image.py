@@ -9,7 +9,7 @@ from easycv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated):
-    """ Decorator to auto-compute image before running function. Add this to all functions that \
+    """ Decorator to auto-compute image before running method. Add this to all methods that \
     need the updated image array to function properly."""
 
     @wraps(decorated)
@@ -22,9 +22,10 @@ def auto_compute(decorated):
 
 class Image:
     """
-    This class represents an **image**.
+    This class represents an image.
     Images can be created from a NumPy array containing the image data, a path to a local file
-    or a link to an image on the web. Transforms and pipelines can easily be applied to any image.
+    or a link to an image on the web. :doc:`Transforms <transforms/index>` and \
+    :doc:`Pipelines <pipeline>` can easily be applied to any image.
     If the Image is lazy, computations will be delayed until needed or until the image is computed.
     This can facilitate large scale processing and distributed computation.
 
@@ -68,7 +69,7 @@ class Image:
         Returns all pending transforms/pipelines.
 
         :return: Pipeline containing pending operations
-        :rtype: :class:`~cv.pipeline.Pipeline`
+        :rtype: :class:`~eascv.pipeline.Pipeline`
         """
         return self._pending
 
@@ -114,7 +115,8 @@ class Image:
 
     def apply(self, transform, in_place=False):
         """
-        Returns a new Image with the Transform or Pipeline applied.
+        Returns a new Image with the :doc:`Transform <transforms/index>` or \
+        :doc:`Pipeline <pipeline>` applied.
         If the image is lazy the transform/pipeline will be stored as a pending operation
         (no computation is done).
         If `in_place` is *True* the operation will change the current image instead of returning
@@ -127,7 +129,7 @@ class Image:
         transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
-        :rtype: :class:`~cv.image.Image`
+        :rtype: :class:`~eascv.image.Image`
         """
         if in_place:
             if self._lazy:
@@ -154,7 +156,7 @@ class Image:
          pending transforms applied, defaults to `False`
         :type in_place: :class:`bool`, optional
         :return: The new Image if `in_place` is *False*
-        :rtype: :class:`~cv.image.Image`
+        :rtype: :class:`~eascv.image.Image`
         """
         self.load()
         if in_place:

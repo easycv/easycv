@@ -7,4 +7,5 @@ Transforms
    color
    edges
    filter
+   noise
    spatial
