@@ -9,7 +9,7 @@ from easycv.io import save, valid_image_source, get_image_array, show
 
 
 def auto_compute(decorated):
-    """ Decorator to auto-compute image before running method. Add this to all methods that \
+    """ Decorator to auto-compute **image** before running method. Add this to all methods that \
     need the updated image array to function properly."""
 
     @wraps(decorated)
@@ -23,11 +23,11 @@ def auto_compute(decorated):
 class Image:
     """
     This class represents an image.
-    Images can be created from a NumPy array containing the image data, a path to a local file
-    or a link to an image on the web. :doc:`Transforms <transforms/index>` and \
-    :doc:`Pipelines <pipeline>` can easily be applied to any image.
-    If the Image is lazy, computations will be delayed until needed or until the image is computed.
-    This can facilitate large scale processing and distributed computation.
+    Images can be created from a NumPy array containing the **image** data, a path to a local file
+    or a link to an **image** on the web. :doc:`Transforms <transforms/index>` and \
+    :doc:`Pipelines <pipeline>` can easily be applied to any **image**.
+    If the image is lazy, computations will be delayed until needed or until the image is \
+    computed. This can facilitate large scale processing and distributed computation.
 
     :param source: Image data source. An array representing the image or a path/link to a file \
     containing the image
@@ -56,7 +56,7 @@ class Image:
     @property
     def loaded(self):
         """
-        Check if image is loaded or if it still needs to be downloaded/decoded.
+        Check if **image** is loaded or if it still needs to be downloaded/decoded.
 
         :return: `True` if loaded, `False` otherwise
         :rtype: :class:`bool`
@@ -88,7 +88,7 @@ class Image:
     @auto_compute
     def width(self):
         """
-        Returns image width.
+        Returns **image** width.
 
         :return: Image width
         :rtype: :class:`int`
@@ -99,7 +99,7 @@ class Image:
     @auto_compute
     def array(self):
         """
-        Returns a NumPy array that represents the image.
+        Returns a NumPy array that represents the **image**.
 
         :return: Image as NumPy array
         :rtype: :class:`~numpy:numpy.ndarray`
@@ -108,27 +108,27 @@ class Image:
 
     def load(self):
         """
-        Loads the image if it isn't already loaded
+        Loads the **image** if it isn't already loaded
         """
         if not self.loaded:
             self._img = get_image_array(self._source)
 
     def apply(self, transform, in_place=False):
         """
-        Returns a new Image with the :doc:`Transform <transforms/index>` or \
-        :doc:`Pipeline <pipeline>` applied.
+        Returns a new **image** with the :doc:`transform <transforms/index>` or \
+        :doc:`pipeline <pipeline>` applied.
         If the image is lazy the transform/pipeline will be stored as a pending operation
         (no computation is done).
-        If `in_place` is *True* the operation will change the current image instead of returning
-        a new Image.
+        If `in_place` is *True* the operation will change the **current image** instead of \
+        returning a new Image.
 
         :param transform: Transform/Pipeline to be applied
         :type transform: :class:`~easycv.transforms.base.Transform`/\
         :class:`~easycv.pipeline.Pipeline`
-        :param in_place: `True` to change the current image, `False` to return a new one with the \
-        transform applied, defaults to `False`
+        :param in_place: `True` to change the current **image**, `False` to return a new one with \
+        the transform applied, defaults to `False`
         :type in_place: :class:`bool`, optional
-        :return: The new Image if `in_place` is *False*
+        :return: The new **image** if `in_place` is *False*
         :rtype: :class:`~eascv.image.Image`
         """
         if in_place:
@@ -148,14 +148,14 @@ class Image:
 
     def compute(self, in_place=False):
         """
-        Returns a new Image with all the pending operations applied.
+        Returns a new **image** with all the pending operations applied.
         If `in_place` is *True* the pending operations will be applied
-        to the current image instead.
+        to the current **image** instead.
 
-        :param in_place: `True` to change the current image, `False` to return a new one with the
-         pending transforms applied, defaults to `False`
+        :param in_place: `True` to change the current **image**, `False` to return a new one with \
+         the pending transforms applied, defaults to `False`
         :type in_place: :class:`bool`, optional
-        :return: The new Image if `in_place` is *False*
+        :return: The new **image** if `in_place` is *False*
         :rtype: :class:`~eascv.image.Image`
         """
         self.load()
@@ -169,8 +169,8 @@ class Image:
     @auto_compute
     def show(self, name="Image"):
         """
-        Opens a popup window with the image displayed on it. This window is resizable and supports\
-        zoom/pan.
+        Opens a popup window with the **image** displayed on it. This window is resizable and\
+        supports zoom/pan.
 
         :param name: Window name, defaults to "Image"
         :type name: :class:`str`, optional

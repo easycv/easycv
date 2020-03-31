@@ -1,20 +1,20 @@
 Image
 ======================
 
-The :mod:`Image` module provides a class with the same name which is used to represent an image.
+The :mod:`Image` module provides a class with the same name which is used to represent an **image**.
 
-**Images** provide a way of loading images easily from multiple sources and a simple but powerful way \
-of applying :doc:`Transforms <transforms/index>`/:doc:`Pipelines <pipeline>`.
+**Images** provide a way of loading images easily from multiple sources and a simple but powerful \
+way of applying :doc:`Transforms <transforms/index>`/:doc:`Pipelines <pipeline>`.
 
 .. warning::
-    **Easycv** uses `BGR` color scheme in the internal representation. This makes the interface with \
-    opencv easier and faster. Be aware of this if you use the array directly.
+    **Easycv** uses `BGR` color scheme in the internal representation. This makes the interface \
+    with opencv easier and faster. Be aware of this if you use the array directly.
 
 Examples
 ----------
 Load Images
 ^^^^^^^^^^^^^^^^^
-The following script loads and displays an image from a file and then from a url.
+The following script loads and displays an **image** from a file and then from a url.
 
 .. code-block:: python
 
@@ -25,7 +25,7 @@ The following script loads and displays an image from a file and then from a url
 
 Apply transforms
 ^^^^^^^^^^^^^^^^^
-The following script uses the image from the last example. It turns the image into grayscale
+The following script uses the **image** from the last example. It turns the **image** into grayscale
 and then blurs it.
 
 .. code-block:: python
@@ -37,8 +37,9 @@ and then blurs it.
     img.show()
 
 .. note::
-    If you are running **Easycv** inside a jupyter notebook there is no need to call :py:meth:`easycv.image.Image.show()` \
-    , the image will be displayed if you evaluate it.
+    If you are running **Easycv** inside a jupyter notebook there is no need to call \
+    :py:meth:`~easycv.image.Image.show()`
+    , the **image** will be displayed if you evaluate it.
 
 Lazy Images
 -------------
