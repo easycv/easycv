@@ -7,16 +7,18 @@ from easycv.errors.io import InvalidPipelineInputSource
 
 class Pipeline:
     """
-    This class represents an **Pipeline**.
+    This class represents a **pipeline**.
 
-    Pipelines can be created from a list of Transforms or from a previously saved Pipeline.
-    A Pipeline is simply a series of Transforms to be applied sequentially. It also supports nested
-    Pipelines (Pipelines inside Pipelines). A Pipeline can be applied to an image exactly like a
-    Transform.
+    Pipelines can be created from a list of :doc:`transforms <transforms/index>` or from a \
+    previously saved **pipeline**. A **pipeline** is simply a series of \
+    :doc:`transforms <transforms/index>` to be applied sequentially. It also supports **nested
+    pipelines** (pipelines inside pipelines). A **pipeline** can be applied to an image exactly \
+    like a transform.
 
-    :param source: Pipeline data source. A list of Transforms or a path to a saved Pipeline
+    :param source: Pipeline data source. A list of transforms/pipelines or a path to a \
+    previously saved pipeline
     :type source: :class:`list`/:class:`str`
-    :param name: Name of the pipeline, "pipeline" if no name is specified
+    :param name: Name of the **pipeline**, "pipeline" if no name is specified
     :type name: :class:`str`, optional
     """
 
@@ -43,7 +45,7 @@ class Pipeline:
     @property
     def name(self):
         """
-        Returns the name of the Pipeline.
+        Returns the name of the **pipeline**.
 
         :return: Pipeline name
         :rtype: :class:`str`
@@ -52,12 +54,13 @@ class Pipeline:
 
     def description(self, level=0, start=1):
         """
-        Returns Pipeline description. Nested Pipelines/Transforms are indented.
-        This method calls itself recursively for nested Pipelines.
+        Returns **pipeline** description. Nested \
+        :doc:`Transforms <transforms/index>`/:doc:`Pipelines <pipeline>` are indented.
+        This method calls itself recursively for nested pipelines.
 
         :param level: Description indentation level, defaults to 0
         :type level: :class:`int`, optional
-        :param start: Start of Transforms numeration, defaults to 1
+        :param start: Start of transforms numeration, defaults to 1
         :type start: :class:`int`, optional
         :return: Pipeline description
         :rtype: :class:`str`
@@ -81,8 +84,8 @@ class Pipeline:
 
     def num_transforms(self):
         """
-        Returns the total number of Transforms of the Pipeline. Nested Pipelines do not count as
-        one Transform, they count as their own number of Transforms.
+        Returns the total number of transforms of the **pipeline**. Nested pipelines do not \
+        count as one transform, they count as their own number of transforms.
 
         :return: Total number of Transforms
         :rtype: :class:`int`
@@ -97,7 +100,8 @@ class Pipeline:
 
     def add_transform(self, transform, index=None):
         """
-        Adds a Transform/Pipeline to the Pipeline. The new Transform/Pipeline is added in the end.
+        Adds a transform/pipeline to the **pipeline**. The new transform/pipeline is added in the \
+        end by default.
 
         :param transform: Transform/Pipeline to be added
         :type transform: :class:`~easycv.transforms.base.Transform`/\
@@ -115,7 +119,7 @@ class Pipeline:
 
     def transforms(self):
         """
-        Returns a list with all the Transforms/Pipelines that make up the Pipeline.
+        Returns a list with all the transforms/pipelines that make up the **pipeline**.
 
         :return: Pipeline Transforms
         :rtype: :class:`list`
@@ -124,7 +128,7 @@ class Pipeline:
 
     def copy(self):
         """
-        Returns a copy of the Pipeline.
+        Returns a copy of the **pipeline**.
 
         :return: Pipeline copy
         :rtype: :class:`~cv.pipeline.Pipeline`
@@ -133,15 +137,15 @@ class Pipeline:
 
     def clear(self):
         """
-        Clears the Pipeline (removes all Transforms/Pipelines).
+        Clears the **pipeline** (removes all transforms/pipelines).
         """
         self._transforms = []
 
     def save(self, filename=None):
         """
-        Saves the Pipeline to a file.
+        Saves the **pipeline** to a file.
 
-        :param filename: Name of the saved file, if not specified Pipeline's name will be used
+        :param filename: Name of the saved file, if not specified pipeline's name will be used
         :type filename: :class:`str`, optional
         """
         if not filename:
