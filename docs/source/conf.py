@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
 
-project = "easycv"
+project = "EasyCV"
 copyright = "2020, Resi Coders"
 author = "Resi Coders"
 
@@ -36,7 +36,7 @@ autoclass_content = "both"
 pygments_style = "sphinx"
 autodoc_member_order = "bysource"
 html4_writer = True
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "nbsphinx"]
 intersphinx_mapping = {"numpy": ("http://docs.scipy.org/doc/numpy/", None)}
 
 # Add any paths that contain templates here, relative to this directory.

@@ -9,6 +9,7 @@ class Validator:
     and override the `validate` method.
     If default is set to None the argument is required and the Validator will throw an \
     :class:`~easycv.errors.transforms.ArgumentNotProvidedError`.
+
     :param default: Default value for the argument, defaults to None
     :type default: :class:`object`, optional
     """
@@ -23,6 +24,7 @@ class Validator:
         otherwise it calls the validate method to make sure all conditions are verified and if \
         not, throws an :class:`~easycv.errors.transforms.InvalidArgumentError` with the \
         appropriate error message.
+
         :param arg_name: Name of the argument to validate
         :type arg_name: :class:`str`
         :param kwargs: Dictionary containing all arguments and their values
@@ -44,6 +46,7 @@ class Validator:
         is invalid it should throw an :class:`~easycv.errors.transforms.InvalidArgumentError` \
         with a message clarifying what is invalid and how to correct it. If this Validator is \
         inside a the message should reflect that.
+
         :param arg_name: Name of the argument to validate
         :type arg_name: :class:`str`
         :param kwargs: Dictionary containing all arguments and their values
@@ -58,6 +61,7 @@ class Number(Validator):
     """
     Validator to check if an argument is a number. More restrictions can be applied through \
     the keyword arguments.
+
     :param min_value: Minimum value allowed, defaults to -inf
     :type min_value: :class:`int`/:class:`float`, optional
     :param max_value: Maximum value allowed, defaults to inf
@@ -110,6 +114,7 @@ class Number(Validator):
 class Option(Validator):
     """
     Validator to check if an argument one of the allowed options.
+
     :param options: Allowed options
     :type options: :class:`list`
     """
@@ -133,6 +138,7 @@ class Option(Validator):
 class Method(Validator):
     """
     Validator to check if a method is valid and if the arguments called for that method are valid.
+
     :param methods: Dictionary with methods as key and values are lists with valid args for the \
     corresponding method
     :type methods: :class:`dict`
@@ -160,6 +166,7 @@ class Method(Validator):
 class Type(Validator):
     """
     Validator to check if an argument is from the specified type.
+
     :param arg_type: Allowed type
     :type arg_type: :class:`type`
     """
@@ -183,6 +190,7 @@ class List(Validator):
     """
     Validator to check if an argument is a list/tupple or a numpy array containing only elements \
     that satisfies the given Validator.
+
     :param validator: Validator to apply to each element
     :type validator: :class:`Validator`
     :param length: Mandatory length, defaults to None

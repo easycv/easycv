@@ -1,8 +1,8 @@
-Color
+Noise
 ---------------
-The Color module provides Transforms that can alter the color of images
+The Noise module provides Transforms that can alter the color of images
 
-.. automodule:: easycv.transforms.color
+.. automodule:: easycv.transforms.noise
    :members:
    :undoc-members:
    :show-inheritance:

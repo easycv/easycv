@@ -7,7 +7,7 @@ The :mod:`Image` module provides a class with the same name which is used to rep
 way of applying :doc:`Transforms <transforms/index>`/:doc:`Pipelines <pipeline>`.
 
 .. warning::
-    **Easycv** uses `BGR` color scheme in the internal representation. This makes the interface \
+    **EasyCV** uses `BGR` color scheme in the internal representation. This makes the interface \
     with opencv easier and faster. Be aware of this if you use the array directly.
 
 Examples
