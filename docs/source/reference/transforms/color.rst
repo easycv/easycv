@@ -1,8 +1,10 @@
 Color
 ---------------
-The Color module provides Transforms that can alter the color of images
+The Color module provides transforms that operate on the Image color. Examples of each transform \
+from this module can be found `here <../../examples/transforms/color.ipynb>`_.
 
 .. automodule:: easycv.transforms.color
+   :exclude-members: apply, default_args
    :members:
    :undoc-members:
    :show-inheritance:
