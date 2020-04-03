@@ -8,13 +8,13 @@ from easycv.transforms.color import GrayScale
 
 class Gradient(Transform):
     """
-    Gradient is a transform that computes the gradient of an image
+    Gradient is a transform that computes the gradient of an image.
 
-    :param axis: Axis to do gradient, defaults to "x"
+    :param axis: Axis to compute, defaults to "x"
     :type axis: :class:`str`, optional
-    :param method: Method to use on gradients, defaults to "sobel"
+    :param method: Gradient calculation method, defaults to "sobel"
     :type method: :class:`str`, optional
-    :param size: Type of image abstraction, defaults to 5
+    :param size: Kernel size, defaults to 5
     :type size: :class:`int`, optional
     """
 
@@ -39,9 +39,9 @@ class Gradient(Transform):
 
 class GradientMagnitude(Transform):
     """
-    GradientMagnitude is a transform that computes the gradient magnitude of an image
+    GradientMagnitude is a transform that computes the magnitude of the image gradient.
 
-    :param size: Size of operator, defaults to 5
+    :param size: Kernel size, defaults to 5
     :type size: :class:`int`, optional
     """
 
@@ -60,9 +60,9 @@ class GradientMagnitude(Transform):
 
 class GradientAngle(Transform):
     """
-    GradientAngle is a transform that computes the angles of the gradients of an image
+    GradientAngle is a transform that computes the angles of the image gradient.
 
-    :param size: Size of operator, defaults to 5
+    :param size: Kernel size, defaults to 5
     :type size: :class:`int`, optional
     """
 
@@ -81,7 +81,7 @@ class GradientAngle(Transform):
 
 class Canny(Transform):
     """
-    Canny is a transform that applies canny edge detection on an image
+    Canny is a transform that extracts the edges from the image using canny edge detection.
 
     :param low: Low threshold, defaults to 100
     :type low: :class:`int`, optional
