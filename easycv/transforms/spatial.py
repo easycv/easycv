@@ -8,16 +8,24 @@ from easycv.utils import interpolation_methods
 
 class Resize(Transform):
     """
-    Resize is a transform that resizes an image to a given width and height. The interpolation
-    method can be specified by the method parameter.
+    Resize is a transform that resizes an image to a given width and height. Currently supported \
+    methods:
+
+    \t**∙ auto** - Automatically detect the best method\n
+    \t**∙ nearest** - Poisson-distributed noise generated from the data\n
+    \t**∙ linear** - Replaces random pixels with 255\n
+    \t**∙ area** - Replaces random pixels with 0\n
+    \t**∙ cubic** - Replaces random pixels with either 1 or 0.\n
+    \t**∙ lanczos4** - Multiplicative noise using ``out = image + n * image``, where \
+    n is uniform noise with specified mean & variance.\n
 
     :param width: Output image width
-    :type width: : class:`int`
+    :type width: :class:`int`
     :param height: Output image height
     :type height: :class:`int`
-    :param  : Interpolation method, defaults to "cubic" if the image is to be upscaled and \
+    :param  method: Interpolation method, defaults to "cubic" if the image is to be upscaled and \
     to "area"  if downscaled
-    :type method: : class:`str`, optional
+    :type method: :class:`str`, optional
     """
 
     default_args = {

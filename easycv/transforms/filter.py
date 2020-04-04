@@ -6,18 +6,18 @@ from easycv.validators import Option, Number
 
 class Blur(Transform):
     """
-    Blur is a transform that applies blur on a image
+    Blur is a transform that blurs an image.
 
-    :param method: Method of the blur to be aplied, defaults to "uniform"
+    :param method: Blur method to be used, defaults to "uniform"
     :type method: :class:`str`, optional
-    :param size: Size of operator, defaults to 5
+    :param size: Kernel size, defaults to 5
     :type size: :class:`int`, optional
     :param sigma: Sigma value, defaults to 0
     :type sigma: :class:`int`, optional
     :param sigma_color: Sigma for color space, defaults to 75
     :type sigma_color: :class:`int`, optional
-    :param sigma_space: Filter sigma in coordinate space, defaults to 75
-    :type sigma_space: :class:`int`, optionals
+    :param sigma_space: Sigma for coordinate space, defaults to 75
+    :type sigma_space: :class:`int`, optional
     """
 
     default_args = {
