@@ -1,7 +1,7 @@
 Edges
 ---------------
 The Edges module provides transforms that allow the user to perform edge detection and related \
-tasks. Examples of each transform from this module can \
+tasks. Examples of each transform in this module can \
 be found `here <../../examples/transforms/edges.ipynb>`_.
 
 .. automodule:: easycv.transforms.edges
