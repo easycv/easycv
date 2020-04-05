@@ -9,22 +9,20 @@ from easycv.utils import interpolation_methods
 class Resize(Transform):
     """
     Resize is a transform that resizes an image to a given width and height. Currently supported \
-    methods:
+    interpolation methods:
 
     \t**∙ auto** - Automatically detect the best method\n
-    \t**∙ nearest** - Poisson-distributed noise generated from the data\n
-    \t**∙ linear** - Replaces random pixels with 255\n
-    \t**∙ area** - Replaces random pixels with 0\n
-    \t**∙ cubic** - Replaces random pixels with either 1 or 0.\n
-    \t**∙ lanczos4** - Multiplicative noise using ``out = image + n * image``, where \
-    n is uniform noise with specified mean & variance.\n
+    \t**∙ nearest** - Nearest-neighbor interpolation\n
+    \t**∙ linear** - Bilinear interpolation\n
+    \t**∙ area** - Pixel area relation interpolation\n
+    \t**∙ cubic** - Bicubic interpolation (4x4 pixel neighborhood)\n
+    \t**∙ lanczos4** - Lanczos interpolation (8x8 pixel neighborhood)\n
 
     :param width: Output image width
     :type width: :class:`int`
     :param height: Output image height
     :type height: :class:`int`
-    :param  method: Interpolation method, defaults to "cubic" if the image is to be upscaled and \
-    to "area"  if downscaled
+    :param  method: Interpolation method, defaults to auto
     :type method: :class:`str`, optional
     """
 
@@ -52,16 +50,22 @@ class Resize(Transform):
 
 class Rescale(Transform):
     """
-        Rescale is a transform that rescales an image to a scale factor for x and y.
-        The interpolation method can be specified by the method parameter.
+        Rescale is a transform that rescales an image by a scale factor for x and y. Currently \
+        supported interpolation methods:
+
+        \t**∙ auto** - Automatically detect the best method\n
+        \t**∙ nearest** - Nearest-neighbor interpolation\n
+        \t**∙ linear** - Bilinear interpolation\n
+        \t**∙ area** - Pixel area relation interpolation\n
+        \t**∙ cubic** - Bicubic interpolation (4x4 pixel neighborhood)\n
+        \t**∙ lanczos4** - Lanczos interpolation (8x8 pixel neighborhood)\n
 
         :param fx: Scale factor along the horizontal axis
-        :type fx: : class:`int`
+        :type fx: :class:`float`
         :param fy: Scale factor along the vertical axis
-        :type fy: : class:`int`
-        :param method: Interpolation method, defaults to "cubic" if the image is to be \
-        upscaled and to "area"  if downscaled
-        :type method: : class:`str`, optional
+        :type fy: :class:`float`
+        :param method: Interpolation method, defaults to auto
+        :type method: :class:`str`, optional
     """
 
     default_args = {
@@ -90,18 +94,18 @@ class Rescale(Transform):
 
 class Rotate(Transform):
     """
-            Rotate is a transform that rotates an image by degrees according to the provided
-            center. It can also be scaled. The user can decide whether to adjust the output  image\
-            size to contain the all image, if needed.
+            Rotate is a transform that rotates an image by certain degrees arround the provided \
+            center. It can also be scaled.
 
-            :param degrees: Degrees to rotate the image
-            :type degrees: : class:`int`
+            :param degrees: Degrees to rotate
+            :type degrees: :class:`float`
             :param scale: Scale factor, defaults to 1
-            :type scale: : class:`int`
+            :type scale: :class:`float`
             :param center: Center of rotation, defaults to the image center
-            :type center: : class:'list'/'tuple', optional
-            :param bounded: Flag to decide whether the image is to be bounded, defaults to True
-            :type bounded: : class:'bool', optional
+            :type center: :class:`list`/:class:`tuple`, optional
+            :param original: If True the image will be rescaled in order to keep it inside the \
+             original size, defaults to True
+            :type original: :class:`bool`, optional
         """
 
     default_args = {
@@ -110,19 +114,19 @@ class Rotate(Transform):
         "center": List(
             Number(min_value=0, only_integer=True), length=2, default="auto"
         ),
-        "bounded": Type(bool, default=True),
+        "original": Type(bool, default=True),
     }
 
     def apply(self, image, **kwargs):
         (h, w) = image.shape[:2]
-        if kwargs["center"] == "auto" or kwargs["bounded"]:
+        if kwargs["center"] == "auto" or kwargs["original"]:
             kwargs["center"] = (w / 2, h / 2)
 
         matrix = cv2.getRotationMatrix2D(
             kwargs["center"], -kwargs["degrees"], kwargs["scale"]
         )
 
-        if kwargs["bounded"]:
+        if kwargs["original"]:
             cos = np.abs(matrix[0, 0])
             sin = np.abs(matrix[0, 1])
 
@@ -139,18 +143,18 @@ class Rotate(Transform):
 
 class Crop(Transform):
     """
-        Crop is a transform that crops a rectangular portion of an image , if original is True then
+        Crop is a transform that crops a rectangular portion of an image, if original is True then
         the image size will be kept.
 
         :param box: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
-        :type box: :class:'list'/'tuple'
+        :type box: :class:`list`/:class:`tuple`
         :param original: True to keep original image size, False to resize to cropped area
-        :type original: :class:'bool', optional
+        :type original: :class:`bool`, optional
     """
 
     default_args = {
         "box": List(Number(min_value=0), length=4),
-        "original": Type(bool, default=True),
+        "original": Type(bool, default=False),
     }
 
     def apply(self, image, **kwargs):
@@ -184,9 +188,9 @@ class Translate(Transform):
         Translate is a transform that translates the image according to a vector xy
 
         :param x: x value, defaults to 0
-        :type x: :class:'int'
+        :type x: :class:`int`, optional
         :param y: y value, defaults to 0
-        :type y: :class: 'int'
+        :type y: :class:`int`, optional
     """
 
     default_args = {"x": Number(default=0), "y": Number(default=0)}
