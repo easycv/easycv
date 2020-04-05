@@ -134,7 +134,7 @@ class Crop(Transform):
         Crop is a transform that crops a rectangular portion of an image , if original is True then
         the image size will be kept.
 
-        :param box: A 4-tuple defining the left, upper, right, and lower pixel coordinate.
+        :param box: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
         :type box: :class:'list'/'tuple'
         :param original: True to keep original image size, False to resize to cropped area
         :type original: :class:'bool', optional
@@ -146,7 +146,12 @@ class Crop(Transform):
     }
 
     def apply(self, image, **kwargs):
-        lx, rx, ty, by = kwargs["x"][0], kwargs["x"][1], kwargs["x"][2], kwargs["x"][3]
+        lx, rx, ty, by = (
+            kwargs["box"][0],
+            kwargs["box"][1],
+            kwargs["box"][2],
+            kwargs["box"][3],
+        )
 
         #  crops the image keeping the original size
         if kwargs["original"]:

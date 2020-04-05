@@ -87,7 +87,10 @@ def show_grid(images, titles=(), size="auto"):
     for i in range(len(images)):
         img = prepare_image_to_output(images[i].array)
         plt.subplot(size[0], size[1], i + 1)
-        plt.imshow(img)
+        if len(img.shape) == 2:
+            plt.imshow(img, cmap="gray")
+        else:
+            plt.imshow(img)
         plt.xticks([])
         plt.yticks([])
         if len(titles) == len(images):
