@@ -10,8 +10,6 @@ Summary under construction
     :alt: Build Status
 
 .. toctree::
-   :maxdepth: 3
-
    installation
    examples/index.rst
    reference/index.rst
