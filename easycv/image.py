@@ -28,7 +28,6 @@ class Image:
     :doc:`Pipelines <pipeline>` can easily be applied to any **image**.
     If the image is lazy, computations will be delayed until needed or until the image is \
     computed. This can facilitate large scale processing and distributed computation.
-
     :param source: Image data source. An array representing the image or a path/link to a file \
     containing the image
     :type source: :class:`str`/:class:`~numpy:numpy.ndarray`
@@ -57,7 +56,6 @@ class Image:
     def loaded(self):
         """
         Check if **image** is loaded or if it still needs to be downloaded/decoded.
-
         :return: `True` if loaded, `False` otherwise
         :rtype: :class:`bool`
         """
@@ -67,7 +65,6 @@ class Image:
     def pending(self):
         """
         Returns all pending transforms/pipelines.
-
         :return: Pipeline containing pending operations
         :rtype: :class:`~eascv.pipeline.Pipeline`
         """
@@ -78,7 +75,6 @@ class Image:
     def height(self):
         """
         Returns image height.
-
         :return: Image height
         :rtype: :class:`int`
         """
@@ -89,7 +85,6 @@ class Image:
     def width(self):
         """
         Returns **image** width.
-
         :return: Image width
         :rtype: :class:`int`
         """
@@ -100,7 +95,6 @@ class Image:
     def array(self):
         """
         Returns a NumPy array that represents the **image**.
-
         :return: Image as NumPy array
         :rtype: :class:`~numpy:numpy.ndarray`
         """
@@ -121,7 +115,6 @@ class Image:
         (no computation is done).
         If `in_place` is *True* the operation will change the **current image** instead of \
         returning a new Image.
-
         :param transform: Transform/Pipeline to be applied
         :type transform: :class:`~easycv.transforms.base.Transform`/\
         :class:`~easycv.pipeline.Pipeline`
@@ -141,7 +134,8 @@ class Image:
             if self._lazy:
                 new_pending = self._pending.copy()
                 new_pending.add_transform(transform)
-                return Image(self._source, pipeline=new_pending, lazy=True)
+                new_source = self._img if self.loaded else self._source
+                return Image(new_source, pipeline=new_pending, lazy=True)
             else:
                 self.load()
                 return Image(transform(self._img))
@@ -151,7 +145,6 @@ class Image:
         Returns a new **image** with all the pending operations applied.
         If `in_place` is *True* the pending operations will be applied
         to the current **image** instead.
-
         :param in_place: `True` to change the current **image**, `False` to return a new one with \
          the pending transforms applied, defaults to `False`
         :type in_place: :class:`bool`, optional
@@ -171,7 +164,6 @@ class Image:
         """
         Opens a popup window with the **image** displayed on it. This window is resizable and\
         supports zoom/pan.
-
         :param name: Window name, defaults to "Image"
         :type name: :class:`str`, optional
         """

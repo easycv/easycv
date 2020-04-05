@@ -7,7 +7,7 @@ from easycv.transforms.base import Transform
 
 class GrayScale(Transform):
     """
-    GrayScale is a transform that turns an image into grayscale
+    GrayScale is a transform that turns an image into grayscale.
     """
 
     def apply(self, image, **kwargs):
@@ -19,11 +19,11 @@ class GrayScale(Transform):
 
 class FilterChannels(Transform):
     """
-    FilterChannels is a transform that removes color channel(s)
+    FilterChannels is a transform that removes color channel(s).
 
     :param channels: List of channels to remove
     :type channels: :class:`list`
-    :param scheme: Type of image abstraction (rgb or bgr), defaults to "rgb"
+    :param scheme: Image color scheme (rgb or bgr), defaults to "rgb"
     :type scheme: :class:`str`, optional
     """
 
