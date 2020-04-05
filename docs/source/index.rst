@@ -11,6 +11,7 @@ Summary under construction
 
 .. toctree::
    :maxdepth: 2
+
    installation
    examples/index.rst
    reference/index.rst
