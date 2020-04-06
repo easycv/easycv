@@ -41,7 +41,7 @@ class Image:
 
     def __init__(self, source, pipeline=None, lazy=False):
         self._lazy = lazy
-        self._pending = Pipeline([]) if pipeline is None else pipeline.copy()
+        self._pending = Pipeline([], name='pending') if pipeline is None else pipeline.copy()
 
         if not valid_image_source(source):
             raise InvalidImageInputSource()
@@ -147,14 +147,14 @@ class Image:
                 self.load()
                 return Image(transform(self._img))
 
-    def compute(self, in_place=False):
+    def compute(self, in_place=True):
         """
         Returns a new **image** with all the pending operations applied.
         If `in_place` is *True* the pending operations will be applied
         to the current **image** instead.
 
         :param in_place: `True` to change the current **image**, `False` to return a new one with \
-         the pending transforms applied, defaults to `False`
+         the pending transforms applied, defaults to `True`
         :type in_place: :class:`bool`, optional
         :return: The new **image** if `in_place` is *False*
         :rtype: :class:`~eascv.image.Image`
@@ -163,6 +163,7 @@ class Image:
         if in_place:
             self._img = self._pending(self._img)
             self._pending.clear()
+            return self
         else:
             result = Image(self._pending(self._img), lazy=True)
             return result
