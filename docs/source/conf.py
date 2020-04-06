@@ -45,7 +45,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["**.ipynb_checkpoints"]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -56,7 +56,7 @@ exclude_patterns = []
 html_theme_path = ["../_themes"]
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "navigation_depth": 3,
+    "navigation_depth": 4,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

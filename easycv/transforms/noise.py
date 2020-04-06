@@ -57,5 +57,6 @@ class Noise(Transform):
     def apply(self, image, **kwargs):
         kwargs["mode"] = kwargs.pop("method")
         kwargs["seed"] = kwargs["seed"] if kwargs["seed"] else None
-        kwargs["var"] = kwargs["var"] / 255
+        if kwargs["mode"] == "gaussian":
+            kwargs["var"] = kwargs["var"] / 255
         return random_noise(image, **kwargs) * 255
