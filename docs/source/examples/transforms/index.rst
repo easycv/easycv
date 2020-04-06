@@ -1,5 +1,5 @@
-Transforms
-============
+Transforms examples
+===================
 
 .. toctree::
    :maxdepth: 2

@@ -8,6 +8,11 @@ class Blur(Transform):
     """
     Blur is a transform that blurs an image.
 
+    \t**∙ uniform** - Uniform Filter\n
+    \t**∙ gaussian** - Gaussian-distributed additive noise\n
+    \t**∙ median** - Median Filter\n
+    \t**∙ bilateral** - Edge preserving blur\n
+
     :param method: Blur method to be used, defaults to "uniform"
     :type method: :class:`str`, optional
     :param size: Kernel size, defaults to 5
