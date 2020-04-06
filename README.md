@@ -1,36 +1,34 @@
 # EasyCV
 
-One Paragraph of project description goes here
+Computer Vision made easy.
 
-## Getting Started
+[![Build Status](https://travis-ci.org/Resi-Coders/easycv.svg?branch=master)](https://travis-ci.org/Resi-Coders/easycv)
+[![Documentation Status](https://readthedocs.org/projects/easycv/badge/?version=latest)](https://easycv.readthedocs.io/en/latest/?badge=latest)
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## Installation
 
-### Prerequisites
+You can install **EasyCV** with ``pip`` or from source.
 
-What things you need to install the software and how to install them
+### Using Pip
 
+First, ensure that you have the latest pip version to avoid dependency errors
 ```
-Give examples
+pip install --upgrade pip
 ```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
+Then install **EasyCV** and all its dependencies using [pip](https://pip.pypa.io/en/stable/)
 ```
-Give the example
+pip install easycv
 ```
+### Install from Source
 
-And repeat
-
+To install EasyCV from source, clone the repository from [github](https://github.com/Resi-Coders/easycv)
 ```
-until finished
+git clone https://github.com/Resi-Coders/easycv.git
+cd easycv
+pip install .
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
+You can view the list of all dependencies within the ``install_requires`` field
+of ``setup.py``.
 
 ## Running the tests
 
