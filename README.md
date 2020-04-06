@@ -5,6 +5,8 @@ Computer Vision made easy.
 [![Build Status](https://travis-ci.org/Resi-Coders/easycv.svg?branch=master)](https://travis-ci.org/easycv/easycv)
 [![Documentation Status](https://readthedocs.org/projects/easycv/badge/?version=latest)](https://easycv.readthedocs.io/en/latest/?badge=latest)
 
+## Documentation
+We provide detailed documentation of all **EasyCV** modules on [read the docs.](https://easycv.readthedocs.io/en/latest/)
 ## Installation
 
 You can install **EasyCV** using [pip](https://pip.pypa.io/en/stable/) or from source.
@@ -31,8 +33,6 @@ You can view the list of all dependencies within the ``install_requires`` field
 of ``setup.py``.
 
 ## Running the tests
-
-### Test EasyCV with ``pytest``
 
 If you don't have ``pytest`` installed run
 ```
