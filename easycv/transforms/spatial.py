@@ -22,7 +22,7 @@ class Resize(Transform):
     :type width: :class:`int`
     :param height: Output image height
     :type height: :class:`int`
-    :param  method: Interpolation method, defaults to auto
+    :param method: Interpolation method, defaults to auto
     :type method: :class:`str`, optional
     """
 
