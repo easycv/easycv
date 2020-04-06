@@ -10,17 +10,17 @@ Using Pip
 ---------
 First, ensure that you have the latest pip version to avoid dependency errors::
 
-   pip3 install --upgrade pip
+   pip install --upgrade pip
 
 Then install **EasyCV** and all its dependencies using `pip <https://pip.pypa.io/en/stable/>`_::
 
-   pip3 install easycv
+   pip install easycv
 
 Install from Source
 -------------------
 
 To install EasyCV from source, clone the repository from `github
-<https://github.com/Resi-Coders/easycv>`_::
+<https://github.com/easycv/easycv>`_::
 
     git clone https://github.com/Resi-Coders/easycv.git
     cd easycv
