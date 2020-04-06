@@ -15,7 +15,7 @@ setup(
     description="Cv is a computer vision library built for learning purposes.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Resi-Coders/cv",
+    url="https://github.com/Resi-Coders/easycv",
     author="Resi Coders",
     author_email="to-do@gmail.com",
     license="MIT",
