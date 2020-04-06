@@ -11,7 +11,7 @@ You can install **EasyCV** using [pip](https://pip.pypa.io/en/stable/) or from s
 
 ### Using Pip
 
-First, ensure that you have the latest pip version to avoid dependency errors
+First ensure that you have the latest pip version to avoid dependency errors
 ```
 pip install --upgrade pip
 ```
