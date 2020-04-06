@@ -170,6 +170,15 @@ class Image:
         show(self._img, name=name)
 
     @auto_compute
+    def save(self, filename):
+        """
+        Saves an **image** to a file under a given filename.
+        :param filename: Filename to save
+        :type filename: :class:`str`, optional
+        """
+        save(self.array, filename)
+
+    @auto_compute
     def __eq__(self, other):
         return (
             isinstance(other, Image)
