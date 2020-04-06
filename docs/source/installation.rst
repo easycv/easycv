@@ -1,7 +1,7 @@
 Installation
 ==============
 
-You can install **EasyCV** with ``conda``, with ``pip``, or by installing from source.
+You can install **EasyCV** with ``pip`` or from source.
 
 .. note::
     **EasyCV** only supports Python 3 so make you sure you have it installed before proceeding.
@@ -15,14 +15,6 @@ First, ensure that you have the latest pip version to avoid dependency errors::
 Then install **EasyCV** and all its dependencies using `pip <https://pip.pypa.io/en/stable/>`_::
 
    pip3 install easycv
-
-Using Conda
------------
-
-You can also install **EasyCV** and all its dependencies using \
-`conda <https://www.anaconda.com/download/>`_::
-
-   conda install easycv
 
 Install from Source
 -------------------
