@@ -204,7 +204,7 @@ class List(Validator):
 
     def validate(self, arg_name, kwargs, inside_list=False):
         arg = kwargs.get(arg_name)
-        if not isinstance(arg, (list, tuple, np.array)):
+        if not isinstance(arg, (list, tuple, np.ndarray)):
             raise InvalidArgumentError(
                 'Invalid value for "{}". Must be a list or tuple.'.format(arg_name)
             )
