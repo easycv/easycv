@@ -7,7 +7,7 @@ Computer Vision made easy.
 
 ## Installation
 
-You can install **EasyCV** with [pip](https://pip.pypa.io/en/stable/) or from source.
+You can install **EasyCV** using [pip](https://pip.pypa.io/en/stable/) or from source.
 
 ### Using Pip
 
@@ -19,7 +19,7 @@ Then install **EasyCV** and all its dependencies using [pip](https://pip.pypa.io
 ```
 pip install easycv
 ```
-### Install from Source
+### From Source
 
 To install EasyCV from source, clone the repository from [github](https://github.com/easycv/easycv)
 ```
@@ -36,14 +36,14 @@ Test EasyCV with ``pytest``. If you don't have ``pytest`` installed run
 ```
 pip install pytest
 ```
-Then to run all tests just run
+To run all tests just run
 ```
 cd easycv
 pytest .
 ```
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/easycv/easycv/tags). 
+[SemVer](http://semver.org/) is used for versioning. For available versions see the [tags on this repository](https://github.com/easycv/easycv/tags). 
 
 ## License
 
