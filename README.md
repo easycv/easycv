@@ -21,7 +21,7 @@ pip install easycv
 ```
 ### From Source
 
-To install EasyCV from source, clone the repository from [github](https://github.com/easycv/easycv)
+Clone the repository from [github](https://github.com/easycv/easycv)
 ```
 git clone https://github.com/Resi-Coders/easycv.git
 cd easycv
@@ -32,7 +32,9 @@ of ``setup.py``.
 
 ## Running the tests
 
-Test EasyCV with ``pytest``. If you don't have ``pytest`` installed run
+### Test EasyCV with ``pytest``
+
+If you don't have ``pytest`` installed run
 ```
 pip install pytest
 ```
