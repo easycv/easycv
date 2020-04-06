@@ -149,7 +149,7 @@ class Pipeline:
         :type filename: :class:`str`, optional
         """
         if not filename:
-            filename = self._name + ".pipe"
+            filename = "_".join(self._name.lower().split()) + ".pipe"
         with open(filename, "wb") as f:
             pickle.dump(self, f)
 
