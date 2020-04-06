@@ -2,7 +2,7 @@
 
 Computer Vision made easy.
 
-[![Build Status](https://travis-ci.org/Resi-Coders/easycv.svg?branch=master)](https://travis-ci.org/easycv/easycv)
+[![Build Status](https://api.travis-ci.org/easycv/easycv.svg?branch=master)](https://travis-ci.org/easycv/easycv)
 [![Documentation Status](https://readthedocs.org/projects/easycv/badge/?version=latest)](https://easycv.readthedocs.io/en/latest/?badge=latest)
 
 ## Documentation
