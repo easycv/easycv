@@ -70,7 +70,7 @@ def show(img_arr, name="Image", wait_time=500):
             break
 
 
-def show_grid(images, titles=(), size="auto"):
+def show_grid(images, titles=(), size=(10, 10), shape="auto"):
     """
     Display images in a grid
 
@@ -78,15 +78,17 @@ def show_grid(images, titles=(), size="auto"):
     :type images: :class:`~numpy:numpy.ndarray`
     :param titles: Image titles
     :type titles: :class:`tuple`
-    :param size: Size of grids
-    :type size: :class:`str`, optional
+    :param size: Size of grid
+    :type size: :class:`tuple`, optional
+    :param shape: Shape of grid
+    :type shape: :class:`tuple`, optional
     """
-    if size == "auto":
+    if shape == "auto":
         side = nearest_square_side(len(images))
-        size = (side, side)
+        shape = (side, side)
     for i in range(len(images)):
         img = prepare_image_to_output(images[i].array)
-        plt.subplot(size[0], size[1], i + 1)
+        plt.subplot(shape[0], shape[1], i + 1)
         if len(img.shape) == 2:
             plt.imshow(img, cmap="gray")
         else:
@@ -95,4 +97,6 @@ def show_grid(images, titles=(), size="auto"):
         plt.yticks([])
         if len(titles) == len(images):
             plt.title(titles[i])
+
+    plt.gcf().set_size_inches(*size)
     plt.show()
