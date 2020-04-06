@@ -1,6 +1,6 @@
 # EasyCV
 
-One Paragraph of project description goes here
+Computer Vision made easy.
 
 ## Getting Started
 
