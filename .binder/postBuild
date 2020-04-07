@@ -1,3 +1,11 @@
 #!/bin/bash
 
 set -e
+
+tmp=/tmp/easycv
+mkdir -p $tmp
+mv docs/examples/* $tmp
+
+rm -r ./*
+mv $tmp/* .
+find . -type f -name '*.rst' -delete
