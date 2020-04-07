@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from easycv.transforms.base import Transform
+from .transforms.base import Transform
 from easycv.errors.io import InvalidPipelineInputSource
 
 
