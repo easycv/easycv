@@ -2,6 +2,8 @@
 
 set -e
 
+python -m pip install .
+
 tmp=/tmp/easycv
 mkdir -p $tmp
 mv docs/source/examples/* $tmp
