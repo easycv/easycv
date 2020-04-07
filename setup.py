@@ -1,39 +1,36 @@
-# author: Resi Coders
+# author: EasyCV Developers
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
-
-
-# Get the long description from the README file
-with open("README.md", "r") as f:
-    long_description = f.read()
-
+from distutils.core import setup
 
 setup(
-    name="easycv",
-    version="0.1.0",
-    description="Computer Vision made easy",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/Resi-Coders/easycv",
-    author="Resi Coders",
-    author_email="to-do@gmail.com",
-    license="MIT",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    keywords="easycv computer vision ai",
-    packages=find_packages(),
-    setup_requires=["setuptools>=38.6.0"],
-    install_requires=[
-        "numpy",
-        "pillow",
-        "requests",
-        "scipy",
-        "matplotlib",
-        "opencv-python",
-        "scikit-image",
-    ],
+  name = 'easycv',
+  packages = ['easycv'],
+  version = '0.1.0',
+  license='MIT',
+  description = 'Computer Vision made easy',
+  author = 'EasyCV Developers',
+  url = 'https://github.com/easycv/easycv',
+  download_url = 'https://github.com/easycv/easycv/archive/v0.1.0.tar.gz',
+  keywords = ['easycv', 'computer vision', 'python', 'ai'],
+  install_requires=[
+      "numpy",
+      "pillow",
+      "requests",
+      "scipy",
+      "matplotlib",
+      "opencv-python",
+      "scikit-image",
+  ],
+  classifiers=[
+    'Intended Audience :: Developers',
+    'Topic :: Software Development :: Build Tools',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+  ],
 )
