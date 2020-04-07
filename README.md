@@ -4,6 +4,7 @@ Computer Vision made easy.
 
 [![Build Status](https://api.travis-ci.org/easycv/easycv.svg?branch=master)](https://travis-ci.org/easycv/easycv)
 [![Documentation Status](https://readthedocs.org/projects/easycv/badge/?version=latest)](https://easycv.readthedocs.io/en/latest/?badge=latest)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/easycv/easycv/dev)
 
 ## Documentation
 We provide detailed documentation of all **EasyCV** modules on [read the docs.](https://easycv.readthedocs.io/en/latest/)
