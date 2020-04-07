@@ -27,7 +27,6 @@ setup(
         "numpy",
         "pillow",
         "requests",
-        "scipy",
         "matplotlib",
         "opencv-python",
         "scikit-image",
