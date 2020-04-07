@@ -12,7 +12,7 @@ with open("README.md", "r") as f:
 setup(
     name="easycv",
     version="0.1.0",
-    description="Cv is a computer vision library built for learning purposes.",
+    description="Computer Vision made easy",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Resi-Coders/easycv",
