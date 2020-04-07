@@ -4,7 +4,7 @@ set -e
 
 tmp=/tmp/easycv
 mkdir -p $tmp
-mv docs/examples/* $tmp
+mv docs/source/examples/* $tmp
 
 rm -r ./*
 mv $tmp/* .
