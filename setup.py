@@ -1,7 +1,13 @@
 # author: EasyCV Developers
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+from setuptools import setup
+
+
+# Get the long description from the README file
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 
 setup(
     name="easycv",
@@ -9,10 +15,14 @@ setup(
     version="0.1.1",
     license="MIT",
     description="Computer Vision made easy",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="EasyCV Developers",
+    author_email="easycv.developers@gmail.com",
     url="https://github.com/easycv/easycv",
     download_url="https://github.com/easycv/easycv/archive/v0.1.1.tar.gz",
     keywords=["easycv", "computer vision", "python", "ai"],
+    setup_requires=["setuptools>=38.6.0"],
     install_requires=[
         "numpy",
         "pillow",
