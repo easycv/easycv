@@ -6,9 +6,9 @@ python -m pip install .
 
 TMP=/tmp/easycv
 mkdir -p $TMP
-cp -r docs/examples .binder $TMP
+cp -r docs/source/examples .binder $TMP
 
 find . -delete
 
 mv $TMP/.binder .
-rm -rf $TMP_CONTENT_DIR
+rm -rf $TMP
