@@ -72,9 +72,7 @@ class Regex(Validator):
     :type flags: :class:`enum 'RegexFlag'`, optional
     """
 
-    def __init__(
-        self, pattern, *flags, description=None, default=None,
-    ):
+    def __init__(self, pattern, *flags, description=None, default=None):
         self._pattern = pattern
         self._description = description
         self._regex = re.compile(pattern, *flags)
