@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 
 from easycv.errors import ArgumentNotProvidedError, InvalidArgumentError
@@ -55,6 +57,45 @@ class Validator:
         :type inside_list: :class:`bool`, optional
         """
         pass
+
+
+class Regex(Validator):
+    """
+    Validator to check if an argument verifies a certain regex pattern. To add regex flags just \
+    include them in the constructor like an argument.
+
+    :param pattern: Regex pattern to validate argument
+    :type pattern: :class:`str`
+    :param description: Description of accepted values, used in the error message
+    :type description: :class:`str`, optional
+    :param flags: Regex Flags
+    :type flags: :class:`enum 'RegexFlag'`, optional
+    """
+
+    def __init__(
+        self, pattern, *flags, description=None, default=None,
+    ):
+        self._pattern = pattern
+        self._description = description
+        self._regex = re.compile(pattern, *flags)
+        super().__init__(default=default)
+
+    def validate(self, arg_name, kwargs, inside_list=False):
+        arg = kwargs.get(arg_name)
+        match = self._regex.match(str(arg))
+        if not bool(match):
+            if self._description is not None:
+                raise InvalidArgumentError(
+                    'Invalid value for "{}". '.format(arg_name)
+                    + "Must be a/an {}.".format(self._description)
+                )
+            else:
+                raise InvalidArgumentError(
+                    'Invalid value for "{}". '.format(arg_name)
+                    + 'Must satisfy this regex pattern "{}.'.format(self._pattern)
+                )
+        else:
+            return arg
 
 
 class Number(Validator):
