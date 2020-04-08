@@ -6,7 +6,7 @@ from functools import wraps
 
 from easycv.pipeline import Pipeline
 from easycv.errors.io import InvalidImageInputSource
-from easycv.io import save, valid_image_source, get_image_array, show
+from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 
 
 def auto_compute(decorated):
@@ -55,6 +55,17 @@ class Image:
         else:
             self._pending.clear()
             self._img = self._pending(get_image_array(source))
+
+    @classmethod
+    def random_dog(cls):
+        """
+        Get a random image. Currently all images are from `DogApi <https://dog.ceo/dog-api/>`_.
+
+        :return: Random Image
+        :rtype: :class:`Image`
+        """
+        img = random_dog_image()
+        return cls(img)
 
     @property
     def loaded(self):
