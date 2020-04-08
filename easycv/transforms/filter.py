@@ -42,13 +42,15 @@ class Blur(Transform):
             return cv2.blur(image, (kwargs["size"], kwargs["size"]))
         elif kwargs["method"] == "gaussian":
             if kwargs["size"] == "auto":
-                kwargs["size"] = int(kwargs["sigma"] * 8 + 1)
+                kwargs["size"] = int(2 * (kwargs["sigma"] * kwargs["truncate"]) + 1)
             return cv2.GaussianBlur(
                 image, (kwargs["size"], kwargs["size"]), kwargs["sigma"]
             )
         elif kwargs["method"] == "median":
             return cv2.medianBlur(image, kwargs["size"])
         else:
+            if kwargs["size"] == "auto":
+                kwargs["size"] = 5
             return cv2.bilateralFilter(
                 image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_space"]
             )
@@ -57,21 +59,19 @@ class Blur(Transform):
 class Sharpen(Transform):
     """
     Sharpen is a transform that sharpens an image.
-    enhanced image = original + amount * (original - blurred)
 
-    :param radius: Blur method to be used, defaults to "uniform"
-    :type radius: :class:`str`, optional
-    :param amount: Kernel size, defaults to auto
-    :type amount: :class:`int`, optional
-    :param multichannel: True
-    :type multichannel: :class:`int`, optional
+    :param radius: Radius of the kernel of the blur, defaults to 1
+    :type radius: :class:`int`, optional
+    :param amount: Amount to sharpen, defaults to 1
+    :type amount: :class:`float`, optional
+    :param multichannel: `True` if image has color `False` otherwise
+    :type multichannel: :class:`bool`
     """
 
     default_args = {
         "radius": Number(min_value=0, only_integer=True, default=1),
-        "sigma": Number(min_value=0, default=0),
         "amount": Number(default=1),
-        "multichannel": Type(bool, default=True),
+        "multichannel": Type(bool),
     }
 
     def apply(self, image, **kwargs):
