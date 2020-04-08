@@ -176,7 +176,7 @@ class Image:
         """
         Opens a popup window with the **image** displayed on it. This window is resizable and\
         supports zoom/pan. If its impossible to open a popup window this method will return the
-        image and launch a warning.
+        image instead.
 
         :param name: Window name, defaults to "Image"
         :type name: :class:`str`, optional
