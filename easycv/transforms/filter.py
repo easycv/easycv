@@ -60,8 +60,8 @@ class Sharpen(Transform):
     """
     Sharpen is a transform that sharpens an image.
 
-    :param sigma: Radius of the kernel of the blur, defaults to 1
-    :type sigma: :class:`int`, optional
+    :param sigma: Kernel sigma, defaults to 1
+    :type sigma: :class:`float`, optional
     :param amount: Amount to sharpen, defaults to 1
     :type amount: :class:`float`, optional
     :param multichannel: `True` if diferent processing for each color layer `False` otherwise
@@ -69,7 +69,7 @@ class Sharpen(Transform):
     """
 
     default_args = {
-        "sigma": Number(min_value=0, only_integer=True, default=1),
+        "sigma": Number(min_value=0, default=1),
         "amount": Number(default=1),
         "multichannel": Type(bool, default=False),
     }
