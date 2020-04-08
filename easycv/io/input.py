@@ -77,8 +77,7 @@ def random_dog_image():
     :return: Link to a random dog image
     :rtype: :class:`str`
     """
-    dog_api = "https://dog.ceo/api/breeds/image/random"
-    response = urlopen(dog_api)
+    response = urlopen("https://dog.ceo/api/breeds/image/random")
     if response.getcode() != 200:
         raise ImageDownloadError(
             "Failed to Download file, error {}.".format(response.getcode())
