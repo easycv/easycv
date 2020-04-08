@@ -75,4 +75,4 @@ class Sharpen(Transform):
     }
 
     def apply(self, image, **kwargs):
-        return unsharp_mask(image, **kwargs, preserve_range=True)
+        return unsharp_mask(image, preserve_range=True, **kwargs)
