@@ -42,7 +42,7 @@ class Blur(Transform):
             return cv2.blur(image, (kwargs["size"], kwargs["size"]))
         elif kwargs["method"] == "gaussian":
             if kwargs["size"] == "auto":
-                kwargs["size"] = int(2 * (kwargs["sigma"] * kwargs["truncate"]) + 1)
+                kwargs["size"] = 2 * int(kwargs["sigma"] * kwargs["truncate"] + 0.5) + 1
             return cv2.GaussianBlur(
                 image, (kwargs["size"], kwargs["size"]), kwargs["sigma"]
             )
@@ -60,19 +60,20 @@ class Sharpen(Transform):
     """
     Sharpen is a transform that sharpens an image.
 
-    :param radius: Radius of the kernel of the blur, defaults to 1
-    :type radius: :class:`int`, optional
+    :param sigma: Radius of the kernel of the blur, defaults to 1
+    :type sigma: :class:`int`, optional
     :param amount: Amount to sharpen, defaults to 1
     :type amount: :class:`float`, optional
-    :param multichannel: `True` if image has color `False` otherwise
+    :param multichannel: `True` if diferent processing for each color layer `False` otherwise
     :type multichannel: :class:`bool`
     """
 
     default_args = {
-        "radius": Number(min_value=0, only_integer=True, default=1),
+        "sigma": Number(min_value=0, only_integer=True, default=1),
         "amount": Number(default=1),
-        "multichannel": Type(bool),
+        "multichannel": Type(bool, default=False),
     }
 
     def apply(self, image, **kwargs):
+        kwargs["radius"] = kwargs.pop("sigma")
         return unsharp_mask(image, preserve_range=True, **kwargs)
