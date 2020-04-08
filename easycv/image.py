@@ -1,4 +1,5 @@
 import io
+import os
 
 import numpy as np
 from functools import wraps
@@ -41,7 +42,9 @@ class Image:
 
     def __init__(self, source, pipeline=None, lazy=False):
         self._lazy = lazy
-        self._pending = Pipeline([], name='pending') if pipeline is None else pipeline.copy()
+        self._pending = (
+            Pipeline([], name="pending") if pipeline is None else pipeline.copy()
+        )
 
         if not valid_image_source(source):
             raise InvalidImageInputSource()
@@ -172,12 +175,17 @@ class Image:
     def show(self, name="Image"):
         """
         Opens a popup window with the **image** displayed on it. This window is resizable and\
-        supports zoom/pan.
+        supports zoom/pan. If its impossible to open a popup window this method will return the
+        image instead.
 
         :param name: Window name, defaults to "Image"
         :type name: :class:`str`, optional
         """
-        show(self._img, name=name)
+
+        if "DISPLAY" in os.environ:
+            show(self._img, name=name)
+        else:
+            return self
 
     @auto_compute
     def save(self, filename):

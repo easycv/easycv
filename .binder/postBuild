@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+python -m pip install .
+
+tmp=/tmp/easycv
+mkdir -p $tmp
+mv docs/source/examples/* $tmp
+
+rm -r ./*
+mv $tmp/* .
+find . -type f -name '*.rst' -delete
