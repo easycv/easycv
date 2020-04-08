@@ -23,6 +23,7 @@ setup(
     keywords=["easycv", "computer vision", "python", "ai"],
     setup_requires=["setuptools>=38.6.0"],
     packages=find_packages(),
+    python_requires=">=3.5",
     install_requires=[
         "numpy",
         "pillow",
@@ -36,7 +37,6 @@ setup(
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
