@@ -57,15 +57,15 @@ class Image:
             self._img = self._pending(get_image_array(source))
 
     @classmethod
-    def random_dog(cls):
+    def random(cls):
         """
         Get a random image. Currently all images are from `DogApi <https://dog.ceo/dog-api/>`_.
 
         :return: Random Image
         :rtype: :class:`Image`
         """
-        img = random_dog_image()
-        return cls(img)
+        path = random_dog_image()
+        return cls(path)
 
     @property
     def loaded(self):
