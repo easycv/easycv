@@ -96,7 +96,8 @@ class Transform(metaclass=Metadata):
             arguments = cls.default_args
 
         for argument in arguments:
-            default_values[argument] = cls.default_args[argument].default
+            if method is None or argument != "method":
+                default_values[argument] = cls.default_args[argument].default
 
         return default_values
 

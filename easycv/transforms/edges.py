@@ -19,8 +19,8 @@ class Gradient(Transform):
     """
 
     default_args = {
+        "method": Method({"sobel": ["axis", "size"], "laplace": []}, default="sobel"),
         "axis": Option(["x", "y"], default=0),
-        "method": Method(["sobel", "laplace"], default="sobel"),
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
         ),
