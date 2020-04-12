@@ -53,6 +53,8 @@ def point_selector(image, n_points):
     """
     def onclick(event):
         res.append((round(event.xdata), round(event.ydata)))
+        plt.plot(event.xdata, event.ydata, marker='o', color='cyan', markersize=4)
+        fig.canvas.draw()
         if len(res) == n_points:
             plt.close(fig)
     res = []
