@@ -6,7 +6,7 @@ Summary under construction
     :target: https://easycv.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 .. image:: https://travis-ci.org/Resi-Coders/easycv.svg?branch=master
-    :target: https://travis-ci.org/Resi-Coders/easycv
+    :target: https://travis-ci.org/easycv/easycv
     :alt: Build Status
 
 .. toctree::
