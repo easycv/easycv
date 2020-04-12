@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, Option, List, Type
+from easycv.validators import Number, List, Type, Method
 from easycv.utils import interpolation_methods
 
 
@@ -29,8 +29,8 @@ class Resize(Transform):
     default_args = {
         "width": Number(min_value=0, only_integer=True),
         "height": Number(min_value=0, only_integer=True),
-        "method": Option(
-            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default=0
+        "method": Method(
+            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default="auto"
         ),
     }
 
@@ -71,8 +71,8 @@ class Rescale(Transform):
     default_args = {
         "fx": Number(min_value=0),
         "fy": Number(min_value=0),
-        "method": Option(
-            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default=0
+        "method": Method(
+            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default="auto"
         ),
     }
 
@@ -146,7 +146,7 @@ class Crop(Transform):
         Crop is a transform that crops a rectangular portion of an image, if original is True then
         the image size will be kept.
 
-        :param box: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
+        :param box: A 4-tuple defining the left, r  ight, upper, and lower pixel coordinate.
         :type box: :class:`list`/:class:`tuple`
         :param original: True to keep original image size, False to resize to cropped area
         :type original: :class:`bool`, optional

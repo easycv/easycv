@@ -1,6 +1,6 @@
 from easycv.transforms.base import Transform
 
-from easycv.validators import Number, Type
+from easycv.validators import Number, Type, Method
 from skimage.util import random_noise
 
 
@@ -13,7 +13,7 @@ class Noise(Transform):
         \t**∙ poisson** - Poisson-distributed noise generated from the data\n
         \t**∙ salt** - Replaces random pixels with 255\n
         \t**∙ pepper** - Replaces random pixels with 0\n
-        \t**∙ s&p** - Replaces random pixels with either 1 or 0.\n
+        \t**∙ sp** - Replaces random pixels with either 1 or 0.\n
         \t**∙ speckle** - Multiplicative noise using ``out = image + n * image``, where \
         n is uniform noise with specified mean & variance.\n
 
@@ -36,26 +36,27 @@ class Noise(Transform):
         :type salt_vs_pepper: :class:`float`, optional
     """
 
-    methods = {
-        "gaussian": ["mean", "var"],
-        "salt": ["amount"],
-        "pepper": ["amount"],
-        "s&p": ["amount", "salt_vs_pepper"],
-        "poisson": [],
-    }
-
     default_args = {
-        "method": "gaussian",
+        "method": Method(
+            {
+                "gaussian": ["mean", "var"],
+                "salt": ["amount"],
+                "pepper": ["amount"],
+                "sp": ["amount", "salt_vs_pepper"],
+                "poisson": [],
+            },
+            name="mode",
+            default="gaussian",
+        ),
         "seed": Number(min_value=0, max_value=2 ** 32 - 1, default=False),
         "clip": Type(bool, default=True),
-        "mean": Type(object, default=0),
+        "mean": Number(default=0),
         "var": Number(min_value=0, max_value=250, default=2.5),
         "amount": Number(min_value=0, max_value=1, default=0.05),
         "salt_vs_pepper": Number(min_value=0, max_value=1, default=0.5),
     }
 
     def apply(self, image, **kwargs):
-        kwargs["mode"] = kwargs.pop("method")
         kwargs["seed"] = kwargs["seed"] if kwargs["seed"] else None
         if kwargs["mode"] == "gaussian":
             kwargs["var"] = kwargs["var"] / 255

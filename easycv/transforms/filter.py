@@ -2,7 +2,7 @@ import cv2
 from skimage.filters import unsharp_mask
 
 from easycv.transforms.base import Transform
-from easycv.validators import Option, Number, Type
+from easycv.validators import Method, Number, Type
 
 
 class Blur(Transform):
@@ -29,7 +29,15 @@ class Blur(Transform):
     """
 
     default_args = {
-        "method": Option(["uniform", "gaussian", "median", "bilateral"], default=1),
+        "method": Method(
+            {
+                "uniform": [],
+                "gaussian": ["sigma", "truncate"],
+                "median": [],
+                "bilateral": ["sigma_color", "sigma_space"],
+            },
+            default="gaussian",
+        ),
         "size": Number(min_value=1, only_integer=True, only_odd=True, default="auto"),
         "sigma": Number(min_value=0, default=0),
         "sigma_color": Number(min_value=0, default=75),
@@ -52,7 +60,7 @@ class Blur(Transform):
             if kwargs["size"] == "auto":
                 kwargs["size"] = 5
             return cv2.bilateralFilter(
-                image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_space"]
+                image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_ssspace"]
             )
 
 

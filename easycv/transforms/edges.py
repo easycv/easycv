@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from easycv.validators import Option, Number
+from easycv.validators import Method, Number, Option
 from easycv.transforms.base import Transform
 from easycv.transforms.color import GrayScale
 
@@ -20,7 +20,7 @@ class Gradient(Transform):
 
     default_args = {
         "axis": Option(["x", "y"], default=0),
-        "method": Option(["sobel", "laplace"], default=0),
+        "method": Method(["sobel", "laplace"], default="sobel"),
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
         ),
