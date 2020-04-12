@@ -7,6 +7,7 @@ Reference
    image
    pipeline
    transforms/index.rst
+   validators
+   selectors
    io/index.rst
    errors/index.rst
-   validators
