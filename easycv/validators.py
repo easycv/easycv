@@ -2,7 +2,11 @@ import re
 
 import numpy as np
 
-from easycv.errors import ArgumentNotProvidedError, InvalidArgumentError
+from easycv.errors import (
+    ArgumentNotProvidedError,
+    InvalidArgumentError,
+    InvalidMethodError,
+)
 
 
 class Validator:
@@ -18,6 +22,10 @@ class Validator:
 
     def __init__(self, default=None):
         self._default = default
+
+    @property
+    def default(self):
+        return self._default
 
     def check(self, arg_name, kwargs):
         """
@@ -178,28 +186,65 @@ class Method(Validator):
     """
     Validator to check if a method is valid and if the arguments called for that method are valid.
 
-    :param methods: Dictionary with methods as key and values are lists with valid args for the \
-    corresponding method
-    :type methods: :class:`dict`
+    :param methods: List containing supported methods or dictionary with methods as keys and \
+    allowed arguments for that method as values
+    :type methods: :class:`list`/:class:`dict`
+    :param name: Name of the method attribute, this is the name of the parameter representing \
+    the method sent to ``apply``, defaults to method
+    :type name: :class:`str`
     """
 
-    def __init__(self, methods, default=None):
+    def __init__(self, methods, name="method", default=None):
         self.methods = methods
+        self.method_name = name
         super().__init__(default=default)
+
+    @property
+    def contains_allowed(self):
+        return isinstance(self.methods, dict)
+
+    @property
+    def allowed_methods(self):
+        if self.contains_allowed:
+            return list(self.methods.keys())
+        else:
+            return self.methods
+
+    def allowed_args(self, method):
+        return self.methods[method]
+
+    def add_unspecified_allowed_args(self, default_args):
+        specified_args = set(sum(self.methods.values(), []))
+        not_specified = set(default_args) - specified_args - {"method"}
+        if not_specified:
+            for method in self.methods:
+                self.methods[method].extend(not_specified)
+
+    def check(self, arg_name, kwargs):
+        arg = kwargs.get(arg_name)
+        if arg is None:
+            if self._default is None:
+                raise ArgumentNotProvidedError(arg_name)
+            else:
+                kwargs[arg_name] = self._default
+        return self.validate(arg_name, kwargs)
 
     def validate(self, arg_name, kwargs, inside_list=False):
         arg = kwargs.pop(arg_name)
+
         if arg not in self.methods:
-            raise InvalidArgumentError(
-                "Invalid method. Available methods: {}".format(", ".join(self.methods))
+            raise InvalidMethodError(
+                self.methods.keys() if self.contains_allowed else self.methods
             )
-        if any(a not in self.methods[arg] for a in kwargs):
-            raise InvalidArgumentError(
-                'Invalid arguments for method "{}". '.format(arg)
-                + "Allowed arguments: {}".format(", ".join(self.methods[arg]))
-            )
-        else:
-            return arg
+
+        if self.contains_allowed:
+            if any(a not in self.methods[arg] for a in kwargs if a != "method"):
+                raise InvalidArgumentError(
+                    'Invalid arguments for method "{}". '.format(arg)
+                    + "Allowed arguments: {}".format(", ".join(self.methods[arg]))
+                )
+
+        return arg
 
 
 class Type(Validator):
