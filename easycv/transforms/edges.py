@@ -95,7 +95,7 @@ class Canny(Transform):
         "low": Number(min_value=1, max_value=255, only_integer=True, default=100),
         "high": Number(min_value=1, max_value=255, only_integer=True, default=200),
         "size": Number(
-            min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
+            min_value=3, max_value=7, only_integer=True, only_odd=True, default=3
         ),
     }
 
