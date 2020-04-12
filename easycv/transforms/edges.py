@@ -87,12 +87,17 @@ class Canny(Transform):
     :type low: :class:`int`, optional
     :param high: High threshold, defaults to 200
     :type high: :class:`int`, optional
+    :param size: Kernel size, defaults to 5
+    :type size: :class:`int`, optional
     """
 
     default_args = {
         "low": Number(min_value=1, max_value=255, only_integer=True, default=100),
         "high": Number(min_value=1, max_value=255, only_integer=True, default=200),
+        "size": Number(
+            min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
+        ),
     }
 
     def apply(self, image, **kwargs):
-        return cv2.Canny(image, kwargs["low"], kwargs["high"])
+        return cv2.Canny(image, kwargs["low"], kwargs["high"], kwargs["size"])
