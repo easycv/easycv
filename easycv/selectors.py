@@ -1,7 +1,10 @@
 from matplotlib.widgets import RectangleSelector, EllipseSelector
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 from easycv.io.output import prepare_image_to_output
+
+mpl.use("Qt5Agg")
 
 
 def toggle_selector(event):  # Bindings to close the matplotlib window
@@ -24,7 +27,7 @@ def rectangle_selector(image):
     def line_select_callback(e1, e2):  # Callback to RectangleSelector
         pass
 
-    fig, current_ax = plt.subplots()
+    _, current_ax = plt.subplots()
     plt.tick_params(
         axis="both",
         which="both",
