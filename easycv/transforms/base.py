@@ -1,5 +1,7 @@
 from easycv.errors import InvalidArgumentError
 
+import cv2
+
 
 class Metadata(type):
     exclude = {"apply", "default_args"}
@@ -28,7 +30,19 @@ class Transform(metaclass=Metadata):
         self._args = self._get_arguments(kwargs, methods)
 
     def __call__(self, image):
-        return self.process(image)
+        output = self.process(image)
+
+        if output.min() >= 0 and output.max() <= 255:
+            if output.dtype.kind != "i":
+                if output.min() >= 0 and output.max() <= 1:
+                    output = output * 255
+                output = output.astype("uint8")
+        else:
+            output = cv2.normalize(output, None, 0, 255, cv2.NORM_MINMAX).astype(
+                "uint8"
+            )
+
+        return output
 
     def __eq__(self, other):
         return isinstance(other, Transform) and self.args() == other.args()
@@ -109,7 +123,7 @@ class Transform(metaclass=Metadata):
         return []
 
     def apply(self, image, **kwargs):
-        pass
+        return image
 
     def args(self):
         return self._args

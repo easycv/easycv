@@ -7,8 +7,7 @@ from easycv.utils import nearest_square_side
 
 def prepare_image_to_output(img_arr, rgb=True):
     """
-    Formats the image array to be showed turning its values to be between 0 and 255 and puts image
-    in BGR abstraction
+    Formats the image array to be in the correct color scheme for output
 
     :param img_arr: image array
     :type img_arr: :class:`~numpy:numpy.ndarray`
@@ -17,13 +16,6 @@ def prepare_image_to_output(img_arr, rgb=True):
     :return: image array
     :rtype: :class:`~numpy:numpy.ndarray`
     """
-    if img_arr.min() >= 0 and img_arr.max() <= 255:
-        if img_arr.dtype.kind != "i":
-            if img_arr.min() >= 0 and img_arr.max() <= 1:
-                img_arr = img_arr * 255
-            img_arr = img_arr.astype("uint8")
-    else:
-        img_arr = cv2.normalize(img_arr, None, 0, 255, cv2.NORM_MINMAX).astype("uint8")
 
     if rgb and len(img_arr.shape) == 3 and img_arr.shape[-1] == 3:
         img_arr = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
