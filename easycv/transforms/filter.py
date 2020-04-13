@@ -60,7 +60,7 @@ class Blur(Transform):
             if kwargs["size"] == "auto":
                 kwargs["size"] = 5
             return cv2.bilateralFilter(
-                image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_ssspace"]
+                image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_space"]
             )
 
 
