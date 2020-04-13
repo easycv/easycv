@@ -5,7 +5,7 @@ from easycv.transforms.noise import Noise
 from easycv.transforms.filter import Blur, Sharpen
 from easycv.transforms.color import GrayScale, FilterChannels
 from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
-from easycv.transforms.edges import Gradient, GradientAngle, GradientMagnitude, Canny
+from easycv.transforms.edges import Gradient, GradientAngle, Canny
 
 
 transforms = [
@@ -15,7 +15,6 @@ transforms = [
     FilterChannels,
     Gradient,
     GradientAngle,
-    GradientMagnitude,
     GrayScale,
     Noise,
     Rescale,

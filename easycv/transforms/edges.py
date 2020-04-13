@@ -10,7 +10,7 @@ class Gradient(Transform):
     """
     Gradient is a transform that computes the gradient of an image.
 
-    :param axis: Axis to compute, defaults to "x"
+    :param axis: Axis to compute, defaults to "both" (magnitude)
     :type axis: :class:`str`, optional
     :param method: Gradient calculation method, defaults to "sobel"
     :type method: :class:`str`, optional
@@ -20,7 +20,7 @@ class Gradient(Transform):
 
     default_args = {
         "method": Method({"sobel": ["axis", "size"], "laplace": []}, default="sobel"),
-        "axis": Option(["x", "y"], default=0),
+        "axis": Option(["both", "x", "y"], default=0),
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
         ),
@@ -29,33 +29,16 @@ class Gradient(Transform):
     def apply(self, image, **kwargs):
         image = GrayScale().process(image)
         if kwargs["method"] == "sobel":
+            if kwargs["axis"] == "both":
+                x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
+                y = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
+                return (x ** 2 + y ** 2) ** 0.5
             if kwargs["axis"] == "x":
                 return cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
             else:
                 return cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs["size"])
         else:
             return cv2.Laplacian(image, cv2.CV_64F)
-
-
-class GradientMagnitude(Transform):
-    """
-    GradientMagnitude is a transform that computes the magnitude of the image gradient.
-
-    :param size: Kernel size, defaults to 5
-    :type size: :class:`int`, optional
-    """
-
-    default_args = {
-        "size": Number(
-            min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
-        )
-    }
-
-    def apply(self, image, **kwargs):
-        image = GrayScale().process(image)
-        x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
-        y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs["size"])
-        return (x ** 2 + y ** 2) ** 0.5
 
 
 class GradientAngle(Transform):
