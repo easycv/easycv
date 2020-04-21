@@ -66,6 +66,16 @@ class Validator:
         """
         pass
 
+    def accept(self, other):
+        """
+        Every Validator should override this method. This method should check if the validator
+        given can be accepted with the self validator parameters
+
+        :param other: Instance of a validator
+        :type other: :class:`str`
+        """
+        pass
+
 
 class Regex(Validator):
     """
@@ -117,6 +127,8 @@ class Number(Validator):
     :type only_integer: :class:`bool`, optional
     :param only_odd: Allow only odd numbers, defaults to False
     :type only_odd: :class:`bool`, optional
+    :param only_even: Allow only even numbers, defaults to False
+    :type only_even: :class:`bool`, optional
     """
 
     def __init__(
@@ -125,11 +137,13 @@ class Number(Validator):
         max_value=float("inf"),
         only_integer=False,
         only_odd=False,
+        only_even=False,
         default=None,
     ):
-        self._only_odd = only_odd
-        self._min_value = min_value
-        self._max_value = max_value
+        self.only_odd = only_odd
+        self.only_even = only_even
+        self.min_value = min_value
+        self.max_value = max_value
         self.only_integer = only_integer
         super().__init__(default=default)
 
@@ -138,24 +152,39 @@ class Number(Validator):
         allowed_types = (int,) if self.only_integer else (int, float)
         if (
             not isinstance(arg, allowed_types)
-            or not (self._min_value <= arg <= self._max_value)
-            or self._only_odd
-            and arg % 2 == 0
+            or not (self.min_value <= arg <= self.max_value)
+            or (self.only_odd and arg % 2 == 0)
+            or (self.only_even and arg % 2 != 0)
         ):
             if inside_list:
                 prefix = "a list/tuple of " + (
                     "integers" if self.only_integer else "numbers"
                 )
             else:
-                if self.only_integer:
-                    prefix = "an odd integer" if self._only_odd else "an integer"
+                if self.only_odd:
+                    prefix = "an odd integer" if self.only_integer else "an odd number"
+                elif self.only_even:
+                    prefix = "an odd integer" if self.only_integer else "an even number"
                 else:
-                    prefix = "an odd number" if self._only_odd else "a number"
+                    prefix = "an integer" if self.only_integer else "a number"
             raise InvalidArgumentError(
                 'Invalid value for "{}". Must be {} '.format(arg_name, prefix)
-                + "between {} and {}.".format(self._min_value, self._max_value)
+                + "between {} and {}.".format(self.min_value, self.max_value)
             )
         return arg
+
+    def accept(self, other):
+        if isinstance(other, Number):
+            if self.min_value <= other.min_value and self.max_value >= other.max_value:
+                flag = True
+                if not other.only_odd and self.only_odd:
+                    flag = False
+                if not other.only_even and self.only_even:
+                    flag = False
+                if not other.only_integer and self.only_integer:
+                    flag = False
+                return flag
+        return False
 
 
 class Option(Validator):
@@ -180,6 +209,11 @@ class Option(Validator):
             )
         else:
             return arg
+
+    def accept(self, other):
+        return isinstance(other, Option) and all(
+            [opt in self.options for opt in other.options]
+        )
 
 
 class Method(Validator):
@@ -246,6 +280,11 @@ class Method(Validator):
 
         return arg
 
+    def accept(self, other):
+        return isinstance(other, Method) and all(
+            [opt in self.methods for opt in other.methods]
+        )
+
 
 class Type(Validator):
     """
@@ -269,6 +308,9 @@ class Type(Validator):
             )
         return arg
 
+    def accept(self, other):
+        return isinstance(other, Type) and self.arg_type == other.arg_type
+
 
 class List(Validator):
     """
@@ -282,8 +324,8 @@ class List(Validator):
     """
 
     def __init__(self, validator, length=None, default=None):
-        self._validator = validator
-        self._length = length
+        self.validator = validator
+        self.length = length
         super().__init__(default=default)
 
     def validate(self, arg_name, kwargs, inside_list=False):
@@ -292,13 +334,19 @@ class List(Validator):
             raise InvalidArgumentError(
                 'Invalid value for "{}". Must be a list or tuple.'.format(arg_name)
             )
-        if self._length is not None and len(arg) != self._length:
+        if self.length is not None and len(arg) != self.length:
             raise InvalidArgumentError(
                 'Invalid value for "{}". Must be {} elements long.'.format(
-                    arg_name, self._length
+                    arg_name, self.length
                 )
             )
 
         for e in list(arg):
-            self._validator.validate(arg_name, {arg_name: e}, inside_list=True)
+            self.validator.validate(arg_name, {arg_name: e}, inside_list=True)
         return arg
+
+    def accept(self, other):
+        if isinstance(other, List):
+            if self.length() >= other.length():
+                return self.validator.accept(other.length())
+        return False
