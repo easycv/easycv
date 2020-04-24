@@ -14,9 +14,9 @@ def auto_compute(decorated):
     need the updated image array to function properly."""
 
     @wraps(decorated)
-    def wrapper(image, *args):
+    def wrapper(image, *args, **kwargs):
         image.compute(in_place=True)
-        return decorated(image, *args)
+        return decorated(image, *args, **kwargs)
 
     return wrapper
 
