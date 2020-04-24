@@ -68,8 +68,8 @@ class Validator:
 
     def accept(self, other):
         """
-        Every Validator should override this method. This method should check if the validator
-        given can be accepted with the self validator parameters
+        Every Validator should override this method. This method should check if the given
+        validator can be accepted with the current validator parameters.
 
         :param other: Instance of a validator
         :type other: :class:`str`
@@ -91,7 +91,7 @@ class Regex(Validator):
     """
 
     def __init__(self, pattern, *flags, description=None, default=None):
-        self._pattern = pattern
+        self.pattern = pattern
         self._description = description
         self._regex = re.compile(pattern, *flags)
         super().__init__(default=default)
@@ -108,10 +108,13 @@ class Regex(Validator):
             else:
                 raise InvalidArgumentError(
                     'Invalid value for "{}". '.format(arg_name)
-                    + 'Must satisfy this regex pattern "{}.'.format(self._pattern)
+                    + 'Must satisfy this regex pattern "{}.'.format(self.pattern)
                 )
         else:
             return arg
+
+    def accept(self, other):
+        return isinstance(other, Regex) and self.pattern == other.pattern
 
 
 class Number(Validator):
@@ -347,6 +350,6 @@ class List(Validator):
 
     def accept(self, other):
         if isinstance(other, List):
-            if self.length() >= other.length():
-                return self.validator.accept(other.length())
+            if self.length() == other.length():
+                return self.validator.accept(other.validator)
         return False
