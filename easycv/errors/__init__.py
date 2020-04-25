@@ -2,6 +2,7 @@ from easycv.errors.transforms import (
     InvalidArgumentError,
     ArgumentNotProvidedError,
     InvalidMethodError,
+    InvalidSelectionError,
 )
 from easycv.errors.io import (
     InvalidPathError,
@@ -12,11 +13,12 @@ from easycv.errors.io import (
 
 
 __all__ = [
-    InvalidArgumentError,
-    ArgumentNotProvidedError,
-    InvalidPathError,
-    ImageDownloadError,
-    ImageDecodeError,
-    InvalidMethodError,
-    ImageSaveError,
+    "InvalidArgumentError",
+    "InvalidSelectionError",
+    "ArgumentNotProvidedError",
+    "InvalidPathError",
+    "ImageDownloadError",
+    "ImageDecodeError",
+    "InvalidMethodError",
+    "ImageSaveError",
 ]

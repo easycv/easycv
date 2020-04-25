@@ -6,7 +6,7 @@ from easycv.transforms.filter import Blur, Sharpen
 from easycv.transforms.color import GrayScale, FilterChannels
 from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
-
+from easycv.transforms.selectors import Select
 
 transforms = [
     Blur,
@@ -20,6 +20,7 @@ transforms = [
     Rescale,
     Resize,
     Rotate,
+    Select,
     Sharpen,
     Translate,
 ]

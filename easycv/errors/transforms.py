@@ -21,3 +21,10 @@ class InvalidMethodError(Exception):
                 ", ".join(str(arg) for arg in args)
             )
         )
+
+
+class InvalidSelectionError(Exception):
+    """Raised when an invalid selection is made in a selector"""
+
+    def __init__(self, msg):
+        super().__init__("Invalid selection. {}".format(msg))
