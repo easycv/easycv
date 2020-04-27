@@ -18,7 +18,7 @@ class Gradient(Transform):
     :type size: :class:`int`, optional
     """
 
-    default_args = {
+    inputs = {
         "method": Method({"sobel": ["axis", "size"], "laplace": []}, default="sobel"),
         "axis": Option(["both", "x", "y"], default=0),
         "size": Number(
@@ -49,7 +49,7 @@ class GradientAngle(Transform):
     :type size: :class:`int`, optional
     """
 
-    default_args = {
+    inputs = {
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
         )
@@ -74,7 +74,7 @@ class Canny(Transform):
     :type size: :class:`int`, optional
     """
 
-    default_args = {
+    inputs = {
         "low": Number(min_value=1, max_value=255, only_integer=True, default=100),
         "high": Number(min_value=1, max_value=255, only_integer=True, default=200),
         "size": Number(

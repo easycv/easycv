@@ -68,7 +68,7 @@ class Rescale(Transform):
         :type method: :class:`str`, optional
     """
 
-    default_args = {
+    inputs = {
         "fx": Number(min_value=0),
         "fy": Number(min_value=0),
         "method": Method(
@@ -108,7 +108,7 @@ class Rotate(Transform):
             :type original: :class:`bool`, optional
         """
 
-    default_args = {
+    inputs = {
         "degrees": Number(),
         "scale": Number(default=1),
         "center": List(
@@ -152,7 +152,7 @@ class Crop(Transform):
         :type original: :class:`bool`, optional
     """
 
-    default_args = {
+    inputs = {
         "box": List(Number(min_value=0), length=4),
         "original": Type(bool, default=False),
     }
@@ -193,7 +193,7 @@ class Translate(Transform):
         :type y: :class:`int`, optional
     """
 
-    default_args = {"x": Number(default=0), "y": Number(default=0)}
+    inputs = {"x": Number(default=0), "y": Number(default=0)}
 
     def apply(self, image, **kwargs):
         height, width = image.shape[:2]

@@ -27,7 +27,7 @@ class FilterChannels(Transform):
     :type scheme: :class:`str`, optional
     """
 
-    default_args = {
+    inputs = {
         "channels": List(Number(min_value=0, max_value=2, only_integer=True)),
         "scheme": Option(["rgb", "bgr"], default=0),
     }

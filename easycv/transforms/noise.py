@@ -36,7 +36,7 @@ class Noise(Transform):
         :type salt_vs_pepper: :class:`float`, optional
     """
 
-    default_args = {
+    inputs = {
         "method": Method(
             {
                 "gaussian": ["mean", "var"],

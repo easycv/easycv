@@ -11,19 +11,21 @@ class Metadata(type):
 
 
 class Transform(metaclass=Metadata):
-    default_args = {}
+    inputs = {}
+    outputs = {}
+
     method_name = None
 
     def __init__(self, **kwargs):
-        methods = self.default_args.get("method")
+        methods = self.inputs.get("method")
         if methods is not None and methods.contains_allowed:
-            methods.add_unspecified_allowed_args(self.default_args.keys())
-        elif any(arg not in self.default_args for arg in kwargs):
+            methods.add_unspecified_allowed_args(self.inputs.keys())
+        elif any(arg not in self.inputs for arg in kwargs):
             msg = 'Invalid arguments for transform "{}". '.format(
                 self.__class__.__name__
             )
-            if self.default_args:
-                msg += "Allowed arguments: {}".format(", ".join(self.default_args))
+            if self.inputs:
+                msg += "Allowed arguments: {}".format(", ".join(self.inputs))
             else:
                 msg += "{} takes no arguments.".format(self.__class__.__name__)
             raise InvalidArgumentError(msg)
@@ -73,51 +75,48 @@ class Transform(metaclass=Metadata):
             if methods.contains_allowed:
                 valid_arguments = methods.allowed_args(method)
             else:
-                valid_arguments = list(self.default_args.keys())
+                valid_arguments = list(self.inputs.keys())
                 valid_arguments.remove("method")
         else:
-            valid_arguments = self.default_args.keys()
+            valid_arguments = self.inputs.keys()
 
         for arg in valid_arguments:
-            validator = self.default_args[arg]
+            validator = self.inputs[arg]
             arguments[arg] = validator.check(arg, kwargs)
 
         return arguments
 
     @property
     def default_values(self):
-        return {
-            arg_name: self.default_args[arg_name].default
-            for arg_name in self.default_args
-        }
+        return {arg_name: self.inputs[arg_name].default for arg_name in self.inputs}
 
     @classmethod
     def add_unspecified_allowed_args(cls):
-        method_validator = cls.default_args.get("method")
+        method_validator = cls.inputs.get("method")
         if method_validator is not None and method_validator.contains_allowed:
-            method_validator.add_unspecified_allowed_args(cls.default_args)
+            method_validator.add_unspecified_allowed_args(cls.inputs)
 
     @classmethod
     def get_default_values(cls, method=None):
         default_values = {}
         if method is not None:
-            method_validator = cls.default_args["method"]
+            method_validator = cls.inputs["method"]
             if method_validator.contains_allowed:
                 arguments = method_validator.allowed_args(method)
             else:
-                arguments = cls.default_args
+                arguments = cls.inputs
         else:
-            arguments = cls.default_args
+            arguments = cls.inputs
 
         for argument in arguments:
             if method is None or argument != "method":
-                default_values[argument] = cls.default_args[argument].default
+                default_values[argument] = cls.inputs[argument].default
 
         return default_values
 
     @classmethod
     def get_methods(cls):
-        method_validator = cls.default_args.get("method")
+        method_validator = cls.inputs.get("method")
         if method_validator is not None:
             return method_validator.allowed_methods
         return []

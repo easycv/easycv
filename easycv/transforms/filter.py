@@ -28,7 +28,7 @@ class Blur(Transform):
     :type truncate: :class:`int`, optional
     """
 
-    default_args = {
+    inputs = {
         "method": Method(
             {
                 "uniform": [],
@@ -76,7 +76,7 @@ class Sharpen(Transform):
     :type multichannel: :class:`bool`
     """
 
-    default_args = {
+    inputs = {
         "sigma": Number(min_value=0, default=1),
         "amount": Number(default=1),
         "multichannel": Type(bool, default=False),

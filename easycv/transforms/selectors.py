@@ -13,7 +13,7 @@ mpl.use("Qt5Agg")
 
 class Select(Transform):
 
-    default_args = {
+    inputs = {
         "method": Method(
             {"rectangle": [], "point": ["n"], "ellipse": []}, default="rectangle"
         ),
