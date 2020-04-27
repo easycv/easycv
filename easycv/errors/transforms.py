@@ -23,6 +23,20 @@ class InvalidMethodError(Exception):
         )
 
 
+class UnsupportedArgumentError(Exception):
+    """Raised when a transform is created with an unsupported argument"""
+
+    def __init__(self, transform):
+        msg = 'Invalid arguments for transform "{}". '.format(
+            transform.__class__.__name__
+        )
+        if transform.inputs:
+            msg += "Allowed arguments: {}".format(", ".join(transform.inputs))
+        else:
+            msg += "{} takes no arguments.".format(transform.__class__.__name__)
+        super().__init__(msg)
+
+
 class InvalidSelectionError(Exception):
     """Raised when an invalid selection is made in a selector"""
 
