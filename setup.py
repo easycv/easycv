@@ -31,7 +31,7 @@ setup(
         "matplotlib",
         "opencv-python",
         "scikit-image",
-        "PyQt5",
+        "pyqt5",
     ],
     classifiers=[
         "Intended Audience :: Developers",
