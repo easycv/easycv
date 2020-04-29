@@ -2,7 +2,7 @@ import cv2
 from skimage.filters import unsharp_mask
 
 from easycv.transforms.base import Transform
-from easycv.validators import Method, Number, Type
+from easycv.validators import Number, Type
 
 
 class Blur(Transform):
@@ -28,16 +28,15 @@ class Blur(Transform):
     :type truncate: :class:`int`, optional
     """
 
-    inputs = {
-        "method": Method(
-            {
-                "uniform": [],
-                "gaussian": ["sigma", "truncate"],
-                "median": [],
-                "bilateral": ["sigma_color", "sigma_space"],
-            },
-            default="gaussian",
-        ),
+    methods = {
+        "uniform": {"arguments": ["size"]},
+        "gaussian": {"arguments": ["size", "sigma", "truncate"]},
+        "median": {"arguments": ["size"]},
+        "bilateral": {"arguments": ["sigma_color", "sigma_space"]},
+    }
+    default_method = "gaussian"
+
+    arguments = {
         "size": Number(min_value=1, only_integer=True, only_odd=True, default="auto"),
         "sigma": Number(min_value=0, default=0),
         "sigma_color": Number(min_value=0, default=75),
@@ -76,7 +75,7 @@ class Sharpen(Transform):
     :type multichannel: :class:`bool`
     """
 
-    inputs = {
+    arguments = {
         "sigma": Number(min_value=0, default=1),
         "amount": Number(default=1),
         "multichannel": Type(bool, default=False),

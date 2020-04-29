@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from easycv.transforms.base import Transform
-from easycv.validators import Method, Number
+from easycv.validators import Number, List, Custom
 from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
@@ -12,12 +12,23 @@ mpl.use("Qt5Agg")
 
 
 class Select(Transform):
+    methods = {
+        "rectangle": {"arguments": [], "outputs": ["rectangle"]},
+        "point": {"arguments": ["n"], "outputs": ["points"]},
+        "ellipse": {"arguments": [], "outputs": ["ellipse"]},
+    }
+    default_method = "rectangle"
 
-    inputs = {
-        "method": Method(
-            {"rectangle": [], "point": ["n"], "ellipse": []}, default="rectangle"
-        ),
+    arguments = {
         "n": Number(only_integer=True, min_value=0, default=2),
+    }
+
+    outputs = {
+        "rectangle": List(
+            List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
+        "ellipse": Custom(lambda x: True),  # Placeholder
+        "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
     def apply(self, image, **kwargs):

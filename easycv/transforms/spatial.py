@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Type, Method
+from easycv.validators import Number, List, Type
 from easycv.utils import interpolation_methods
 
 
@@ -26,12 +26,12 @@ class Resize(Transform):
     :type method: :class:`str`, optional
     """
 
-    default_args = {
+    methods = ["auto", "nearest", "linear", "area", "cubic", "lanczos4"]
+    default_method = "auto"
+
+    arguments = {
         "width": Number(min_value=0, only_integer=True),
         "height": Number(min_value=0, only_integer=True),
-        "method": Method(
-            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default="auto"
-        ),
     }
 
     def apply(self, image, **kwargs):
@@ -68,12 +68,12 @@ class Rescale(Transform):
         :type method: :class:`str`, optional
     """
 
-    inputs = {
+    methods = ["auto", "nearest", "linear", "area", "cubic", "lanczos4"]
+    default_method = "auto"
+
+    arguments = {
         "fx": Number(min_value=0),
         "fy": Number(min_value=0),
-        "method": Method(
-            ["auto", "nearest", "linear", "area", "cubic", "lanczos4"], default="auto"
-        ),
     }
 
     def apply(self, image, **kwargs):
@@ -108,7 +108,7 @@ class Rotate(Transform):
             :type original: :class:`bool`, optional
         """
 
-    inputs = {
+    arguments = {
         "degrees": Number(),
         "scale": Number(default=1),
         "center": List(
@@ -152,17 +152,19 @@ class Crop(Transform):
         :type original: :class:`bool`, optional
     """
 
-    inputs = {
-        "box": List(Number(min_value=0), length=4),
+    arguments = {
+        "rectangle": List(
+            List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
         "original": Type(bool, default=False),
     }
 
     def apply(self, image, **kwargs):
         lx, rx, ty, by = (
-            kwargs["box"][0],
-            kwargs["box"][1],
-            kwargs["box"][2],
-            kwargs["box"][3],
+            kwargs["rectangle"][0],
+            kwargs["rectangle"][1],
+            kwargs["rectangle"][2],
+            kwargs["rectangle"][3],
         )
 
         #  crops the image keeping the original size
@@ -193,7 +195,7 @@ class Translate(Transform):
         :type y: :class:`int`, optional
     """
 
-    inputs = {"x": Number(default=0), "y": Number(default=0)}
+    arguments = {"x": Number(default=0), "y": Number(default=0)}
 
     def apply(self, image, **kwargs):
         height, width = image.shape[:2]

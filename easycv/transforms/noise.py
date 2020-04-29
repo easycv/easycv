@@ -1,6 +1,6 @@
 from easycv.transforms.base import Transform
 
-from easycv.validators import Number, Type, Method
+from easycv.validators import Number, Type
 from skimage.util import random_noise
 
 
@@ -36,18 +36,17 @@ class Noise(Transform):
         :type salt_vs_pepper: :class:`float`, optional
     """
 
-    inputs = {
-        "method": Method(
-            {
-                "gaussian": ["mean", "var"],
-                "salt": ["amount"],
-                "pepper": ["amount"],
-                "sp": ["amount", "salt_vs_pepper"],
-                "poisson": [],
-            },
-            name="mode",
-            default="gaussian",
-        ),
+    methods = {
+        "gaussian": {"arguments": ["mean", "var", "seed", "clip"]},
+        "salt": {"arguments": ["amount", "seed", "clip"]},
+        "pepper": {"arguments": ["amount", "seed", "clip"]},
+        "sp": {"arguments": ["amount", "salt_vs_pepper", "seed", "clip"]},
+        "poisson": {"arguments": ["seed", "clip"]},
+    }
+    method_name = "mode"
+    default_method = "gaussian"
+
+    arguments = {
         "seed": Number(min_value=0, max_value=2 ** 32 - 1, default=False),
         "clip": Type(bool, default=True),
         "mean": Number(default=0),
