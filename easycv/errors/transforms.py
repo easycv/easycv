@@ -12,6 +12,14 @@ class InvalidArgumentError(Exception):
         super().__init__(message)
 
 
+class ValidatorError(Exception):
+    def __init__(self, desc):
+        self.desc = desc
+
+    def get_description(self):
+        return self.desc
+
+
 class InvalidMethodError(Exception):
     """Raised when a transform is called with an invalid method"""
 
