@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from easycv.validators import Method, Number, Option
+from easycv.validators import Number, Option
 from easycv.transforms.base import Transform
 from easycv.transforms.color import GrayScale
 
@@ -18,8 +18,10 @@ class Gradient(Transform):
     :type size: :class:`int`, optional
     """
 
-    inputs = {
-        "method": Method({"sobel": ["axis", "size"], "laplace": []}, default="sobel"),
+    methods = {"sobel": {"arguments": ["axis", "size"]}, "laplace": {}}
+    default_method = "sobel"
+
+    arguments = {
         "axis": Option(["both", "x", "y"], default=0),
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
@@ -49,7 +51,7 @@ class GradientAngle(Transform):
     :type size: :class:`int`, optional
     """
 
-    inputs = {
+    arguments = {
         "size": Number(
             min_value=1, max_value=31, only_integer=True, only_odd=True, default=5
         )
@@ -74,7 +76,7 @@ class Canny(Transform):
     :type size: :class:`int`, optional
     """
 
-    inputs = {
+    arguments = {
         "low": Number(min_value=1, max_value=255, only_integer=True, default=100),
         "high": Number(min_value=1, max_value=255, only_integer=True, default=200),
         "size": Number(
