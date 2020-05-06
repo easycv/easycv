@@ -10,7 +10,7 @@ from copy import copy
 
 
 class Metadata(type):
-    exclude = {"apply", "default_args"}
+    exclude = {"apply", "arguments", "method_name", "methods", "default_method"}
 
     def __dir__(cls):
         return list(set(cls.__dict__.keys()) - cls.exclude)
@@ -26,8 +26,8 @@ class Transform(metaclass=Metadata):
 
     def __init__(self, **kwargs):
         self._method = self._extract_method(kwargs)
-        self.arguments = self._extract_attribute("arguments")
-        self.outputs = self._extract_attribute("outputs")
+        self.arguments = self._extract_attribute("arguments", self._method)
+        self.outputs = self._extract_attribute("outputs", self._method)
 
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)
@@ -35,7 +35,8 @@ class Transform(metaclass=Metadata):
         self._args = {"method": self._method}
         for arg in kwargs:
             validator = self.arguments[arg]
-            self._args[arg] = validator.check(arg, kwargs)
+            validator.check(arg, kwargs[arg])
+            self._args[arg] = kwargs[arg]
 
         self._unspecified = [arg for arg in self.arguments if arg not in kwargs]
         self._required = [
@@ -55,11 +56,11 @@ class Transform(metaclass=Metadata):
 
     def can_be_forwarded(self, name, validator):
         if name in self._unspecified:
-            return self.arguments[name].accept(validator)
+            return self.arguments[name].accepts(validator)
         return False
 
     def _extract_method(self, kwargs):
-        if self.contains_methods:
+        if self.contains_methods():
             method = self.default_method
             if "method" in kwargs:
                 method = kwargs.pop("method")
@@ -71,24 +72,25 @@ class Transform(metaclass=Metadata):
         else:
             return None
 
-    def _extract_attribute(self, name):
-        collection = self.arguments if name == "arguments" else self.outputs
+    @classmethod
+    def contains_methods(cls):
+        return cls.methods is not None
+
+    @classmethod
+    def _extract_attribute(cls, name, method):
+        collection = cls.arguments if name == "arguments" else cls.outputs
         if collection is not None:
             to_keep = collection.keys()
-            if self.contains_methods and isinstance(self.methods, dict):
-                if self.methods[self._method] is None:
+            if cls.contains_methods() and isinstance(cls.methods, dict):
+                if cls.methods[method] is None:
                     to_keep = []
-                elif len(self.methods[self._method]) > 0:
-                    args = self.methods[self._method].get(name)
+                elif len(cls.methods[method]) > 0:
+                    args = cls.methods[method].get(name)
                     if args is not None:
                         to_keep = args
             return {key: collection[key] for key in to_keep}
         else:
             return {}
-
-    @property
-    def contains_methods(self):
-        return self.methods is not None
 
     @property
     def contains_outputs(self):
@@ -115,6 +117,7 @@ class Transform(metaclass=Metadata):
         return isinstance(other, Transform) and self.args() == other.args()
 
     def __repr__(self):
+        self.initialize()
         return str(self)
 
     def __str__(self):
@@ -133,58 +136,22 @@ class Transform(metaclass=Metadata):
     def copy(self):
         return copy(self)
 
-    def _get_arguments(self, kwargs, methods):
-        arguments = {}
-        if methods is not None:
-            self.method_name = methods.method_name
-            method = methods.check("method", kwargs)
-            arguments[self.method_name] = method
-
-            if methods.contains_allowed:
-                valid_arguments = methods.allowed_args(method)
-            else:
-                valid_arguments = list(self.arguments.keys())
-                valid_arguments.remove("method")
-        else:
-            valid_arguments = self.arguments.keys()
-
-        for arg in valid_arguments:
-            validator = self.arguments[arg]
-            arguments[arg] = validator.check(arg, kwargs)
-
-        return arguments
-
-    @property
-    def default_values(self):
-        return {
-            arg_name: self.arguments[arg_name].default for arg_name in self.arguments
-        }
-
     @classmethod
     def get_default_values(cls, method=None):
-        default_values = {}
-        if method is not None:
-            method_validator = cls.arguments["method"]
-            if method_validator.contains_allowed:
-                arguments = method_validator.allowed_args(method)
-            else:
-                arguments = cls.arguments
+        if method is None:
+            args = cls.arguments
         else:
-            arguments = cls.arguments
-
+            args = cls._extract_attribute("arguments", method)
+        default_values = {}
         if cls.arguments is not None:
-            for argument in arguments:
-                if method is None or argument != "method":
-                    default_values[argument] = cls.arguments[argument].default
+            for argument in args:
+                default_values[argument] = args[argument].default
 
         return default_values
 
     @classmethod
     def get_methods(cls):
-        method_validator = cls.arguments.get("method")
-        if method_validator is not None:
-            return method_validator.allowed_methods
-        return []
+        return list(cls.methods) if cls.methods is not None else []
 
     def apply(self, image, **kwargs):
         return image

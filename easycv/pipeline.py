@@ -97,7 +97,7 @@ class Pipeline:
                 outputs[i] = output
 
             return outputs[len(self._transforms) - 1]
-        return image
+        return {"image": image}
 
     @property
     def name(self):

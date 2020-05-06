@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Custom
+from easycv.validators import Number, List
 from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
@@ -40,7 +40,11 @@ class Select(Transform):
         "rectangle": List(
             List(Number(min_value=0, only_integer=True), length=2), length=2
         ),
-        "ellipse": Custom(lambda x: True),  # Placeholder
+        "ellipse": List(
+            List(Number(only_integer=True, min_value=0), length=2),
+            Number(only_integer=True, min_value=0),
+            Number(only_integer=True, min_value=0),
+        ),
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
@@ -122,7 +126,7 @@ class Select(Transform):
             center = [round(x) for x in selector.S.to_draw.get_center()]
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select an ellipse.")
-            return {"center": center, "width": width, "height": height}
+            return {"ellipse": [center, width, height]}
         else:
             if len(res) != kwargs["n"]:
                 raise InvalidSelectionError(

@@ -7,6 +7,7 @@ from easycv.lazy import Lazy, auto_compute
 from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 from easycv.output import Output
+from easycv.transforms.base import Transform
 
 
 class Image(Lazy):
@@ -39,7 +40,7 @@ class Image(Lazy):
             self._source = source
             self._img = None
         else:
-            self._img = self._pending(get_image_array(source))
+            self._img = self._pending(get_image_array(source))["image"]
             self._pending.clear()
 
     @classmethod
@@ -122,36 +123,32 @@ class Image(Lazy):
         :rtype: :class:`~eascv.image.Image`
         """
 
+        if isinstance(transform, Transform):
+            transform.initialize()
         outputs = transform.outputs
-        if self._lazy and outputs != {}:
-            self.load()
-            return Output(self._img, pending=transform)
 
-        if in_place:
-            if self._lazy:
-                self._pending.add_transform(transform)
+        if self._lazy:
+            if outputs == {}:  # If transform outputs an image
+                if in_place:
+                    self._pending.add_transform(transform)
+                else:
+                    new_source = self._img if self.loaded else self._source
+                    new_image = Image(new_source, pipeline=self._pending, lazy=True)
+                    new_image.apply(transform, in_place=True)
+                    return new_image
             else:
                 self.load()
-                output = transform(self._img)
-
-                if len(output) == 1 and "image" in output:
-                    self._img = output["image"]
-                else:
-                    return output
-
+                return Output(self._img, pending=transform)
         else:
-            if self._lazy:
-                new_source = self._img if self.loaded else self._source
-                new_image = Image(new_source, pipeline=self._pending, lazy=True)
-                new_image.apply(transform, in_place=True)
-                return new_image
-            else:
-                self.load()
-                output = transform(self._img)
-                if len(output) == 1 and "image" in output:
-                    return Image(output["image"])
+            self.load()
+            if outputs == {}:  # If transform outputs an image
+                new_image = transform(self._img)["image"]
+                if in_place:
+                    self._img = new_image
                 else:
-                    return Image(output)
+                    return Image(new_image)
+            else:
+                return transform(self._img)
 
     def compute(self, in_place=True):
         """
@@ -167,11 +164,11 @@ class Image(Lazy):
         """
         self.load()
         if in_place:
-            self._img = self._pending(self._img)
+            self._img = self._pending(self._img)["image"]
             self._pending.clear()
             return self
         else:
-            result = Image(self._pending(self._img), lazy=True)
+            result = Image(self._pending(self._img)["image"], lazy=True)
             return result
 
     @auto_compute

@@ -3,7 +3,6 @@ import re
 import numpy as np
 
 from easycv.errors import (
-    ArgumentNotProvidedError,
     InvalidArgumentError,
     ValidatorError,
 )
@@ -27,7 +26,7 @@ class Validator:
     def default(self):
         return self._default
 
-    def check(self, arg_name, kwargs):
+    def check(self, name, value):
         """
         Check if an argument satisfies the Validator conditions. If the default value is None
         the Validator throws an :class:`~easycv.errors.transforms.ArgumentNotProvidedError`, \
@@ -40,22 +39,14 @@ class Validator:
         :param kwargs: Dictionary containing all arguments and their values
         :type kwargs: :class:`dict`
         """
-        arg = kwargs.get(arg_name)
-        if arg is None:
-            if self._default is None:
-                raise ArgumentNotProvidedError(arg_name)
-            else:
-                return self._default
-        else:
-            try:
-                return self.validate(arg_name, kwargs)
-            except ValidatorError as VE:
-                raise InvalidArgumentError(
-                    "Invalid value for {}. Must ".format(arg_name)
-                    + VE.get_description()
-                )
+        try:
+            return self.validate(value)
+        except ValidatorError as e:
+            raise InvalidArgumentError(
+                "Invalid value for {}. Must {}.".format(name, e.get_description())
+            )
 
-    def validate(self, arg_name, kwargs, inside_list=False):
+    def validate(self, value):
         """
         Every Validator should override this method. This method should validate the arguments \
         named `arg_name` from `kwargs` by checking if it verifies the constrains. If the argument \
@@ -110,28 +101,13 @@ class Regex(Validator):
             self.desc = "satisfy this regex pattern: ".format(self.pattern)
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
-        match = self._regex.match(str(arg))
+    def validate(self, value):
+        match = self._regex.match(str(value))
         if not bool(match):
             raise ValidatorError(self.desc) from None
-        else:
-            return arg
 
     def accepts(self, other):
         return isinstance(other, Regex) and self.pattern == other.pattern
-
-
-class Custom(Validator):
-    def __init__(self, checker, default=None):
-        self.checker = checker
-        super().__init__(default=default)
-
-    def validate(self, arg_name, kwargs, inside_list=False):
-        return self.checker(kwargs.get(arg_name))
-
-    def accept(self, other):
-        return isinstance(other, Custom) and self.checker == other.checker
 
 
 class Number(Validator):
@@ -176,17 +152,15 @@ class Number(Validator):
         )
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
+    def validate(self, value):
         allowed_types = (int,) if self.only_integer else (int, float)
         if (
-            not isinstance(arg, allowed_types)
-            or not (self.min_value <= arg <= self.max_value)
-            or (self.only_odd and arg % 2 == 0)
-            or (self.only_even and arg % 2 != 0)
+            not isinstance(value, allowed_types)
+            or not (self.min_value <= value <= self.max_value)
+            or (self.only_odd and value % 2 == 0)
+            or (self.only_even and value % 2 != 0)
         ):
             raise ValidatorError(self.desc) from None
-        return arg
 
     def accepts(self, other):
         if isinstance(other, Number):
@@ -216,12 +190,9 @@ class Option(Validator):
         self.desc = "be one of the following values: {}".format(", ".join(self.options))
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
-        if arg not in self.options:
+    def validate(self, value):
+        if value not in self.options:
             raise ValidatorError(self.desc) from None
-        else:
-            return arg
 
     def accepts(self, other):
         return isinstance(other, Option) and all(
@@ -242,27 +213,15 @@ class Type(Validator):
         self.desc = "be an object from class {}".format(self.arg_type.__name__)
         super().__init__(default=default)
 
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
-        if not isinstance(arg, self.arg_type):
+    def validate(self, value):
+        if not isinstance(value, self.arg_type):
             raise ValidatorError(self.desc) from None
-        return arg
 
     def accepts(self, other):
         return isinstance(other, Type) and self.arg_type == other.arg_type
 
 
 class List(Validator):
-    """
-    Validator to check if an argument is a list/tuple or a numpy array containing only elements \
-    that satisfies the given Validator.
-
-    :param validator: Validator to apply to each element
-    :type validator: :class:`Validator`
-    :param length: Mandatory length, defaults to None
-    :type length: :class:`int`, optional
-    """
-
     def __init__(self, *validators, length=float("inf"), default=None):
         super().__init__(default=default)
         if len(validators) != 1:
@@ -274,24 +233,23 @@ class List(Validator):
             self.length = length
             self.validator = validators[0]
 
-    def validate(self, arg_name, kwargs, inside_list=False):
-        arg = kwargs.get(arg_name)
-        if not isinstance(arg, (list, tuple, np.ndarray)):
+    def validate(self, value):
+        if not isinstance(value, (list, tuple, np.ndarray)):
             raise ValidatorError("be list or tuple.") from None
-        if self.length is not None and len(arg) != self.length:
+        if self.length is not None and len(value) != self.length:
             raise ValidatorError("be {} elements long.".format(self.length)) from None
         if not self.manual:
             try:
-                for e in list(arg):
-                    self.validator.validate(arg_name, {arg_name: e}, inside_list=True)
+                for e in list(value):
+                    self.validator.validate(e)
             except ValidatorError as VE:
                 raise ValidatorError(
                     "be a list/tuple where each element is " + VE.get_description()
                 ) from None
         else:
             try:
-                for e, validator in zip(list(arg), self.validator):
-                    validator.validate(arg_name, {arg_name: e}, inside_list=True)
+                for e, validator in zip(list(value), self.validator):
+                    validator.validate(e)
             except ValidatorError:
                 list_description = (
                     self.description() + " where: " + self.elem_description()
@@ -299,7 +257,6 @@ class List(Validator):
                 raise ValidatorError(
                     "be a list/tuple composed of {} ".format(list_description)
                 ) from None
-        return arg
 
     def accepts(self, other):
         if isinstance(other, List):
