@@ -95,13 +95,13 @@ class Select(Transform):
             x, y = selector.S.to_draw.get_xy()
             x = int(round(x))
             y = int(round(y))
-            width = round(selector.S.to_draw.get_width())
-            height = round(selector.S.to_draw.get_height())
+            width = int(round(selector.S.to_draw.get_width()))
+            height = int(round(selector.S.to_draw.get_height()))
 
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select a rectangle.")
 
-            return [(x, y), (x + width, y + height)]
+            return {"rectangle": [(x, y), (x + width, y + height)]}
 
         elif kwargs["method"] == "ellipse":
             width = round(selector.S.to_draw.width)

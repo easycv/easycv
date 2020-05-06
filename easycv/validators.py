@@ -75,6 +75,10 @@ class Validator:
         """
         pass
 
+    @property
+    def required(self):
+        return self._default is None
+
 
 class Regex(Validator):
     """

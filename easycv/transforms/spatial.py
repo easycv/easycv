@@ -161,10 +161,10 @@ class Crop(Transform):
 
     def apply(self, image, **kwargs):
         lx, rx, ty, by = (
-            kwargs["rectangle"][0],
-            kwargs["rectangle"][1],
-            kwargs["rectangle"][2],
-            kwargs["rectangle"][3],
+            kwargs["rectangle"][0][0],
+            kwargs["rectangle"][1][0],
+            kwargs["rectangle"][0][1],
+            kwargs["rectangle"][1][1],
         )
 
         #  crops the image keeping the original size
@@ -195,7 +195,10 @@ class Translate(Transform):
         :type y: :class:`int`, optional
     """
 
-    arguments = {"x": Number(default=0), "y": Number(default=0)}
+    arguments = {
+        "x": Number(min_value=0, only_integer=True, default=0),
+        "y": Number(min_value=0, only_integer=True, default=0),
+    }
 
     def apply(self, image, **kwargs):
         height, width = image.shape[:2]

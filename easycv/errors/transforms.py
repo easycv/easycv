@@ -26,15 +26,28 @@ class InvalidMethodError(Exception):
 class UnsupportedArgumentError(Exception):
     """Raised when a transform is created with an unsupported argument"""
 
-    def __init__(self, transform):
-        msg = 'Invalid arguments for transform "{}". '.format(
-            transform.__class__.__name__
-        )
-        if transform.inputs:
-            msg += "Allowed arguments: {}".format(", ".join(transform.inputs))
+    def __init__(self, transform, method=None):
+        if method is None:
+            name = 'transform "{}"'.format(transform.__class__.__name__)
         else:
-            msg += "{} takes no arguments.".format(transform.__class__.__name__)
+            name = 'method "{}"'.format(method)
+        msg = "Invalid arguments for {}. ".format(name)
+        if transform.arguments:
+            msg += "Allowed arguments: {}".format(", ".join(transform.arguments))
+        else:
+            msg += "{} takes no arguments.".format(name.title())
         super().__init__(msg)
+
+
+class MissingArgumentError(Exception):
+    """Raised when an transform is executed while missing a mandatory argument"""
+
+    def __init__(self, arg, index=None):
+        if index is None:
+            msg = "Transform "
+        else:
+            msg = "Transform at index {} ".format(index)
+        super().__init__(msg + "missing mandatory argument: {}".format(arg))
 
 
 class InvalidSelectionError(Exception):

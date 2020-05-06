@@ -4,12 +4,14 @@ from easycv.errors.transforms import (
     InvalidMethodError,
     InvalidSelectionError,
     UnsupportedArgumentError,
+    MissingArgumentError,
 )
 from easycv.errors.io import (
     InvalidPathError,
     ImageDownloadError,
     ImageDecodeError,
     ImageSaveError,
+    InvalidPipelineInputSource,
 )
 
 
@@ -23,4 +25,6 @@ __all__ = [
     "InvalidMethodError",
     "ImageSaveError",
     "UnsupportedArgumentError",
+    "InvalidPipelineInputSource",
+    "MissingArgumentError",
 ]

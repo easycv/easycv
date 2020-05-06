@@ -4,7 +4,6 @@ import inspect
 
 class Output(Lazy):
     def __init__(self, image, pending):
-        self.a = 1
         self._image = image
         self._outputs = pending.outputs
         self._computed = False
@@ -20,7 +19,8 @@ class Output(Lazy):
 
     def __getattr__(self, item):
         if item in self._outputs and inspect.stack()[1][3] != "getattr_paths":
-            return self.compute()[item]
+            self.compute()
+            return self._outputs[item]
 
     def __dir__(self):
         return list(super().__dir__()) + [str(k) for k in self.fields] + ["a"]
@@ -32,6 +32,7 @@ class Output(Lazy):
 
         if inplace:
             self._outputs = output
+            self._computed = True
         else:
             return output
 

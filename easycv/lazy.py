@@ -17,7 +17,17 @@ class Lazy:
         if pending is not None:
             self._pending = pending.copy()
         else:
-            self._pending = Pipeline([])
+            self._pending = Pipeline([], name="pending")
+
+    @property
+    def pending(self):
+        """
+        Returns all pending transforms/pipelines.
+
+        :return: Pipeline containing pending operations
+        :rtype: :class:`~eascv.pipeline.Pipeline`
+        """
+        return self._pending
 
     def compute(self, inplace=False):
         pass

@@ -2,26 +2,14 @@ import io
 import os
 
 import numpy as np
-from functools import wraps
 
-from easycv.pipeline import Pipeline
+from easycv.lazy import Lazy, auto_compute
 from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
+from easycv.output import Output
 
 
-def auto_compute(decorated):
-    """ Decorator to auto-compute **image** before running method. Add this to all methods that \
-    need the updated image array to function properly."""
-
-    @wraps(decorated)
-    def wrapper(image, *args, **kwargs):
-        image.compute(in_place=True)
-        return decorated(image, *args, **kwargs)
-
-    return wrapper
-
-
-class Image:
+class Image(Lazy):
     """
     This class represents an image.
     Images can be created from a NumPy array containing the **image** data, a path to a local file
@@ -41,20 +29,18 @@ class Image:
     """
 
     def __init__(self, source, pipeline=None, lazy=False):
-        self._lazy = lazy
-        self._pending = (
-            Pipeline([], name="pending") if pipeline is None else pipeline.copy()
-        )
-
         if not valid_image_source(source):
             raise InvalidImageInputSource()
+
+        super().__init__(pending=pipeline)
+        self._lazy = lazy
 
         if self._lazy:
             self._source = source
             self._img = None
         else:
-            self._pending.clear()
             self._img = self._pending(get_image_array(source))
+            self._pending.clear()
 
     @classmethod
     def random(cls, lazy=False):
@@ -76,16 +62,6 @@ class Image:
         :rtype: :class:`bool`
         """
         return self._img is not None
-
-    @property
-    def pending(self):
-        """
-        Returns all pending transforms/pipelines.
-
-        :return: Pipeline containing pending operations
-        :rtype: :class:`~eascv.pipeline.Pipeline`
-        """
-        return self._pending
 
     @property
     @auto_compute
@@ -145,21 +121,37 @@ class Image:
         :return: The new **image** if `in_place` is *False*
         :rtype: :class:`~eascv.image.Image`
         """
+
+        outputs = transform.outputs
+        if self._lazy and outputs != {}:
+            self.load()
+            return Output(self._img, pending=transform)
+
         if in_place:
             if self._lazy:
                 self._pending.add_transform(transform)
             else:
                 self.load()
-                self._img = transform(self._img)
+                output = transform(self._img)
+
+                if len(output) == 1 and "image" in output:
+                    self._img = output["image"]
+                else:
+                    return output
+
         else:
             if self._lazy:
-                new_pending = self._pending.copy()
-                new_pending.add_transform(transform)
                 new_source = self._img if self.loaded else self._source
-                return Image(new_source, pipeline=new_pending, lazy=True)
+                new_image = Image(new_source, pipeline=self._pending, lazy=True)
+                new_image.apply(transform, in_place=True)
+                return new_image
             else:
                 self.load()
-                return Image(transform(self._img))
+                output = transform(self._img)
+                if len(output) == 1 and "image" in output:
+                    return Image(output["image"])
+                else:
+                    return Image(output)
 
     def compute(self, in_place=True):
         """
