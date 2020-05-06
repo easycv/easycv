@@ -8,8 +8,8 @@ from easycv.utils import interpolation_methods
 
 class Resize(Transform):
     """
-    Resize is a transform that resizes an image to a given width and height. Currently supported \
-    interpolation methods:
+    Resize is a transform that resizes an image to a given width, height or a multiplier for \
+    either. Currently supported interpolation methods:
 
     \t**∙ auto** - Automatically detect the best method\n
     \t**∙ nearest** - Nearest-neighbor interpolation\n
@@ -18,11 +18,11 @@ class Resize(Transform):
     \t**∙ cubic** - Bicubic interpolation (4x4 pixel neighborhood)\n
     \t**∙ lanczos4** - Lanczos interpolation (8x8 pixel neighborhood)\n
 
-    :param width: Output image width
+    :param width: Output image width or scalar of width
     :type width: :class:`int`
-    :param height: Output image height
+    :param height: Output image height or scalar of width
     :type height: :class:`int`
-    :param method: Interpolation method, defaults to auto
+    :param method: Resize method, defaults to auto
     :type method: :class:`str`, optional
     """
     methods = {
@@ -42,58 +42,20 @@ class Resize(Transform):
 
     def apply(self, image, **kwargs):
         if kwargs["method"] == "auto":
-            if image.shape[1] * image.shape[0] < kwargs["width"] * kwargs["height"]:
+            if image.shape[1] * image.shape[0] < kwargs["width"] * kwargs["height"] or \
+                    kwargs["fx"] * kwargs["fy"] > 1:
                 kwargs["method"] = "cubic"
             else:
                 kwargs["method"] = "area"
+        if kwargs["width"][-1] == "x":
+            kwargs["width"] = int(image.shape[1] * float(kwargs["width"][:-1]))
+
+        if kwargs["height"][-1] == "x":
+            kwargs["height"] = int(image.shape[1] * float(kwargs["height"][:-1]))
 
         return cv2.resize(
             image,
             (kwargs["width"], kwargs["height"]),
-            interpolation=interpolation_methods[kwargs["method"]],
-        )
-
-
-class Rescale(Transform):
-    """
-        Rescale is a transform that rescales an image by a scale factor for x and y. Currently \
-        supported interpolation methods:
-
-        \t**∙ auto** - Automatically detect the best method\n
-        \t**∙ nearest** - Nearest-neighbor interpolation\n
-        \t**∙ linear** - Bilinear interpolation\n
-        \t**∙ area** - Pixel area relation interpolation\n
-        \t**∙ cubic** - Bicubic interpolation (4x4 pixel neighborhood)\n
-        \t**∙ lanczos4** - Lanczos interpolation (8x8 pixel neighborhood)\n
-
-        :param fx: Scale factor along the horizontal axis
-        :type fx: :class:`float`
-        :param fy: Scale factor along the vertical axis
-        :type fy: :class:`float`
-        :param method: Interpolation method, defaults to auto
-        :type method: :class:`str`, optional
-    """
-
-    methods = ["auto", "nearest", "linear", "area", "cubic", "lanczos4"]
-    default_method = "auto"
-
-    arguments = {
-        "fx": Number(min_value=0),
-        "fy": Number(min_value=0),
-    }
-
-    def apply(self, image, **kwargs):
-        if kwargs["method"] == "auto":
-            if kwargs["fx"] * kwargs["fy"] > 1:
-                kwargs["method"] = "cubic"
-            else:
-                kwargs["method"] = "area"
-
-        return cv2.resize(
-            image,
-            (0, 0),
-            fx=kwargs["fx"],
-            fy=kwargs["fy"],
             interpolation=interpolation_methods[kwargs["method"]],
         )
 
