@@ -1,17 +1,30 @@
 from matplotlib.widgets import RectangleSelector, EllipseSelector
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
+import os
 from easycv.transforms.base import Transform
 from easycv.validators import Number, List, Custom
 from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
 
-mpl.use("Qt5Agg")
+if "DISPLAY" in os.environ:
+    mpl.use("Qt5Agg")
 
 
 class Select(Transform):
+    """
+    Select is a transform that allows the user to select a shape in an image. Currently \
+    supported shapes:
+
+    \t**∙ rectangle** - Rectangle Shape\n
+    \t**∙ point** - Point\n
+    \t**∙ ellipse** - Ellipse Shape\n
+
+    :param n: Number of points to select
+    :type n: :class:`int`
+"""
+
     methods = {
         "rectangle": {"arguments": [], "outputs": ["rectangle"]},
         "point": {"arguments": ["n"], "outputs": ["points"]},

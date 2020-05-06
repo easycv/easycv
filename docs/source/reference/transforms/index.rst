@@ -8,4 +8,5 @@ Transforms
    edges
    filter
    noise
+   selectors
    spatial
