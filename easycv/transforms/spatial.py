@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Type
+from easycv.validators import Number, List, Type, Regex
 from easycv.utils import interpolation_methods
 
 
@@ -25,13 +25,19 @@ class Resize(Transform):
     :param method: Interpolation method, defaults to auto
     :type method: :class:`str`, optional
     """
-
-    methods = ["auto", "nearest", "linear", "area", "cubic", "lanczos4"]
+    methods = {
+        "auto": {"arguments": []},
+        "nearest": {"arguments": []},
+        "linear": {"arguments": []},
+        "area": {"arguments": []},
+        "cubic": {"arguments": []},
+        "lanczos4": {"arguments": []}
+    }
     default_method = "auto"
-
+    regex_description = 'float with a x at the the end or an int with or without a x at the end '
     arguments = {
-        "width": Number(min_value=0, only_integer=True),
-        "height": Number(min_value=0, only_integer=True),
+        "width": Regex(r'^(([\d]+([x])?)|(([\d]*[.])?[\d]+x))$', description=regex_description),
+        "height": Regex(r'^(([\d]+([x])?)|(([\d]*[.])?[\d]+x))$', description=regex_description),
     }
 
     def apply(self, image, **kwargs):
