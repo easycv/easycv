@@ -222,7 +222,7 @@ class Type(Validator):
 
 
 class List(Validator):
-    def __init__(self, *validators, length=float("inf"), default=None):
+    def __init__(self, *validators, length=None, default=None):
         super().__init__(default=default)
         if len(validators) != 1:
             self.validator = []

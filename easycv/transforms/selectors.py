@@ -8,9 +8,6 @@ from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
 
-if "DISPLAY" in os.environ:
-    mpl.use("Qt5Agg")
-
 
 class Select(Transform):
     """
@@ -49,6 +46,8 @@ class Select(Transform):
     }
 
     def apply(self, image, **kwargs):
+        if "DISPLAY" in os.environ:
+            mpl.use("Qt5Agg")
         fig, current_ax = plt.subplots()
         plt.tick_params(
             axis="both",
