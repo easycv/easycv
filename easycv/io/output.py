@@ -1,6 +1,8 @@
 import cv2
 from PIL import Image
 from matplotlib import pyplot as plt
+import matplotlib as mpl
+import sys
 
 from easycv.utils import nearest_square_side
 
@@ -75,6 +77,8 @@ def show_grid(images, titles=(), size=(10, 10), shape="auto"):
     :param shape: Shape of grid
     :type shape: :class:`tuple`, optional
     """
+    if 'ipykernel' in sys.modules:
+        mpl.use("module://ipykernel.pylab.backend_inline")
     if shape == "auto":
         side = nearest_square_side(len(images))
         shape = (side, side)
