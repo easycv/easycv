@@ -1,3 +1,4 @@
+from easycv.image import Image
 from easycv.errors import MissingArgumentError
 
 
@@ -56,3 +57,35 @@ class Operation:
         if arg_name in self.arguments and arg_name not in self._args:
             return self.arguments[arg_name].accepts(validator)
         return False
+
+    def run(self, image_array):
+        """
+        This method applies the operation to the given image array and returns the result.
+        All operations must to override this method.
+
+        :param image_array: Image represented as an array
+        :type image_array: :class:`~numpy:numpy.ndarray`
+        :return: The image as an array after the operation
+        :rtype: :class:`~numpy:numpy.ndarray`
+        """
+        pass
+
+    def apply(self, image, in_place=False):
+        """
+        This method returns the image after applying this operation. If image is an array it \
+        returns the altered array. If it is an `Image` object returns a new `Image` with this \
+        operation applied. If in_place id *True* it alters the given object instead of creating a \
+        new one.
+
+        :param image: Image object or image as an array
+        :type image: :class:`~easycv.image.Image`/:class:`~numpy:numpy.ndarray`
+        :param in_place: `True` to change the *image* object, `False` to return a new one with \
+        the transform applied, defaults to `False`
+        :type in_place: :class:`bool`, optional
+        :return: The image after the operation
+        :rtype: :class:`~easycv.image.Image`/:class:`~numpy:numpy.ndarray`
+        """
+        if image is Image:
+            return image.apply(self, in_place=in_place)
+        else:
+            return self.run(image)
