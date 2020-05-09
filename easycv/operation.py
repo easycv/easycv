@@ -1,3 +1,5 @@
+from copy import copy
+
 from easycv.image import Image
 from easycv.errors import MissingArgumentError
 
@@ -89,3 +91,6 @@ class Operation:
             return image.apply(self, in_place=in_place)
         else:
             return self.run(image)
+
+    def copy(self):
+        return copy(self)
