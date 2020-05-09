@@ -71,7 +71,6 @@ class Operation:
         :return: The image as an array after the operation
         :rtype: :class:`~numpy:numpy.ndarray`
         """
-        pass
 
     def apply(self, image, in_place=False):
         """
