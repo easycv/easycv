@@ -36,9 +36,9 @@ def valid_image_source(source):
     :return: Returns `True` if a source is valid, otherwise `False`
     :rtype: :class:`bool`
     """
-    source_is_str = isinstance(source, str)
-    source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array)
+    source_is_str = source is str
+    source_is_array = source is np.ndarray
+    return source_is_str or (source_is_array and valid_image_array(source))
 
 
 def open_image(path):
