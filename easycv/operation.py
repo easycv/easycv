@@ -1,6 +1,6 @@
 from copy import copy
 
-from easycv.image import Image
+import easycv.image
 from easycv.errors import MissingArgumentError
 
 
@@ -36,11 +36,12 @@ class Operation:
         """
 
         for arg in self.arguments:
-            if self.arguments[arg].default is None:
-                if arg not in self._args and arg not in forwarded:
+            if arg not in self._args:
+                if self.arguments[arg].default is None and arg not in forwarded:
                     raise MissingArgumentError(arg, index=index)
-            validator = self.arguments[arg]
-            self._args[arg] = validator.default
+
+                validator = self.arguments[arg]
+                self._args[arg] = validator.default
 
     def can_be_forwarded(self, arg_name, validator):
         """
@@ -87,7 +88,7 @@ class Operation:
         :return: The image after the operation
         :rtype: :class:`~easycv.image.Image`/:class:`~numpy:numpy.ndarray`
         """
-        if image is Image:
+        if isinstance(image, easycv.image.Image):
             return image.apply(self, in_place=in_place)
         else:
             return self.run(image)
