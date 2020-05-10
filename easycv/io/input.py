@@ -38,7 +38,7 @@ def valid_image_source(source):
     """
     source_is_str = isinstance(source, str)
     source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array)
+    return source_is_str or (source_is_array and valid_image_array(source))
 
 
 def open_image(path):
