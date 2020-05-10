@@ -1,11 +1,9 @@
 import cv2
+from math import ceil
 
 
 def nearest_square_side(n):
-    i = 1
-    while i ** 2 < n:
-        i += 1
-    return i
+    return ceil(n ** 0.5)
 
 
 interpolation_methods = {
