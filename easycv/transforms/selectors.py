@@ -45,7 +45,7 @@ class Select(Transform):
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         if "DISPLAY" in os.environ:
             mpl.use("Qt5Agg")
         fig, current_ax = plt.subplots()

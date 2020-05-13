@@ -10,7 +10,7 @@ class GrayScale(Transform):
     GrayScale is a transform that turns an image into grayscale.
     """
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         if len(image.shape) == 3:
             return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         else:
@@ -32,7 +32,7 @@ class FilterChannels(Transform):
         "scheme": Option(["rgb", "bgr"], default=0),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         channels = np.array(kwargs["channels"])
         if kwargs["scheme"] == "rgb":
             channels = 2 - channels

@@ -44,7 +44,7 @@ class Blur(Transform):
         "truncate": Number(min_value=0, default=4),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         if kwargs["method"] == "uniform":
             return cv2.blur(image, (kwargs["size"], kwargs["size"]))
         elif kwargs["method"] == "gaussian":
@@ -81,6 +81,6 @@ class Sharpen(Transform):
         "multichannel": Type(bool, default=False),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         kwargs["radius"] = kwargs.pop("sigma")
         return unsharp_mask(image, preserve_range=True, **kwargs)

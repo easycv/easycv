@@ -47,7 +47,7 @@ class Resize(Transform):
         ),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         if kwargs["method"] == "auto":
             if (
                 image.shape[1] * image.shape[0] < kwargs["width"] * kwargs["height"]
@@ -94,7 +94,7 @@ class Rotate(Transform):
         "original": Type(bool, default=True),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         (h, w) = image.shape[:2]
         if kwargs["center"] == "auto" or kwargs["original"]:
             kwargs["center"] = (w / 2, h / 2)
@@ -136,7 +136,7 @@ class Crop(Transform):
         "original": Type(bool, default=False),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         lx, rx, ty, by = (
             kwargs["rectangle"][0][0],
             kwargs["rectangle"][1][0],
@@ -177,7 +177,7 @@ class Translate(Transform):
         "y": Number(min_value=0, only_integer=True, default=0),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         height, width = image.shape[:2]
 
         matrix = np.float32([[1, 0, kwargs["x"]], [0, 1, kwargs["y"]]])
