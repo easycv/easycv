@@ -1,6 +1,6 @@
 import os
 import pickle
-from copy import copy
+from copy import deepcopy
 
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
@@ -32,7 +32,7 @@ class Pipeline:
             self.outputs = source[-1].outputs if source else {}
 
             self._name = name if name else "pipeline"
-            self._transforms = source
+            self._transforms = deepcopy(source)
 
         elif isinstance(source, str) and os.path.isfile(source):
             try:
@@ -168,9 +168,9 @@ class Pipeline:
         """
         if isinstance(transform, (Transform, Pipeline)):
             if index is not None:
-                self._transforms.insert(index, transform)
+                self._transforms.insert(index, transform.copy())
             else:
-                self._transforms.append(transform)
+                self._transforms.append(transform.copy())
             self.forwards = Pipeline._calculate_forwards(self._transforms)
         else:
             raise ValueError("Pipelines can only contain Transforms or other pipelines")
@@ -191,7 +191,7 @@ class Pipeline:
         :return: Pipeline copy
         :rtype: :class:`~cv.pipeline.Pipeline`
         """
-        return copy(self)
+        return deepcopy(self)
 
     def clear(self):
         """
