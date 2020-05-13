@@ -12,10 +12,14 @@ def auto_compute(decorated):
     return wrapper
 
 
-class Lazy:
-    def __init__(self, pending=None):
-        if pending is not None:
-            self._pending = pending.copy()
+class Collection:
+    def __init__(self, pending=None, lazy=False):
+        self._lazy = lazy
+
+        if pending is not None and not (
+            isinstance(pending, Pipeline) and pending.num_transforms() == 0
+        ):
+            self._pending = Pipeline([pending], name="pending")
         else:
             self._pending = Pipeline([], name="pending")
 
