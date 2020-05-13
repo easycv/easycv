@@ -55,7 +55,7 @@ class Noise(Transform):
         "salt_vs_pepper": Number(min_value=0, max_value=1, default=0.5),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         kwargs["seed"] = kwargs["seed"] if kwargs["seed"] else None
         if kwargs["mode"] == "gaussian":
             kwargs["var"] = kwargs["var"] / 255

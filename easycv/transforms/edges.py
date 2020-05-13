@@ -28,7 +28,7 @@ class Gradient(Transform):
         ),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         image = GrayScale().process(image)
         if kwargs["method"] == "sobel":
             if kwargs["axis"] == "both":
@@ -57,7 +57,7 @@ class GradientAngle(Transform):
         )
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         image = GrayScale().process(image)
         x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
         y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs["size"])
@@ -84,5 +84,5 @@ class Canny(Transform):
         ),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         return cv2.Canny(image, kwargs["low"], kwargs["high"], kwargs["size"])

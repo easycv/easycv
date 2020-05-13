@@ -35,7 +35,7 @@ class Transform(Operation, metaclass=Metadata):
             self._args[arg] = kwargs[arg]
 
     def __call__(self, image, forwarded=None):
-        output = self.process(image, forwarded=forwarded)
+        output = self.run(image, forwarded=forwarded)
 
         if isinstance(output, dict):
             return output
@@ -125,11 +125,14 @@ class Transform(Operation, metaclass=Metadata):
         else:
             return None
 
-    def process(self, image, forwarded=None):
+    def process(self, image, **kwargs):
+        pass
+
+    def run(self, image, forwarded=None):
         if forwarded is None:
             args = self._args
         else:
             args = self._args.copy()
             args.update(forwarded)
 
-        return self.apply(image, **args)
+        return self.process(image, **args)
