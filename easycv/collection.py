@@ -16,10 +16,12 @@ class Collection:
     def __init__(self, pending=None, lazy=False):
         self._lazy = lazy
 
-        if pending is not None and not (
-            isinstance(pending, Pipeline) and pending.num_transforms() == 0
-        ):
-            self._pending = Pipeline([pending], name="pending")
+        if pending is not None:
+            if isinstance(pending, Pipeline):
+                self._pending = pending.copy()
+                self._pending._name = "pending"
+            else:
+                self._pending = Pipeline([pending], name="pending")
         else:
             self._pending = Pipeline([], name="pending")
 
