@@ -1,15 +1,14 @@
 import easycv.image
 from easycv.errors.list import InvalidListInputSource
 from easycv.io import show_grid
-from easycv.collection import Collection, auto_compute
-from easycv.output import Output
+from easycv.collection import auto_compute
 from easycv.transforms.base import Transform
 from copy import deepcopy
 import ray
 
 
-class List(Collection):
-    def __init__(self, images, pipeline=None, lazy=False):
+class List:
+    def __init__(self, images):
         if isinstance(images, list) and all(
             isinstance(i, easycv.image.Image) for i in images
         ):
@@ -17,105 +16,82 @@ class List(Collection):
         else:
             raise InvalidListInputSource()
 
-        super().__init__(pending=pipeline, lazy=lazy)
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._images[key]
+        elif isinstance(key, slice):
+            return List(self._images[key])
+        else:
+            raise TypeError("Unsupported type to access List.")
 
     @classmethod
     def random(cls, length, lazy=False):
         images = [easycv.image.Image.random(lazy=lazy) for _ in range(length)]
-        return cls(images, lazy=lazy)
+        return cls(images)
 
     @staticmethod
     @ray.remote
-    def _process(operation, image):
+    def _process_image(operation, image):
         image.load()
         return operation.apply(image)
 
-    def apply(self, operation, in_place=False, parallel=False):
-        if parallel and not ray.is_initialized():
+    @staticmethod
+    @ray.remote
+    def _compute_image(image):
+        return image.compute(image, in_place=False)
+
+    @staticmethod
+    def start():
+        if not ray.is_initialized():
             ray.init(logging_level=40)
+
+    def __len__(self):
+        return len(self._images)
+
+    @staticmethod
+    def shutdown():
+        ray.shutdown()
+
+    def apply(self, operation, in_place=False, parallel=False):
+        if parallel:
+            self.start()
 
         if isinstance(operation, Transform):
             operation.initialize()
         outputs = operation.outputs
 
-        if self._lazy:
-            if outputs == {}:  # If transform outputs an image
-                if in_place:
-                    self._pending.add_transform(operation)
-                else:
-                    new_list = List(
-                        deepcopy(self._images), pipeline=self._pending, lazy=True
-                    )
-                    new_list.apply(operation, in_place=True)
-                    return new_list
-            else:
-                result = []
-                for img in self._images:
-                    img.load()
-                    result.append(Output(img.array, pending=operation))
-                return result
+        if parallel:
+            operation = ray.put(operation)
+            operation_outputs = ray.get(
+                [self._process_image.remote(operation, i) for i in self._images]
+            )
         else:
-            if outputs == {}:  # If transform outputs an image
-                if in_place:
-                    if parallel:
-                        self._images = ray.get(
-                            [self._process.remote(operation, i) for i in self._images]
-                        )
-                    else:
-                        for image in self._images:
-                            image.apply(operation, in_place=True)
-                else:
-                    if parallel:
-                        operation = ray.put(operation)
-                        result = ray.get(
-                            [self._process.remote(operation, i) for i in self._images]
-                        )
-                    else:
-                        result = []
-                        for image in self._images:
-                            result.append(image.apply(operation))
-                    return List(result)
+            operation_outputs = [operation.apply(i) for i in self._images]
+
+        if outputs == {}:
+            if in_place:
+                self._images = operation_outputs
             else:
-                if parallel:
-                    operation = ray.put(operation)
-                    return ray.get(
-                        [self._process.remote(operation, i) for i in self._images]
-                    )
-                else:
-                    result = []
-                    for img in self._images:
-                        img.load()
-                        result.append(img.apply(operation))
-                    return result
+                return List(operation_outputs)
+        else:
+            return operation_outputs
 
     def compute(self, in_place=True, parallel=False):
-        if parallel and not ray.is_initialized():
-            ray.init(logging_level=40)
+        if parallel:
+            self.start()
+
+        if parallel:
+            images = ray.get([self._compute_image.remote(i) for i in self._images])
+        else:
+            images = [i.compute(in_place=False) for i in self._images]
 
         if in_place:
-            if parallel:
-                operation = ray.put(self._pending)
-                self._images = ray.get(
-                    [self._process.remote(operation, i) for i in self._images]
-                )
-            else:
-                result = []
-                for img in self._images:
-                    result.append(img.apply(self._pending))
-                self._pending.clear()
+            self._images = images
         else:
-            if parallel:
-                operation = ray.put(self._pending)
-                return List(
-                    ray.get([self._process.remote(operation, i) for i in self._images])
-                )
-            else:
-                result = []
-                for img in self._images:
-                    img = img.apply(self._pending)
-                    img.compute()
-                    result.append(img)
-                return List(result)
+            return List(images)
+
+    def copy(self):
+        return deepcopy(self)
 
     @auto_compute
     def show(self, size=(10, 10), shape="auto"):
