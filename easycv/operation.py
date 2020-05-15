@@ -61,13 +61,15 @@ class Operation:
             return self.arguments[arg_name].accepts(validator)
         return False
 
-    def run(self, image_array):
+    def run(self, image_array, forwarded=None):
         """
         This method applies the operation to the given image array and returns the result.
         All operations must to override this method.
 
         :param image_array: Image represented as an array
         :type image_array: :class:`~numpy:numpy.ndarray`
+        :param forwarded: Forwarded arguments, defaults to None
+        :type forwarded: :class:`dict`, optional
         :return: The image as an array after the operation
         :rtype: :class:`~numpy:numpy.ndarray`
         """
