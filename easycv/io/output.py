@@ -52,7 +52,6 @@ def show(img_arr, name="Image", wait_time=500):
     :param wait_time: Time between cicles of waiting for end key, defaults to 500
     :type wait_time: :class:`int`, optional
     """
-    img_arr = prepare_image_to_output(img_arr, rgb=False)
     cv2.namedWindow(name, cv2.WINDOW_KEEPRATIO)
     cv2.resizeWindow(name, img_arr.shape[0], img_arr.shape[1])
     cv2.imshow(name, img_arr)
@@ -77,7 +76,7 @@ def show_grid(images, titles=(), size=(10, 10), shape="auto"):
     :param shape: Shape of grid
     :type shape: :class:`tuple`, optional
     """
-    if 'ipykernel' in sys.modules:
+    if "ipykernel" in sys.modules:
         mpl.use("module://ipykernel.pylab.backend_inline")
     if shape == "auto":
         side = nearest_square_side(len(images))
