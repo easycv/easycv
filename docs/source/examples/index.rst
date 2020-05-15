@@ -7,3 +7,4 @@ Examples
    transforms/index.rst
    image.ipynb
    pipeline.ipynb
+   list.ipynb
