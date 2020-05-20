@@ -9,7 +9,14 @@ from easycv.errors import (
 
 
 class Metadata(type):
-    exclude = {"apply", "arguments", "method_name", "methods", "default_method"}
+    exclude = {
+        "apply",
+        "arguments",
+        "outputs",
+        "method_name",
+        "methods",
+        "default_method",
+    }
 
     def __dir__(cls):
         return list(set(cls.__dict__.keys()) - cls.exclude)
