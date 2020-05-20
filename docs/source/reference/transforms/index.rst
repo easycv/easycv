@@ -10,3 +10,4 @@ Transforms
    noise
    selectors
    spatial
+   perspective

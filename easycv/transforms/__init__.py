@@ -3,9 +3,10 @@ from types import FunctionType
 
 from easycv.transforms.noise import Noise
 from easycv.transforms.filter import Blur, Sharpen
+from easycv.transforms.perspective import Perspective
 from easycv.transforms.color import GrayScale, FilterChannels
-from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
+from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
 
 transforms = [
@@ -17,6 +18,7 @@ transforms = [
     GradientAngle,
     GrayScale,
     Noise,
+    Perspective,
     Resize,
     Rotate,
     Select,
