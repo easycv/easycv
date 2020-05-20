@@ -94,7 +94,7 @@ class Select(Transform):
 
             def onclick(event):
                 if event.xdata is not None and event.ydata is not None:
-                    res.append((round(event.xdata), round(event.ydata)))
+                    res.append((int(event.xdata), int(event.ydata)))
                     plt.plot(
                         event.xdata, event.ydata, marker="o", color="cyan", markersize=4
                     )
@@ -131,4 +131,4 @@ class Select(Transform):
                 raise InvalidSelectionError(
                     "Must select {} points.".format(kwargs["n"])
                 )
-            return res
+            return {"points": res}
