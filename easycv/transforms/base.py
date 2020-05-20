@@ -28,7 +28,11 @@ class Transform(Operation, metaclass=Metadata):
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)
 
-        self._args = {self.method_name: self._method}
+        if self._method is not None:
+            self._args = {self.method_name: self._method}
+        else:
+            self._args = {}
+
         for arg in kwargs:
             validator = self.arguments[arg]
             validator.check(arg, kwargs[arg])
