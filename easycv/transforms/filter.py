@@ -2,6 +2,8 @@ import cv2
 from skimage.filters import unsharp_mask
 
 from easycv.transforms.base import Transform
+from easycv.transforms.color import GrayScale
+from easycv.transforms.edges import Gradient
 from easycv.validators import Number, Type
 
 
@@ -32,7 +34,7 @@ class Blur(Transform):
         "uniform": {"arguments": ["size"]},
         "gaussian": {"arguments": ["size", "sigma", "truncate"]},
         "median": {"arguments": ["size"]},
-        "bilateral": {"arguments": ["sigma_color", "sigma_space"]},
+        "bilateral": {"arguments": ["size", "sigma_color", "sigma_space"]},
     }
     default_method = "gaussian"
 
@@ -61,6 +63,27 @@ class Blur(Transform):
             return cv2.bilateralFilter(
                 image, kwargs["size"], kwargs["sigma_color"], kwargs["sigma_space"]
             )
+
+
+class Sharpness(Transform):
+    """
+    Sharpness is a transform that measures how sharpen an image is. The sharpness metric is \
+    calculated using the laplacian of the image. Images are classified as sharpen when above a \
+    certain value of sharpness given by the threshold.
+
+    :param threshold: Threshold to classify images as sharpen, defaults to 100
+    :type threshold: :class:`int`/:class:`float`, optional
+    """
+
+    arguments = {"threshold": Number(min_value=0, default=100)}
+
+    outputs = {"sharpness": Number(), "sharpen": Type(bool)}
+
+    def process(self, image, **kwargs):
+        grayscale = GrayScale().apply(image)
+        variance = Gradient(method="laplace").apply(grayscale).var()
+        sharpen = variance >= kwargs["threshold"]
+        return {"sharpness": variance, "sharpen": sharpen}
 
 
 class Sharpen(Transform):

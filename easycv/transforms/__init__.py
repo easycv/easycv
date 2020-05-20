@@ -2,7 +2,7 @@ from functools import wraps
 from types import FunctionType
 
 from easycv.transforms.noise import Noise
-from easycv.transforms.filter import Blur, Sharpen
+from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
 from easycv.transforms.color import GrayScale, FilterChannels
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
@@ -23,6 +23,7 @@ transforms = [
     Rotate,
     Select,
     Sharpen,
+    Sharpness,
     Translate,
 ]
 

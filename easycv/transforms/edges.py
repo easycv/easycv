@@ -29,7 +29,7 @@ class Gradient(Transform):
     }
 
     def process(self, image, **kwargs):
-        image = GrayScale().process(image)
+        image = GrayScale().apply(image)
         if kwargs["method"] == "sobel":
             if kwargs["axis"] == "both":
                 x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
@@ -58,7 +58,7 @@ class GradientAngle(Transform):
     }
 
     def process(self, image, **kwargs):
-        image = GrayScale().process(image)
+        image = GrayScale().apply(image)
         x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
         y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs["size"])
         return np.arctan2(x, y)
