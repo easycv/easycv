@@ -12,17 +12,13 @@ except ImportError:
 
 class Scan(Transform):
     """
-    Gradient is a transform that computes the gradient of an image.
-
-    :param axis: Axis to compute, defaults to "both" (magnitude)
-    :type axis: :class:`str`, optional
-    :param method: Gradient calculation method, defaults to "sobel"
-    :type method: :class:`str`, optional
-    :param size: Kernel size, defaults to 5
-    :type size: :class:`int`, optional
+    Scan is a transform that scans and decodes all QR codes and barcodes in a image. The \
+    transform returns the number of detections, the data encoded on each code and their bounding \
+    boxes.
     """
 
     outputs = {
+        "detections": Number(min_value=0, only_integer=True),
         "data": List(Type(str)),
         "rectangles": List(
             List(List(Number(min_value=0, only_integer=True), length=2), length=2)
@@ -39,4 +35,4 @@ class Scan(Transform):
             (x, y, width, height) = code.rect
             rectangles.append([(x, y), (x + width, y + height)])
 
-        return {"data": data, "rectangles": rectangles}
+        return {"detections": len(decoded), "data": data, "rectangles": rectangles}
