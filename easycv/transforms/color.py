@@ -50,7 +50,7 @@ class GammaCorrection(Transform):
     """
 
     arguments = {
-        "gamma": Number(min_value=1e-30, only_integer=False, default=1),
+        "gamma": Number(min_value=1e-30, default=1),
     }
 
     def process(self, image, **kwargs):
