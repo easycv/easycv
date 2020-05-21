@@ -39,3 +39,22 @@ class FilterChannels(Transform):
         if len(channels) > 0:
             image[:, :, channels] = 0
         return image
+
+
+class GammaCorrection(Transform):
+    """
+    GammaCorrection is a transform that corrects the contrast of images and displays.
+
+    :param gamma: Gamma value
+    :type gamma: :class:`Float`
+    """
+
+    arguments = {
+        "gamma": Number(min_value=1e-30, only_integer=False, default=1),
+    }
+
+    def process(self, image, **kwargs):
+        table = np.array(
+            [((i / 255.0) ** (1.0 / kwargs["gamma"])) * 255 for i in np.arange(0, 256)]
+        ).astype("uint8")
+        return cv2.LUT(image, table)
