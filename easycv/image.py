@@ -141,10 +141,10 @@ class Image(Collection):
         else:
             self.load()
             if outputs == {}:  # If transform outputs an image
-                new_image = transform(self._img)["image"]
                 if in_place:
-                    self._img = new_image
+                    self._img = transform(self._img)["image"]
                 else:
+                    new_image = transform(self._img.copy())["image"]
                     return Image(new_image)
             else:
                 return transform(self._img)
