@@ -64,18 +64,27 @@ class Cartoon(Transform):
     """
     Cartoon is a transform that creates a stylized / cartoonized image .
 
-    :param sigma_s: Determines the amount of smoothing, defaults to 150.
-    :type sigma_s: :class:`Float`, optional
-    :param sigma_r: Determines the size of regions of constant color, defaults to 0.25.
-    :type sigma_r: :class:`Float`, optional
+    :param smoothing: Determines the amount of smoothing, defaults to 150.
+    :type smoothing: :class:`Float`, optional
+    :param region_size: Determines the size of regions of constant color, defaults to 0.25.
+    :type region_size: :class:`Float`, optional
     """
 
     arguments = {
-        "sigma_s": Number(min_value=0, max_value=200, default=150),
-        "sigma_r": Number(min_value=0, max_value=1, default=0.25),
+        "smoothing": Number(min_value=0, max_value=200, default=60),
+        "region_size": Number(min_value=0, max_value=1, default=0.45),
     }
 
     def process(self, image, **kwargs):
         return cv2.stylization(
-            image, sigma_s=kwargs["sigma_s"], sigma_r=kwargs["sigma_r"]
+            image, sigma_s=kwargs["smoothing"], sigma_r=kwargs["region_size"]
         )
+
+
+class Negative(Transform):
+    """
+    Negative is a transform that inverts color and brightness in an image.
+    """
+
+    def process(self, image, **kwargs):
+        return 255 - image
