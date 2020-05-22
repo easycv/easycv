@@ -62,7 +62,7 @@ class GammaCorrection(Transform):
 
 class Negative(Transform):
     """
-    GammaCorrection is a transform that inverts color and brightness in an image.
+    Negative is a transform that inverts color and brightness in an image.
     """
 
     def process(self, image, **kwargs):
