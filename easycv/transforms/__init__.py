@@ -8,6 +8,7 @@ from easycv.transforms.color import (
     GammaCorrection,
     GrayScale,
     FilterChannels,
+    PhotoSketch,
     Negative,
     Cartoon,
 )
@@ -29,6 +30,7 @@ transforms = [
     Negative,
     Noise,
     Perspective,
+    PhotoSketch,
     Resize,
     Rotate,
     Scan,

@@ -71,12 +71,12 @@ class Negative(Transform):
 
 class Cartoon(Transform):
     """
-    Cartoon is a transform that creates a stylized / cartoonized image .
+    Cartoon is a transform that creates a stylized / cartoonized image.
 
-    :param smoothing: Determines the amount of smoothing, defaults to 150.
-    :type smoothing: :class:`Float`, optional
-    :param region_size: Determines the size of regions of constant color, defaults to 0.25.
-    :type region_size: :class:`Float`, optional
+    :param smoothing: Determines the amount of smoothing, defaults to 60.
+    :type smoothing: :class:`float`, optional
+    :param region_size: Determines the size of regions of constant color, defaults to 0.45.
+    :type region_size: :class:`float`, optional
     """
 
     arguments = {
@@ -88,3 +88,15 @@ class Cartoon(Transform):
         return cv2.stylization(
             image, sigma_s=kwargs["smoothing"], sigma_r=kwargs["region_size"]
         )
+
+
+class PhotoSketch(Transform):
+    """
+    PhotoSketch is a transform that creates a black and white pencil-like drawing.
+    """
+
+    def process(self, image, **kwargs):
+        img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        img_blur = cv2.GaussianBlur(img_gray, (21, 21), 0, 0)
+        img_blend = cv2.divide(img_gray, img_blur, scale=256)
+        return img_blend
