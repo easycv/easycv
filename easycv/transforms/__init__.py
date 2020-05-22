@@ -8,7 +8,6 @@ from easycv.transforms.color import (
     GammaCorrection,
     GrayScale,
     FilterChannels,
-    Negative,
     PhotoSketch,
 )
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
@@ -24,7 +23,6 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
-    Negative,
     Noise,
     Perspective,
     PhotoSketch,

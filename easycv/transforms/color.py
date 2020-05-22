@@ -60,15 +60,6 @@ class GammaCorrection(Transform):
         return cv2.LUT(image, table)
 
 
-class Negative(Transform):
-    """
-    Negative is a transform that inverts color and brightness in an image.
-    """
-
-    def process(self, image, **kwargs):
-        return 255 - image
-
-
 class PhotoSketch(Transform):
     """
     PhotoSketch is a transform that creates a black and white pencil-like drawing.
