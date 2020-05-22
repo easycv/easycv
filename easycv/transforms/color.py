@@ -60,6 +60,15 @@ class GammaCorrection(Transform):
         return cv2.LUT(image, table)
 
 
+class Negative(Transform):
+    """
+    Negative is a transform that inverts color and brightness in an image.
+    """
+
+    def process(self, image, **kwargs):
+        return 255 - image
+
+
 class Cartoon(Transform):
     """
     Cartoon is a transform that creates a stylized / cartoonized image .
@@ -79,12 +88,3 @@ class Cartoon(Transform):
         return cv2.stylization(
             image, sigma_s=kwargs["smoothing"], sigma_r=kwargs["region_size"]
         )
-
-
-class Negative(Transform):
-    """
-    Negative is a transform that inverts color and brightness in an image.
-    """
-
-    def process(self, image, **kwargs):
-        return 255 - image
