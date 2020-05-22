@@ -4,7 +4,7 @@ The Color module provides transforms that operate on the Image color. Examples o
 in this module can be found `here <../../examples/transforms/color.ipynb>`_.
 
 .. automodule:: easycv.transforms.color
-   :exclude-members: apply, default_args
+   :exclude-members: methods, process, arguments, outputs
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,3 +1,4 @@
+import sys
 from functools import wraps
 from types import FunctionType
 
@@ -76,14 +77,15 @@ def add_method_function(transform, method_name, default_values):
     setattr(transform, method_name, classmethod(show_args(method, exclude_method=True)))
 
 
-for transform in transforms:
-    default_values = transform.get_default_values()
-    code = "super(self.__class__,self).__init__(**kwargs['arguments'])"
-    init = create_function(
-        "temp", "self", default_values, tuple(default_values.values()), code
-    )
-    transform.__init__ = show_args(init)
+if "sphinx" not in sys.modules:
+    for transform in transforms:
+        default_values = transform.get_default_values()
+        code = "super(self.__class__, self).__init__(**kwargs['arguments'])"
+        init = create_function(
+            "temp", "self", default_values, tuple(default_values.values()), code
+        )
+        transform.__init__ = show_args(init)
 
-    for method in transform.get_methods():
-        default_values = transform.get_default_values(method=method)
-        add_method_function(transform, method, default_values)
+        for method in transform.get_methods():
+            default_values = transform.get_default_values(method=method)
+            add_method_function(transform, method, default_values)
