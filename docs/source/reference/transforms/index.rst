@@ -11,3 +11,4 @@ Transforms
    selectors
    spatial
    perspective
+   detect

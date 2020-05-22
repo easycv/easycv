@@ -13,6 +13,7 @@ from easycv.transforms.color import (
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
+from easycv.transforms.detect import Scan
 
 transforms = [
     Blur,
@@ -28,6 +29,7 @@ transforms = [
     PhotoSketch,
     Resize,
     Rotate,
+    Scan,
     Select,
     Sharpen,
     Sharpness,
