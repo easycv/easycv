@@ -58,3 +58,12 @@ class GammaCorrection(Transform):
             [((i / 255.0) ** (1.0 / kwargs["gamma"])) * 255 for i in np.arange(0, 256)]
         ).astype("uint8")
         return cv2.LUT(image, table)
+
+
+class Negative(Transform):
+    """
+    GammaCorrection is a transform that inverts color and brightness in an image.
+    """
+
+    def process(self, image, **kwargs):
+        return 255 - image
