@@ -5,11 +5,11 @@ from easycv.transforms.noise import Noise
 from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
 from easycv.transforms.color import (
-    Cartoon,
     GammaCorrection,
     GrayScale,
     FilterChannels,
     Negative,
+    Cartoon,
 )
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
