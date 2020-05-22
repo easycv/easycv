@@ -58,3 +58,24 @@ class GammaCorrection(Transform):
             [((i / 255.0) ** (1.0 / kwargs["gamma"])) * 255 for i in np.arange(0, 256)]
         ).astype("uint8")
         return cv2.LUT(image, table)
+
+
+class Cartoon(Transform):
+    """
+    Cartoon is a transform that creates a stylized / cartoonized image .
+
+    :param sigma_s: Determines the amount of smoothing, defaults to 150.
+    :type sigma_s: :class:`Float`, optional
+    :param sigma_r: Determines the size of regions of constant color, defaults to 0.25.
+    :type sigma_r: :class:`Float`, optional
+    """
+
+    arguments = {
+        "sigma_s": Number(min_value=0, max_value=200, default=150),
+        "sigma_r": Number(min_value=0, max_value=1, default=0.25),
+    }
+
+    def process(self, image, **kwargs):
+        return cv2.stylization(
+            image, sigma_s=kwargs["sigma_s"], sigma_r=kwargs["sigma_r"]
+        )
