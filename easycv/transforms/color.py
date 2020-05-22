@@ -67,3 +67,24 @@ class Negative(Transform):
 
     def process(self, image, **kwargs):
         return 255 - image
+
+
+class Cartoon(Transform):
+    """
+    Cartoon is a transform that creates a stylized / cartoonized image .
+
+    :param smoothing: Determines the amount of smoothing, defaults to 150.
+    :type smoothing: :class:`Float`, optional
+    :param region_size: Determines the size of regions of constant color, defaults to 0.25.
+    :type region_size: :class:`Float`, optional
+    """
+
+    arguments = {
+        "smoothing": Number(min_value=0, max_value=200, default=60),
+        "region_size": Number(min_value=0, max_value=1, default=0.45),
+    }
+
+    def process(self, image, **kwargs):
+        return cv2.stylization(
+            image, sigma_s=kwargs["smoothing"], sigma_r=kwargs["region_size"]
+        )
