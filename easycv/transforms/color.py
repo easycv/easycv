@@ -67,3 +67,15 @@ class Negative(Transform):
 
     def process(self, image, **kwargs):
         return 255 - image
+
+
+class PhotoSketch(Transform):
+    """
+    PhotoSketch is a transform that creates a black and white pencil-like drawing.
+    """
+
+    def process(self, image, **kwargs):
+        img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        img_blur = cv2.GaussianBlur(img_gray, (21, 21), 0, 0)
+        img_blend = cv2.divide(img_gray, img_blur, scale=256)
+        return img_blend
