@@ -4,7 +4,7 @@ The Detect module provides transforms that detect features/objects on an image. 
 module can be found `here <../../examples/transforms/detect.ipynb>`_.
 
 .. automodule:: easycv.transforms.detect
-   :exclude-members: apply, arguments, outputs
+   :exclude-members: methods, process, arguments, outputs
    :members:
    :undoc-members:
    :show-inheritance:
