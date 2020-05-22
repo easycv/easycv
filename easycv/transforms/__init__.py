@@ -9,6 +9,8 @@ from easycv.transforms.color import (
     GrayScale,
     FilterChannels,
     PhotoSketch,
+    Negative,
+    Cartoon,
 )
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
@@ -18,12 +20,14 @@ from easycv.transforms.detect import Scan
 transforms = [
     Blur,
     Canny,
+    Cartoon,
     Crop,
     FilterChannels,
     GammaCorrection,
     Gradient,
     GradientAngle,
     GrayScale,
+    Negative,
     Noise,
     Perspective,
     PhotoSketch,

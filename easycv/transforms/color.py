@@ -60,6 +60,36 @@ class GammaCorrection(Transform):
         return cv2.LUT(image, table)
 
 
+class Negative(Transform):
+    """
+    Negative is a transform that inverts color and brightness in an image.
+    """
+
+    def process(self, image, **kwargs):
+        return 255 - image
+
+
+class Cartoon(Transform):
+    """
+    Cartoon is a transform that creates a stylized / cartoonized image.
+
+    :param smoothing: Determines the amount of smoothing, defaults to 60.
+    :type smoothing: :class:`float`, optional
+    :param region_size: Determines the size of regions of constant color, defaults to 0.45.
+    :type region_size: :class:`float`, optional
+    """
+
+    arguments = {
+        "smoothing": Number(min_value=0, max_value=200, default=60),
+        "region_size": Number(min_value=0, max_value=1, default=0.45),
+    }
+
+    def process(self, image, **kwargs):
+        return cv2.stylization(
+            image, sigma_s=kwargs["smoothing"], sigma_r=kwargs["region_size"]
+        )
+
+
 class PhotoSketch(Transform):
     """
     PhotoSketch is a transform that creates a black and white pencil-like drawing.
