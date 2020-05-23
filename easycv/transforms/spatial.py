@@ -123,25 +123,26 @@ class Crop(Transform):
         Crop is a transform that crops a rectangular portion of an image, if original is True then
         the image size will be kept.
 
-        :param box: A 4-tuple defining the left, r  ight, upper, and lower pixel coordinate.
-        :type box: :class:`list`/:class:`tuple`
+        :param pt1: A 2-tuple defining the upper left point of the rectangle to be cropped.
+        :type pt1: :class:`float`
+        :param pt2: A 2-tuple defining the downwards right point of the rectangle to be cropped.
+        :type pt2: :class:`float`
         :param original: True to keep original image size, False to resize to cropped area
         :type original: :class:`bool`, optional
     """
 
     arguments = {
-        "rectangle": List(
-            List(Number(min_value=0, only_integer=True), length=2), length=2
-        ),
+        "pt1": List(Number(min_value=0, only_integer=True), length=2),
+        "pt2": List(Number(min_value=0, only_integer=True), length=2),
         "original": Type(bool, default=False),
     }
 
     def process(self, image, **kwargs):
-        lx, rx, ty, by = (
-            kwargs["rectangle"][0][0],
-            kwargs["rectangle"][1][0],
-            kwargs["rectangle"][0][1],
-            kwargs["rectangle"][1][1],
+        lx, ty, rx, by = (
+            kwargs["pt1"][0],
+            kwargs["pt1"][1],
+            kwargs["pt2"][0],
+            kwargs["pt2"][1],
         )
 
         #  crops the image keeping the original size

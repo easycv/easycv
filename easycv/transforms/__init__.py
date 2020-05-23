@@ -8,11 +8,13 @@ from easycv.transforms.color import GrayScale, FilterChannels
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
+from easycv.transforms.draw import Draw
 
 transforms = [
     Blur,
     Canny,
     Crop,
+    Draw,
     FilterChannels,
     Gradient,
     GradientAngle,

@@ -23,9 +23,9 @@ class Select(Transform):
 """
 
     methods = {
-        "rectangle": {"arguments": [], "outputs": ["rectangle"]},
+        "rectangle": {"arguments": [], "outputs": ["pt1", "pt2"]},
         "point": {"arguments": ["n"], "outputs": ["points"]},
-        "ellipse": {"arguments": [], "outputs": ["ellipse"]},
+        "ellipse": {"arguments": [], "outputs": ["center", "axes"]},
     }
     default_method = "rectangle"
 
@@ -34,14 +34,13 @@ class Select(Transform):
     }
 
     outputs = {
-        "rectangle": List(
-            List(Number(min_value=0, only_integer=True), length=2), length=2
-        ),
-        "ellipse": List(
-            List(Number(only_integer=True, min_value=0), length=2),
-            Number(only_integer=True, min_value=0),
-            Number(only_integer=True, min_value=0),
-        ),
+        # rectangle
+        "pt1": List(Number(min_value=0, only_integer=True), length=2),
+        "pt2": List(Number(min_value=0, only_integer=True), length=2),
+        # ellipse
+        "center": List(Number(only_integer=True, min_value=0), length=2),
+        "axes": List(Number(min_value=0, only_integer=True), length=2),
+        # point
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
@@ -117,15 +116,15 @@ class Select(Transform):
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select a rectangle.")
 
-            return {"rectangle": [(x, y), (x + width, y + height)]}
+            return {"pt1": (x, y), "pt2": (x + width, y + height)}
 
         elif kwargs["method"] == "ellipse":
-            width = round(selector.S.to_draw.width)
-            height = round(selector.S.to_draw.height)
-            center = [round(x) for x in selector.S.to_draw.get_center()]
+            width = int(round(selector.S.to_draw.width))
+            height = int(round(selector.S.to_draw.height))
+            center = [int(round(x)) for x in selector.S.to_draw.get_center()]
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select an ellipse.")
-            return {"ellipse": [center, width, height]}
+            return {"center": tuple(center), "axes": (width, height)}
         else:
             if len(res) != kwargs["n"]:
                 raise InvalidSelectionError(
