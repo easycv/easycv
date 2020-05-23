@@ -33,6 +33,8 @@ setup(
         "scikit-image",
         "ray",
         "pyzbar",
+        "tqdm",
+        "pyyaml",
     ],
     classifiers=[
         "Intended Audience :: Developers",

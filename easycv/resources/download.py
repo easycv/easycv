@@ -1,0 +1,77 @@
+import urllib.error as url_errors
+from urllib.request import urlopen
+
+import shutil
+
+import easycv.resources.resources as resources
+from easycv.utils import running_on_notebook
+from easycv.errors import ErrorDownloadingResource
+
+if running_on_notebook():
+    from tqdm.notebook import tqdm
+else:
+    from tqdm import tqdm
+
+
+def download_file(file, folder, chunk_size=1024, show_progress=False):
+    filename = folder / file["filename"]
+    url = file["url"]
+    try:
+        response = urlopen(url)
+        size = int(response.info().get("Content-Length").strip())
+        chunk = min(size, chunk_size)
+
+        progress_bar = downloaded_size = None
+
+        if show_progress:
+            percentage = 0
+            downloaded_size = 0
+            progress_bar = tqdm(
+                total=100,
+                desc=file["filename"],
+                bar_format="{percentage:3.0f}% {bar} {desc}",
+                leave=False,
+            )
+
+        with open(filename, "wb") as local_file:
+            while True:
+                data_chunk = response.read(chunk)
+                if not data_chunk:
+                    break
+                local_file.write(data_chunk)
+                if show_progress:
+                    downloaded_size += len(data_chunk)
+                    new_percentage = int(100 * downloaded_size / size)
+                    progress_bar.update(new_percentage - percentage)
+                    percentage = new_percentage
+
+    except (url_errors.HTTPError, url_errors.URLError) as e:
+        raise ErrorDownloadingResource(e.reason)
+
+
+def download_model(model_name, show_progress=False):
+    info = resources.load_resource_info(model_name)
+    files = info["files"]
+
+    resources_folder = resources.get_resources_folder()
+    resource_folder = resources_folder / model_name
+
+    if resource_folder.is_dir():
+        raise ValueError("Already downloaded")
+
+    resource_folder.mkdir()
+
+    try:
+        if show_progress:
+            for file in tqdm(
+                files, bar_format="{percentage:3.0f}% {bar} {n_fmt}/{total_fmt}"
+            ):
+                download_file(file, resource_folder, show_progress=True)
+        else:
+            for file in files:
+                download_file(file, resource_folder)
+
+    except Exception as e:
+        print("Abort: " + str(e))
+        print("Cleaning up...")
+        shutil.rmtree(resource_folder)
