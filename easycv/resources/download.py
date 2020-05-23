@@ -2,6 +2,7 @@ import urllib.error as url_errors
 from urllib.request import urlopen
 
 import shutil
+import hashlib
 
 import easycv.resources.resources as resources
 from easycv.utils import running_on_notebook
@@ -13,7 +14,8 @@ else:
     from tqdm import tqdm
 
 
-def download_file(file, folder, chunk_size=1024, show_progress=False):
+def download_file(file, folder, chunk_size=8192, show_progress=False):
+    file_hash = hashlib.sha256()
     filename = folder / file["filename"]
     url = file["url"]
     try:
@@ -24,7 +26,6 @@ def download_file(file, folder, chunk_size=1024, show_progress=False):
         progress_bar = downloaded_size = None
 
         if show_progress:
-            percentage = 0
             downloaded_size = 0
             progress_bar = tqdm(
                 total=100,
@@ -38,12 +39,17 @@ def download_file(file, folder, chunk_size=1024, show_progress=False):
                 data_chunk = response.read(chunk)
                 if not data_chunk:
                     break
+
                 local_file.write(data_chunk)
+                file_hash.update(data_chunk)
+
                 if show_progress:
                     downloaded_size += len(data_chunk)
-                    new_percentage = int(100 * downloaded_size / size)
-                    progress_bar.update(new_percentage - percentage)
-                    percentage = new_percentage
+                    progress_bar.n = int(100 * downloaded_size / size)
+                    progress_bar.refresh()
+
+        if file["sha256"] != file_hash.hexdigest():
+            raise RuntimeError("File hashes don't match")
 
     except (url_errors.HTTPError, url_errors.URLError) as e:
         raise ErrorDownloadingResource(e.reason)

@@ -37,13 +37,13 @@ def load_resource_info(model_name):
             print(exc)
 
 
-def get_resource(resource_name, show_progress=False):
+def get_resource(resource_name, show_progress=True):
     if resource_name in downloaded_resources():
         return get_resources_folder() / resource_name
     elif resource_name in available_resources():
         print(resource_name + " is not installed. Downloading...")
         download_model(resource_name, show_progress=show_progress)
-        get_resource(resource_name)
+        return get_resource(resource_name)
     else:
         raise InvalidResource(resource_name)
 
