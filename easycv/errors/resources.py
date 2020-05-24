@@ -5,4 +5,11 @@ class InvalidResource(Exception):
 
 class ErrorDownloadingResource(Exception):
     def __init__(self, reason):
-        super().__init__("Error downlaoding the resource. Reason: " + reason)
+        super().__init__("Error downloading the resource. Reason: " + reason)
+
+
+class FileNotInResource(Exception):
+    def __init__(self, resource_name):
+        super().__init__(
+            "Requested file not inside the resource {}.".format(resource_name)
+        )

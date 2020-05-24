@@ -15,7 +15,11 @@ from easycv.errors.io import (
     InvalidPipelineInputSource,
 )
 
-from easycv.errors.resources import ErrorDownloadingResource, InvalidResource
+from easycv.errors.resources import (
+    ErrorDownloadingResource,
+    InvalidResource,
+    FileNotInResource,
+)
 
 from easycv.errors.list import InvalidListInputSource
 
@@ -30,6 +34,7 @@ __all__ = [
     "InvalidMethodError",
     "InvalidResource",
     "ErrorDownloadingResource",
+    "FileNotInResource",
     "ImageSaveError",
     "UnsupportedArgumentError",
     "InvalidListInputSource",

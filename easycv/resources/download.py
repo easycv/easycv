@@ -8,6 +8,7 @@ import easycv.resources.resources as resources
 from easycv.utils import running_on_notebook
 from easycv.errors import ErrorDownloadingResource
 
+# Import the correct tqdm
 if running_on_notebook():
     from tqdm.notebook import tqdm
 else:
@@ -17,9 +18,9 @@ else:
 def download_file(file, folder, chunk_size=8192, show_progress=False):
     file_hash = hashlib.sha256()
     filename = folder / file["filename"]
-    url = file["url"]
+
     try:
-        response = urlopen(url)
+        response = urlopen(file["url"])
         size = int(response.info().get("Content-Length").strip())
         chunk = min(size, chunk_size)
 
@@ -55,12 +56,12 @@ def download_file(file, folder, chunk_size=8192, show_progress=False):
         raise ErrorDownloadingResource(e.reason)
 
 
-def download_model(model_name, show_progress=False):
-    info = resources.load_resource_info(model_name)
+def download_resource(resource_name, show_progress=False):
+    info = resources.load_resource_info(resource_name)
     files = info["files"]
 
     resources_folder = resources.get_resources_folder()
-    resource_folder = resources_folder / model_name
+    resource_folder = resources_folder / resource_name
 
     if resource_folder.is_dir():
         raise ValueError("Already downloaded")
@@ -77,7 +78,7 @@ def download_model(model_name, show_progress=False):
             for file in files:
                 download_file(file, resource_folder)
 
-    except Exception as e:
+    except Exception as e:  # Clear folder if something went wrong
         print("Abort: " + str(e))
         print("Cleaning up...")
         shutil.rmtree(resource_folder)
