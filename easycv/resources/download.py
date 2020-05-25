@@ -15,12 +15,10 @@ else:
     from tqdm import tqdm
 
 
-def download_file(file, folder, chunk_size=8192, show_progress=False):
+def download_file(filename, url, chunk_size=8192, show_progress=False):
     file_hash = hashlib.sha256()
-    filename = folder / file["filename"]
-
     try:
-        response = urlopen(file["url"])
+        response = urlopen(url)
         size = int(response.info().get("Content-Length").strip())
         chunk = min(size, chunk_size)
 
@@ -30,7 +28,7 @@ def download_file(file, folder, chunk_size=8192, show_progress=False):
             downloaded_size = 0
             progress_bar = tqdm(
                 total=100,
-                desc=file["filename"],
+                desc=filename,
                 bar_format="{percentage:3.0f}% {bar} {desc}",
                 leave=False,
             )
@@ -49,11 +47,10 @@ def download_file(file, folder, chunk_size=8192, show_progress=False):
                     progress_bar.n = int(100 * downloaded_size / size)
                     progress_bar.refresh()
 
-        if file["sha256"] != file_hash.hexdigest():
-            raise RuntimeError("File hashes don't match")
-
     except (url_errors.HTTPError, url_errors.URLError) as e:
         raise ErrorDownloadingResource(e.reason)
+
+    return file_hash.hexdigest()
 
 
 def download_resource(resource_name, show_progress=False):
@@ -70,13 +67,16 @@ def download_resource(resource_name, show_progress=False):
 
     try:
         if show_progress:
-            for file in tqdm(
+            files = tqdm(
                 files, bar_format="{percentage:3.0f}% {bar} {n_fmt}/{total_fmt}"
-            ):
-                download_file(file, resource_folder, show_progress=True)
-        else:
-            for file in files:
-                download_file(file, resource_folder)
+            )
+
+        for file in files:
+            sha256 = download_file(
+                file["filename"], file["url"], show_progress=show_progress
+            )
+            if file["sha256"] != sha256:
+                raise RuntimeError("File hashes don't match")
 
     except Exception as e:  # Clear folder if something went wrong
         print("Abort: " + str(e))

@@ -1,0 +1,4 @@
+files:
+- filename: haarcascade_frontalface_default.xml
+  sha256: 0f7d4527844eb514d4a4948e822da90fbb16a34a0bbbbc6adc6498747a5aafb0
+  url: https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
