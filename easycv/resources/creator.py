@@ -1,3 +1,4 @@
+import os
 import yaml
 import pathlib
 
@@ -28,20 +29,22 @@ def create_resource(show_progress=True):
         url = input("File {} url: ".format(i + 1))
         files.append({"filename": filename, "url": url})
 
+    print("Downloading/hashing files...")
+
     files_iter = files
     if show_progress:
         files_iter = tqdm(
             files, bar_format="{percentage:3.0f}% {bar} {n_fmt}/{total_fmt}"
         )
 
-    print("Downloading/hashing files...")
+    cwd = pathlib.Path(os.getcwd())
 
     for file in files_iter:
         sha256 = download_file(
-            file["filename"], file["url"], show_progress=show_progress
+            file["filename"], file["url"], cwd, show_progress=show_progress
         )
         file["sha256"] = sha256
-        pathlib.Path(file["filename"]).unlink()
+        (cwd / file["filename"]).unlink()
 
     filename = str(
         pathlib.Path(__file__).parent.absolute() / "sources" / (name.lower() + ".yaml")

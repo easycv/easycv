@@ -15,7 +15,7 @@ else:
     from tqdm import tqdm
 
 
-def download_file(filename, url, chunk_size=8192, show_progress=False):
+def download_file(filename, url, path, chunk_size=8192, show_progress=False):
     file_hash = hashlib.sha256()
     try:
         response = urlopen(url)
@@ -33,7 +33,7 @@ def download_file(filename, url, chunk_size=8192, show_progress=False):
                 leave=False,
             )
 
-        with open(filename, "wb") as local_file:
+        with open(path / filename, "wb") as local_file:
             while True:
                 data_chunk = response.read(chunk)
                 if not data_chunk:
@@ -73,7 +73,10 @@ def download_resource(resource_name, show_progress=False):
 
         for file in files:
             sha256 = download_file(
-                file["filename"], file["url"], show_progress=show_progress
+                file["filename"],
+                file["url"],
+                resource_folder,
+                show_progress=show_progress,
             )
             if file["sha256"] != sha256:
                 raise RuntimeError("File hashes don't match")
