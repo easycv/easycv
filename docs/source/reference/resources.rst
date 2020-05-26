@@ -36,7 +36,7 @@ A resource can be represented by YAML file. We could create the resource describ
           sha256: 0f7d45278...948e822da // file sha256 hash
           url: example.com/file1.txt
 
-To add this resource to easycv, save the file as **test-resource.yaml** anc put it inside \
+To add this resource to easycv, save the file as **test-resource.yaml** and put it inside \
 **easycv\\resources\\sources**.
 
 
@@ -45,8 +45,8 @@ Using resources
 Resources can be used inside transforms to access big files that don't ship with EasyCV by default.
 
 For example, if you want to create a transform that uses a pre-trained neural network you can create a resource that \
-represents the weights file. Then on your transform, you require the resource, and EasyCV downloads the resource \
-automatically when your transform is used.
+represents the weights file. Then on your transform, if you require the resource, EasyCV downloads the resource \
+automatically when the transform is used.
 
 
 Let's create a transform called TestTransform that uses the resource we created above. We can obtain a path to the \
