@@ -48,8 +48,8 @@ def downloaded_resources():
 
 def get_resource(resource_name, filename=None, show_progress=True):
     """
-    Obtains the path to a resource. If the resource is not downloaded, download the resource \
-    first. Supports progress display.
+    Obtains the path to a resource. If the resource is not downloaded, it is downloaded first.\
+    Supports progress display.
 
     :param resource_name: Name of the desired resource
     :type resource_name: :class:`str`
