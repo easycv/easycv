@@ -1,8 +1,8 @@
-from easycv.lazy import Lazy
+from easycv.collection import Collection
 import inspect
 
 
-class Output(Lazy):
+class Output(Collection):
     def __init__(self, image, pending):
         self._image = image
         self._outputs = pending.outputs

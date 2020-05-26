@@ -1,11 +1,30 @@
 import cv2
+import numpy as np
+
+from math import ceil
 
 
 def nearest_square_side(n):
-    i = 1
-    while i ** 2 < n:
-        i += 1
-    return i
+    return ceil(n ** 0.5)
+
+
+def _sort_by(points, axis):
+    return sorted(points, key=lambda x: x[0 if axis == "x" else 1])
+
+
+def order_corners(corners):
+    sorted_by_x = _sort_by(corners, "x")
+    left_points = sorted_by_x[:2]
+    right_points = sorted_by_x[2:]
+
+    (tl, bl) = _sort_by(left_points, "y")
+    (tr, br) = _sort_by(right_points, "y")
+
+    return tl, tr, br, bl
+
+
+def distance(point1, point2):
+    return int(np.sqrt(((point1[0] - point2[0]) ** 2) + ((point1[1] - point2[1]) ** 2)))
 
 
 interpolation_methods = {

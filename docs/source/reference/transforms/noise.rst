@@ -5,7 +5,7 @@ this module can be found `here <../../examples/transforms/noise.ipynb>`_.
 
 
 .. automodule:: easycv.transforms.noise
-   :exclude-members: methods, apply, default_args
+   :exclude-members: methods, process, arguments, outputs
    :members:
    :undoc-members:
    :show-inheritance:

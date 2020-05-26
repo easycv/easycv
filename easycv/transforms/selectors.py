@@ -45,7 +45,7 @@ class Select(Transform):
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
-    def apply(self, image, **kwargs):
+    def process(self, image, **kwargs):
         if "DISPLAY" in os.environ:
             mpl.use("Qt5Agg")
         fig, current_ax = plt.subplots()
@@ -94,7 +94,7 @@ class Select(Transform):
 
             def onclick(event):
                 if event.xdata is not None and event.ydata is not None:
-                    res.append((round(event.xdata), round(event.ydata)))
+                    res.append((int(event.xdata), int(event.ydata)))
                     plt.plot(
                         event.xdata, event.ydata, marker="o", color="cyan", markersize=4
                     )
@@ -131,4 +131,4 @@ class Select(Transform):
                 raise InvalidSelectionError(
                     "Must select {} points.".format(kwargs["n"])
                 )
-            return res
+            return {"points": res}

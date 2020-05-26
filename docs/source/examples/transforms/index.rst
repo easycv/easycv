@@ -9,3 +9,5 @@ Transforms examples
    filter.ipynb
    noise.ipynb
    spatial.ipynb
+   detect.ipynb
+   perspective.ipynb

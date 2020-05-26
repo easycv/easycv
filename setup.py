@@ -31,6 +31,8 @@ setup(
         "matplotlib",
         "opencv-python",
         "scikit-image",
+        "ray",
+        "pyzbar",
     ],
     classifiers=[
         "Intended Audience :: Developers",

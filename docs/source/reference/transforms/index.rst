@@ -10,3 +10,5 @@ Transforms
    noise
    selectors
    spatial
+   perspective
+   detect

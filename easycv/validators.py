@@ -98,7 +98,7 @@ class Regex(Validator):
         if self._description is not None:
             self.desc = "{}.".format(self._description)
         else:
-            self.desc = "satisfy this regex pattern: ".format(self.pattern)
+            self.desc = "satisfy this regex pattern: " + self.pattern
         super().__init__(default=default)
 
     def validate(self, value):

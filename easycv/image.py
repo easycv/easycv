@@ -3,14 +3,14 @@ import os
 
 import numpy as np
 
-from easycv.lazy import Lazy, auto_compute
+from easycv.collection import Collection, auto_compute
 from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 from easycv.output import Output
 from easycv.transforms.base import Transform
 
 
-class Image(Lazy):
+class Image(Collection):
     """
     This class represents an image.
     Images can be created from a NumPy array containing the **image** data, a path to a local file
@@ -33,8 +33,7 @@ class Image(Lazy):
         if not valid_image_source(source):
             raise InvalidImageInputSource()
 
-        super().__init__(pending=pipeline)
-        self._lazy = lazy
+        super().__init__(pending=pipeline, lazy=lazy)
 
         if self._lazy:
             self._source = source
@@ -142,10 +141,10 @@ class Image(Lazy):
         else:
             self.load()
             if outputs == {}:  # If transform outputs an image
-                new_image = transform(self._img)["image"]
                 if in_place:
-                    self._img = new_image
+                    self._img = transform(self._img)["image"]
                 else:
+                    new_image = transform(self._img.copy())["image"]
                     return Image(new_image)
             else:
                 return transform(self._img)
@@ -168,7 +167,7 @@ class Image(Lazy):
             self._pending.clear()
             return self
         else:
-            result = Image(self._pending(self._img)["image"], lazy=True)
+            result = Image(self._pending(self._img)["image"], lazy=self._lazy)
             return result
 
     @auto_compute

@@ -2,7 +2,7 @@ import os
 
 from urllib.error import URLError
 from urllib.request import urlopen
-from json import load
+from json import loads
 
 import cv2
 import numpy as np
@@ -38,7 +38,7 @@ def valid_image_source(source):
     """
     source_is_str = isinstance(source, str)
     source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array)
+    return source_is_str or (source_is_array and valid_image_array(source))
 
 
 def open_image(path):
@@ -82,7 +82,9 @@ def random_dog_image():
         raise ImageDownloadError(
             "Failed to Download file, error {}.".format(response.getcode())
         )
-    return load(response)["message"]
+    buf = response.read()
+    result = loads(buf.decode("utf-8"))
+    return result["message"]
 
 
 def get_image_array(image_source):
