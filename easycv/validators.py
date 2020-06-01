@@ -167,7 +167,9 @@ class Number(Validator):
         super().__init__(default=default)
 
     def validate(self, value):
-        allowed_types = (int,) if self.only_integer else (int, float)
+        allowed_types = (
+            (int, np.int32, np.integer) if self.only_integer else (int, float, np.float)
+        )
         if (
             not isinstance(value, allowed_types)
             or not (self.min_value <= value <= self.max_value)
