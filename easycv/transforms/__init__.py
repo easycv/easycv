@@ -16,13 +16,15 @@ from easycv.transforms.color import (
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
-from easycv.transforms.detect import Scan
+from easycv.transforms.detect import Scan, Eyes, Faces
 
 transforms = [
     Blur,
     Canny,
     Cartoon,
     Crop,
+    Eyes,
+    Faces,
     FilterChannels,
     GammaCorrection,
     Gradient,
