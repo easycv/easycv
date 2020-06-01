@@ -17,6 +17,26 @@ class GrayScale(Transform):
             return image
 
 
+class Sepia(Transform):
+    """
+    Sepia is a transform that applies a sepia effect to de image
+    """
+
+    def process(self, image, **kwargs):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        normalized_gray = np.array(gray, np.float32) / 255
+
+        sepia = np.ones(image.shape)
+        sepia[:, :, 0] *= 153  # B
+        sepia[:, :, 1] *= 204  # G
+        sepia[:, :, 2] *= 255  # R
+
+        sepia[:, :, 0] *= normalized_gray  # B
+        sepia[:, :, 1] *= normalized_gray  # G
+        sepia[:, :, 2] *= normalized_gray  # R
+        return sepia
+
+
 class FilterChannels(Transform):
     """
     FilterChannels is a transform that removes color channel(s).
