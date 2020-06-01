@@ -19,7 +19,7 @@ class GrayScale(Transform):
 
 class Sepia(Transform):
     """
-    Sepia is a transform that applies a sepia effect to de image
+    Sepia is a transform that applies the sepia effect to an image
     """
 
     def process(self, image, **kwargs):
