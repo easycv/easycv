@@ -17,6 +17,17 @@ class GrayScale(Transform):
             return image
 
 
+class Sepia(Transform):
+    """
+    Sepia is a transform that applies the sepia effect to an image
+    """
+
+    def process(self, image, **kwargs):
+        gray = GrayScale().process(image)
+        sepia = np.array([153 / 255 * gray, 204 / 255 * gray, gray])
+        return sepia.transpose(1, 2, 0).astype("uint8")
+
+
 class FilterChannels(Transform):
     """
     FilterChannels is a transform that removes color channel(s).
