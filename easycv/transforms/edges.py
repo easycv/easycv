@@ -111,8 +111,21 @@ class Lines(Transform):
     :type maxGapLine: :class:`int`/:class:`float`, optional
     """
 
-    methods = {"normal": {"arguments": ["low", "high", "size", "rho", "theta", "threshold"]},
-               "probablistic": {"arguments": ["low", "high", "size", "rho", "theta", "threshold", "minLineSize", "maxGapLine"]}}
+    methods = {
+        "normal": {"arguments": ["low", "high", "size", "rho", "theta", "threshold"]},
+        "probablistic": {
+            "arguments": [
+                "low",
+                "high",
+                "size",
+                "rho",
+                "theta",
+                "threshold",
+                "minLineSize",
+                "maxGapLine",
+            ]
+        },
+    }
 
     default_method = "normal"
 
@@ -123,22 +136,27 @@ class Lines(Transform):
             min_value=3, max_value=7, only_integer=True, only_odd=True, default=3
         ),
         "rho": Number(min_value=0, default=1),
-        "theta": Number(min_value=0, max_value=np.pi/2, default=np.pi/180),
+        "theta": Number(min_value=0, max_value=np.pi / 2, default=np.pi / 180),
         "threshold": Number(min_value=0, only_integer=True, default=200),
         "minLineSize": Number(min_value=0, default=3),
-        "maxGapLine": Number(min_value=0, default=3)
+        "maxGapLine": Number(min_value=0, default=3),
     }
 
     outputs = {
         "lines": List(
-            List(List(Number(min_value=0, only_integer=True), length=2), length=2))
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
+        )
     }
 
     def process(self, image, **kwargs):
         gray = GrayScale().apply(image)
-        edges = Canny(low=kwargs["low"], high=kwargs["high"], size=kwargs["size"]).apply(gray)
+        edges = Canny(
+            low=kwargs["low"], high=kwargs["high"], size=kwargs["size"]
+        ).apply(gray)
         if kwargs["method"] == "normal":
-            h_lines = cv2.HoughLines(edges, kwargs["rho"], kwargs["theta"], kwargs["threshold"])
+            h_lines = cv2.HoughLines(
+                edges, kwargs["rho"], kwargs["theta"], kwargs["threshold"]
+            )
             lines = []
             if h_lines is not None:
                 for rho, theta in h_lines[:, 0]:
@@ -152,8 +170,14 @@ class Lines(Transform):
                     y2 = int(y0 - 1000 * a)
                     lines.append([[x1, y1], [x2, y2]])
         else:
-            lines = cv2.HoughLines(edges, kwargs["rho"], kwargs["theta"], kwargs["threshold"],
-                                   kwargs["minLineSize"], kwargs["maxGapLine"])
+            lines = cv2.HoughLines(
+                edges,
+                kwargs["rho"],
+                kwargs["theta"],
+                kwargs["threshold"],
+                kwargs["minLineSize"],
+                kwargs["maxGapLine"],
+            )
         return {"lines": lines}
 
 
@@ -185,15 +209,22 @@ class Circles(Transform):
         "minRadius": Number(min_value=0, default=0),
         "maxRadius": Number(min_value=0, default=0),
         "cannyThreshold": Number(min_value=0, only_integer=True, default=200),
-        "threshold": Number(min_value=0, only_integer=True, default=200)
+        "threshold": Number(min_value=0, only_integer=True, default=200),
     }
 
-    outputs = {
-        "circles": List(List(Number(min_value=0, only_integer=True), length=3))
-    }
+    outputs = {"circles": List(List(Number(min_value=0, only_integer=True), length=3))}
 
     def process(self, image, **kwargs):
         blur = filt.Blur(method="median", size=kwargs["size"]).apply(image)
         gray = GrayScale().apply(blur)
-        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, kwargs["dp"], kwargs["minDist"], param1=kwargs["cannyThreshold"], param2=kwargs["threshold"], minRadius=kwargs["minRadius"], maxRadius=kwargs["maxRadius"])
+        circles = cv2.HoughCircles(
+            gray,
+            cv2.HOUGH_GRADIENT,
+            kwargs["dp"],
+            kwargs["minDist"],
+            param1=kwargs["cannyThreshold"],
+            param2=kwargs["threshold"],
+            minRadius=kwargs["minRadius"],
+            maxRadius=kwargs["maxRadius"],
+        )
         return {"circles": circles[0]}
