@@ -13,6 +13,7 @@ from easycv.transforms.color import (
     PhotoSketch,
     Negative,
     Cartoon,
+    Sepia,
 )
 from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
@@ -38,6 +39,7 @@ transforms = [
     Rotate,
     Scan,
     Select,
+    Sepia,
     Sharpen,
     Sharpness,
     Translate,
