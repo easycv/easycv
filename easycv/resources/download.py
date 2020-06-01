@@ -4,7 +4,7 @@ from urllib.request import urlopen
 import shutil
 import hashlib
 
-import easycv.resources.resources as resources
+import easycv.resources.resources
 from easycv.utils import running_on_notebook
 from easycv.errors import ErrorDownloadingResource
 
@@ -54,10 +54,10 @@ def download_file(filename, url, path, chunk_size=8192, show_progress=False):
 
 
 def download_resource(resource_name, show_progress=False):
-    info = resources.load_resource_info(resource_name)
+    info = easycv.resources.resources.load_resource_info(resource_name)
     files = info["files"]
 
-    resources_folder = resources.get_resources_folder()
+    resources_folder = easycv.resources.resources.get_resources_folder()
     resource_folder = resources_folder / resource_name
 
     if resource_folder.is_dir():
