@@ -6,3 +6,4 @@ scipy
 matplotlib
 nbsphinx
 sphinx_rtd_theme
+pyzbar

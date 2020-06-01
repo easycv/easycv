@@ -25,3 +25,4 @@ in the same way. The only difference between them is their outputs.
    selectors
    spatial
    perspective
+   detect
