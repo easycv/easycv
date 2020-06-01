@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+import sys
 from math import ceil
 
 
@@ -25,6 +26,15 @@ def order_corners(corners):
 
 def distance(point1, point2):
     return int(np.sqrt(((point1[0] - point2[0]) ** 2) + ((point1[1] - point2[1]) ** 2)))
+
+
+def running_on_notebook():
+    if "IPython" in sys.modules:
+        from IPython import get_ipython
+
+        return "IPKernelApp" in get_ipython().config
+    else:
+        return False
 
 
 interpolation_methods = {

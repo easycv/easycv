@@ -9,7 +9,7 @@ from easycv.errors import (
 
 
 class Metadata(type):
-    exclude = {"apply", "arguments", "method_name", "methods", "default_method"}
+    exclude = {"process", "arguments", "method_name", "methods", "default_method"}
 
     def __dir__(cls):
         return list(set(cls.__dict__.keys()) - cls.exclude)
@@ -90,10 +90,16 @@ class Transform(Operation, metaclass=Metadata):
     @classmethod
     def get_default_values(cls, method=None):
         if method is None:
-            args = cls.arguments
+            if cls.default_method is not None:
+                default_values = {"method": cls.default_method}
+                args = cls._extract_attribute("arguments", cls.default_method)
+            else:
+                default_values = {}
+                args = cls.arguments
         else:
+            default_values = {}
             args = cls._extract_attribute("arguments", method)
-        default_values = {}
+
         if cls.arguments is not None:
             for argument in args:
                 default_values[argument] = args[argument].default
@@ -133,6 +139,7 @@ class Transform(Operation, metaclass=Metadata):
         pass
 
     def run(self, image, forwarded=None):
+        self.initialize()
         if forwarded is None:
             args = self._args
         else:

@@ -5,7 +5,7 @@ tasks. Examples of each transform in this module can \
 be found `here <../../examples/transforms/edges.ipynb>`_.
 
 .. automodule:: easycv.transforms.edges
-   :exclude-members: apply, default_args
+   :exclude-members: methods, process, arguments, outputs
    :members:
    :undoc-members:
    :show-inheritance:

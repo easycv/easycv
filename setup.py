@@ -23,6 +23,7 @@ setup(
     keywords=["easycv", "computer vision", "python", "ai"],
     setup_requires=["setuptools>=38.6.0"],
     packages=find_packages(),
+    package_data={"easycv": ["resources/sources/*.yaml"]},
     python_requires=">=3.5",
     install_requires=[
         "numpy",
@@ -32,6 +33,9 @@ setup(
         "opencv-python",
         "scikit-image",
         "ray",
+        "pyzbar",
+        "tqdm",
+        "pyyaml",
     ],
     classifiers=[
         "Intended Audience :: Developers",
