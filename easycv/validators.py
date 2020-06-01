@@ -1,6 +1,7 @@
 import re
 
 import numpy as np
+from pathlib import Path
 
 from easycv.errors import (
     InvalidArgumentError,
@@ -76,6 +77,19 @@ class Validator:
     @property
     def required(self):
         return self._default is None
+
+
+class File(Validator):
+    """
+    Validator to check if an argument is a valid and existing file.
+    """
+
+    def validate(self, value):
+        if not Path(value).is_file():
+            raise ValidatorError("be an existing file")
+
+    def accepts(self, other):
+        return isinstance(other, File)
 
 
 class Regex(Validator):
@@ -244,7 +258,7 @@ class List(Validator):
                     self.validator.validate(e)
             except ValidatorError as VE:
                 raise ValidatorError(
-                    "be a list/tuple where each element is " + VE.get_description()
+                    "be a list/tuple where each element must " + VE.get_description()
                 ) from None
         else:
             try:
