@@ -3,7 +3,7 @@ from skimage.filters import unsharp_mask
 
 from easycv.transforms.base import Transform
 from easycv.transforms.color import GrayScale
-import easycv.transforms.edges as edges
+import easycv.transforms.edges
 from easycv.validators import Number, Type
 
 
@@ -81,7 +81,9 @@ class Sharpness(Transform):
 
     def process(self, image, **kwargs):
         grayscale = GrayScale().apply(image)
-        variance = edges.Gradient(method="laplace").apply(grayscale).var()
+        variance = (
+            easycv.transforms.edges.Gradient(method="laplace").apply(grayscale).var()
+        )
         sharpen = variance >= kwargs["threshold"]
         return {"sharpness": variance, "sharpen": sharpen}
 

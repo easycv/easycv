@@ -4,7 +4,7 @@ import numpy as np
 from easycv.validators import List, Number, Option
 from easycv.transforms.base import Transform
 from easycv.transforms.color import GrayScale
-import easycv.transforms.filter as filt
+import easycv.transforms.filter
 
 
 class Gradient(Transform):
@@ -215,7 +215,9 @@ class Circles(Transform):
     outputs = {"circles": List(List(Number(min_value=0, only_integer=True), length=3))}
 
     def process(self, image, **kwargs):
-        blur = filt.Blur(method="median", size=kwargs["size"]).apply(image)
+        blur = easycv.transforms.filter.Blur(
+            method="median", size=kwargs["size"]
+        ).apply(image)
         gray = GrayScale().apply(blur)
         circles = cv2.HoughCircles(
             gray,
