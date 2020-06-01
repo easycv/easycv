@@ -10,7 +10,8 @@ from easycv.errors import (
 
 class Metadata(type):
     exclude = {
-        "apply",
+        "run",
+        "process",
         "arguments",
         "outputs",
         "method_name",
