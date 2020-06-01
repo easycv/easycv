@@ -8,7 +8,6 @@ from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
 
-
 class Select(Transform):
     """
     Select is a transform that allows the user to select a shape in an image. Currently \
