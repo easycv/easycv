@@ -12,15 +12,14 @@ class Draw(Transform):
     The Draw transform provides a way to draw 2D shapes or text on a image. Currently supported\
     shapes are:
 
-    \t**∙ circle**\n
     \t**∙ ellipse**\n
     \t**∙ line**\n
     \t**∙ polylines** - An easy way to draw multiple lines or polygons\n
     \t**∙ rectangle**\n
     \t**∙ text**\n
 
-    :param axes: Half of the size of the ellipse main axes.
-    :type axes: :class:`tuple`
+    :param ellipse: Half of the size of the ellipse main axes.
+    :type ellipse: :class:`tuple`#todo
     :param center: center of the shape
     :type center: :class:`tuple`
     :param color: color of the shape in BGR, defaults to "(0,0,0)" - black.
@@ -60,20 +59,9 @@ class Draw(Transform):
     """
 
     methods = {
-        "circle": {
-            "arguments": [
-                "center",
-                "radius",
-                "filled",
-                "color",
-                "thickness",
-                "lineType",
-            ]
-        },
         "ellipse": {
             "arguments": [
-                "axes",
-                "center",
+                "ellipse",
                 "rotation_angle",
                 "start_angle",
                 "end_angle",
@@ -95,7 +83,7 @@ class Draw(Transform):
             ]
         },
         "rectangle": {
-            "arguments": ["pt1", "pt2", "color", "thickness", "lineType", "filled"]
+            "arguments": ["rectangle", "color", "thickness", "lineType", "filled"]
         },
         "text": {
             "arguments": [
@@ -113,8 +101,14 @@ class Draw(Transform):
     method_name = "shape"
 
     arguments = {
-        "axes": List(Number(min_value=0, only_integer=True), length=2),
-        "center": List(Number(min_value=0, only_integer=True), length=2),
+        "ellipse": List(
+            List(Number(only_integer=True, min_value=0), length=2),
+            Number(min_value=0, only_integer=True),
+            Number(min_value=0, only_integer=True),
+        ),
+        "rectangle": List(
+            List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
         "color": List(Number(min_value=0, max_value=255), length=3, default=(0, 0, 0)),
         "end_angle": Number(default=360),
         "font": Option(
@@ -182,14 +176,11 @@ class Draw(Transform):
         if kwargs.pop("filled", False):
             kwargs["thickness"] = cv.FILLED
 
-        if method == "circle":
-            return cv.circle(image, **kwargs,)
-
         if method == "ellipse":
             return cv.ellipse(
                 image,
-                kwargs["center"],
-                kwargs["axes"],
+                kwargs["ellipse"][0],
+                (kwargs["ellipse"][1], kwargs["ellipse"][2]),
                 kwargs["rotation_angle"],
                 kwargs["start_angle"],
                 kwargs["end_angle"],
@@ -199,4 +190,5 @@ class Draw(Transform):
             )
 
         if method == "rectangle":
-            return cv.rectangle(image, **kwargs)
+            pts = kwargs.pop("rectangle")
+            return cv.rectangle(image, pts[0], pts[1], **kwargs)

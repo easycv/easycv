@@ -23,9 +23,9 @@ class Select(Transform):
 """
 
     methods = {
-        "rectangle": {"arguments": [], "outputs": ["pt1", "pt2"]},
+        "rectangle": {"arguments": [], "outputs": ["rectangle"]},
         "point": {"arguments": ["n"], "outputs": ["points"]},
-        "ellipse": {"arguments": [], "outputs": ["center", "axes"]},
+        "ellipse": {"arguments": [], "outputs": ["ellipse"]},
     }
     default_method = "rectangle"
 
@@ -35,11 +35,15 @@ class Select(Transform):
 
     outputs = {
         # rectangle
-        "pt1": List(Number(min_value=0, only_integer=True), length=2),
-        "pt2": List(Number(min_value=0, only_integer=True), length=2),
+        "rectangle": List(
+            List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
         # ellipse
-        "center": List(Number(only_integer=True, min_value=0), length=2),
-        "axes": List(Number(min_value=0, only_integer=True), length=2),
+        "ellipse": List(
+            List(Number(only_integer=True, min_value=0), length=2),
+            Number(min_value=0, only_integer=True),
+            Number(min_value=0, only_integer=True),
+        ),
         # point
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
@@ -116,7 +120,7 @@ class Select(Transform):
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select a rectangle.")
 
-            return {"pt1": (x, y), "pt2": (x + width, y + height)}
+            return {"rectangle": [(x, y), (x + width, y + height)]}
 
         elif kwargs["method"] == "ellipse":
             width = int(round(selector.S.to_draw.width))
@@ -124,7 +128,7 @@ class Select(Transform):
             center = [int(round(x)) for x in selector.S.to_draw.get_center()]
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select an ellipse.")
-            return {"center": tuple(center), "axes": (width, height)}
+            return {"ellipse": [tuple(center), int(width / 2), int(height / 2)]}
         else:
             if len(res) != kwargs["n"]:
                 raise InvalidSelectionError(
