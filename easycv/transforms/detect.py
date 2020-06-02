@@ -119,10 +119,10 @@ class Lines(Transform):
                     b = np.sin(theta)
                     x0 = a * rho
                     y0 = b * rho
-                    x1 = int(x0 + 1000 * (-b))
-                    y1 = int(y0 + 1000 * a)
-                    x2 = int(x0 - 1000 * (-b))
-                    y2 = int(y0 - 1000 * a)
+                    x1 = min(max(int(x0 + 1000 * (-b)), 0), image.shape[0])
+                    y1 = min(max(int(y0 + 1000 * a), 0), image.shape[1])
+                    x2 = min(max(int(x0 - 1000 * (-b)), 0), image.shape[0])
+                    y2 = min(max(int(y0 - 1000 * a), 0), image.shape[1])
                     lines.append([[x1, y1], [x2, y2]])
         else:
             lines = cv2.HoughLines(
