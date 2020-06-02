@@ -119,7 +119,7 @@ class ColorTransfer(Transform):
     ColorTransfer is a transform that transfers the color of an image to another.
 
     :param source: Source image from where the colors will be transferred from.
-    :type source: image
+    :type source: :class:`~easycv.image.Image`
     """
 
     arguments = {
