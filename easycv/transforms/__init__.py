@@ -14,6 +14,7 @@ from easycv.transforms.color import (
     Negative,
     Cartoon,
     Sepia,
+    ColorTransfer,
 )
 from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
@@ -24,6 +25,7 @@ transforms = [
     Canny,
     Circles,
     Cartoon,
+    ColorTransfer,
     Crop,
     FilterChannels,
     GammaCorrection,
