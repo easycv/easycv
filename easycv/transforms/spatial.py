@@ -203,3 +203,19 @@ class Translate(Transform):
         matrix = np.float32([[1, 0, kwargs["x"]], [0, 1, kwargs["y"]]])
 
         return cv2.warpAffine(image, matrix, (width, height))
+
+
+class Mirror(Transform):
+    """
+    Mirror is a transform that flips the image according to an axis 0(x), 1(y) or -1(x and y)
+
+    :param axis: defines flipping axis:, defaults to 1
+    :type axis: :class:`int`, optional
+    """
+
+    arguments = {
+        "axis": Number(min_value=-1, max_value=1, only_integer=True, default=1)
+    }
+
+    def process(self, image, **kwargs):
+        return cv2.flip(image, kwargs["axis"])
