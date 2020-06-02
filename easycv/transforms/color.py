@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 
-from easycv.validators import Option, List, Number
+from color_transfer import color_transfer
+from easycv.validators import Option, List, Number, Image
 from easycv.transforms.base import Transform
 
 
@@ -111,3 +112,19 @@ class PhotoSketch(Transform):
         img_blur = cv2.GaussianBlur(img_gray, (21, 21), 0, 0)
         img_blend = cv2.divide(img_gray, img_blur, scale=256)
         return img_blend
+
+
+class ColorTransfer(Transform):
+    """
+    ColorTransfer is a transform that transfers the color of an image to another.
+
+    :param source: Source image from where the colors will be transferred from.
+    :type source: image
+    """
+
+    arguments = {
+        "source": Image(),
+    }
+
+    def process(self, image, **kwargs):
+        return color_transfer(kwargs["source"].array, image)
