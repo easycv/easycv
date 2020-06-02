@@ -8,6 +8,7 @@ install:
 - sudo apt-get install libzbar0
 - pip install pytest pytest-cov flake8
 - pip install codecov
+- pip install --upgrade pip
 - pip install .
 script:
 - flake8 --count
