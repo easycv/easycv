@@ -1,5 +1,7 @@
 import io
 import os
+import base64
+import json
 
 import numpy as np
 
@@ -87,6 +89,21 @@ class Image(Collection):
 
     @property
     @auto_compute
+    def channels(self):
+        """
+        Returns **image** number of channels.
+
+        :return: Image numeber of channels
+        :rtype: :class:`int`
+        """
+
+        if len(self._img.shape) == 2:
+            return 1
+        else:
+            return self._img.shape[2]
+
+    @property
+    @auto_compute
     def array(self):
         """
         Returns a NumPy array that represents the **image**.
@@ -169,6 +186,40 @@ class Image(Collection):
         else:
             result = Image(self._pending(self._img)["image"], lazy=self._lazy)
             return result
+
+    @auto_compute
+    def encode(self):
+        """
+        Returns a encoded version of the **image**
+
+        :return: Encoded image
+        :rtype: :class:`str`
+        """
+        image_data = base64.b64encode(self.array.copy(order="C")).decode("utf-8")
+        encoded = {
+            "width": self.width,
+            "height": self.height,
+            "channels": self.channels,
+            "dtype": str(self.array.dtype),
+            "data": image_data,
+        }
+        return json.dumps(encoded)
+
+    @classmethod
+    def decode(cls, encoded):
+        """
+        Creates an image by decoding a previously encoded encoded image.
+
+        :return: Decoded image
+        :rtype: :class:`~eascv.image.Image`
+        """
+        encoded = json.loads(encoded)
+        shape = (encoded["height"], encoded["width"], encoded["channels"])
+        image_data = bytes(encoded["data"], encoding="utf-8")
+        image_array = np.frombuffer(
+            base64.decodebytes(image_data), dtype=encoded["dtype"]
+        )
+        return cls(image_array.reshape(shape))
 
     @auto_compute
     def show(self, name="Image"):
