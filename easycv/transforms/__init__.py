@@ -13,6 +13,7 @@ from easycv.transforms.color import (
     Negative,
     Cartoon,
     Sepia,
+    ColorTransfer,
 )
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
@@ -23,6 +24,7 @@ transforms = [
     Blur,
     Canny,
     Cartoon,
+    ColorTransfer,
     Crop,
     FilterChannels,
     GammaCorrection,

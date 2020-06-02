@@ -2,6 +2,7 @@ import re
 
 import numpy as np
 from pathlib import Path
+import easycv.image
 
 from easycv.errors import (
     InvalidArgumentError,
@@ -314,3 +315,16 @@ class List(Validator):
     @property
     def manual(self):
         return isinstance(self.validator, list)
+
+
+class Image(Validator):
+    """
+    Validator to check if an argument is an image.
+    """
+
+    def validate(self, value):
+        if not isinstance(value, easycv.image.Image):
+            raise ValidatorError("be an image")
+
+    def accepts(self, other):
+        return isinstance(other, Image)
