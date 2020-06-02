@@ -15,7 +15,7 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
 )
-from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
+from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
 from easycv.transforms.detect import Scan, Lines, Circles
 
@@ -35,6 +35,7 @@ transforms = [
     Noise,
     Perspective,
     PhotoSketch,
+    Rescale,
     Resize,
     Rotate,
     Scan,
