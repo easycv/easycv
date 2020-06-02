@@ -46,24 +46,24 @@ class Scan(Transform):
 
 class Lines(Transform):
     """
-    Lines is a transform that detects lines in an image using the hough space.
+    Lines is a transform that detects lines in an image using the Hough Transform.
 
-    :param low: Low threshold, defaults to 50
+    :param low: Low canny threshold, defaults to 50
     :type low: :class:`int`, optional
-    :param high: High threshold, defaults to 150
+    :param high: High canny threshold, defaults to 150
     :type high: :class:`int`, optional
-    :param size: Kernel size, defaults to 3
+    :param size: Gaussian kernel size (canny), defaults to 3
     :type size: :class:`int`, optional
     :param rho: Distance resolution of the accumulator in pixels, defaults to 1
     :type rho: :class:`int`/:class:`float`, optional
-    :param theta: Angle resolution of the accumulator in radians, defaults to pi/8
+    :param theta: Angle resolution of the accumulator in radians, defaults to pi/180
     :type theta: :class:`int`/:class:`float`, optional
     :param threshold: Threshold of votes, defaults to 200
     :type threshold: :class:`int`, optional
-    :param minLineSize: Minimum line lenght, defaults to 3
-    :type minLineSize: :class:`int`/:class:`float`, optional
-    :param maxGapLine: Maximum gap between lines to treat them as single line, defaults to 3
-    :type maxGapLine: :class:`int`/:class:`float`, optional
+    :param min_size: Minimum line length, defaults to 3
+    :type min_size: :class:`int`/:class:`float`, optional
+    :param max_gap: Maximum gap between lines to treat them as single line, defaults to 3
+    :type max_gap: :class:`int`/:class:`float`, optional
     """
 
     methods = {
@@ -76,8 +76,8 @@ class Lines(Transform):
                 "rho",
                 "theta",
                 "threshold",
-                "minLineSize",
-                "maxGapLine",
+                "min_size",
+                "max_gap",
             ]
         },
     }
@@ -93,8 +93,8 @@ class Lines(Transform):
         "rho": Number(min_value=0, default=1),
         "theta": Number(min_value=0, max_value=np.pi / 2, default=np.pi / 180),
         "threshold": Number(min_value=0, only_integer=True, default=200),
-        "minLineSize": Number(min_value=0, default=3),
-        "maxGapLine": Number(min_value=0, default=3),
+        "min_size": Number(min_value=0, default=3),
+        "max_gap": Number(min_value=0, default=3),
     }
 
     outputs = {
@@ -130,8 +130,8 @@ class Lines(Transform):
                 kwargs["rho"],
                 kwargs["theta"],
                 kwargs["threshold"],
-                kwargs["minLineSize"],
-                kwargs["maxGapLine"],
+                kwargs["min_size"],
+                kwargs["max_gap"],
             )
         return {"lines": lines}
 
@@ -146,7 +146,7 @@ class Circles(Transform):
     :param dp: Inverse ratio of the accumulator resolution to the image resolution, defaults to 1.
     :type dp: :class:`int`, optional
     :param minDist: Minimal distance between centers of circles, defaults to 1.
-    :type minDist: :class:`int`:/:class:`float`, optional
+    :type minDist: :class:`int`/:class:`float`, optional
     :param minRadius: Minimum radius of a circle, defaults to 0
     :type minRadius: :class:`int`/:class:`float`, optional
     :param maxRadius: Maximum radius of a circle, defaults to 0
