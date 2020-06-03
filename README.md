@@ -1,4 +1,4 @@
-<img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="100" height="100">
+<img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="250" height="250">
 
 Computer Vision made easy.
 
