@@ -1,4 +1,4 @@
-# EasyCV
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
 
 Computer Vision made easy.
 
