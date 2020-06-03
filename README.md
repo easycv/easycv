@@ -1,11 +1,6 @@
 <p class="aligncenter">
-    <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" alt="centered image" />
+    <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" alt="centered image" width="300" height="300" />
 </p>
-<style>
-.aligncenter {
-    text-align: center;
-}
-</style>
 <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="300" height="300" style="width:50%;">
 
 Computer Vision made easy.
