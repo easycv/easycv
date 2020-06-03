@@ -115,15 +115,19 @@ class Lines(Transform):
             lines = []
             if h_lines is not None:
                 for rho, theta in h_lines[:, 0]:
-                    a = np.cos(theta)
-                    b = np.sin(theta)
-                    x0 = a * rho
-                    y0 = b * rho
-                    x1 = min(max(int(x0 + 1000 * (-b)), 0), image.shape[0])
-                    y1 = min(max(int(y0 + 1000 * a), 0), image.shape[1])
-                    x2 = min(max(int(x0 - 1000 * (-b)), 0), image.shape[0])
-                    y2 = min(max(int(y0 - 1000 * a), 0), image.shape[1])
-                    lines.append([[x1, y1], [x2, y2]])
+                    x1 = int(rho * np.cos(theta))
+                    y1 = int(rho * np.sin(theta))
+                    if x1 > y1:
+                        y1 = 0
+                    elif y1 > x1:
+                        x1 = 0
+                    x2 = (rho - image.shape[0] * np.sin(theta)) / np.cos(theta)
+                    y2 = (rho - image.shape[1] * np.cos(theta)) / np.sin(theta)
+                    if 0 <= x2 <= image.shape[1] or np.sin(theta) == 0:
+                        y2 = image.shape[0]
+                    elif 0 <= y2 <= image.shape[0] or np.cos(theta) == 0:
+                        x2 = image.shape[1]
+                    lines.append([[int(x1), int(y1)], [int(x2), int(y2)]])
         else:
             lines = cv2.HoughLines(
                 edges,
