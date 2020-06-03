@@ -243,7 +243,7 @@ class List(Validator):
     validator that should be applied to all elements  (e.g., List(Number())) or by giving a
     validator for each position in the list (e.g., List(Number(), Type()))
 
-    :param validators: Validator or a list of validators
+    :param validators: Validator or multiple validators (one for each position)
     :type validators: :class:`~easycv.validators.Validator`
     :param length: Exact length of the list
     :type length: :class:`int`
