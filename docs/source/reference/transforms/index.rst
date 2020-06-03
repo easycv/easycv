@@ -5,6 +5,7 @@ Transforms
    :maxdepth: 2
 
    color
+   draw
    edges
    filter
    noise

@@ -5,6 +5,7 @@ Transforms examples
    :maxdepth: 2
 
    color.ipynb
+   draw.ipynb
    edges.ipynb
    filter.ipynb
    noise.ipynb
