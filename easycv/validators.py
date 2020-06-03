@@ -237,6 +237,18 @@ class Type(Validator):
 
 
 class List(Validator):
+    """
+
+    Validator to check if an argument is a List. Lists can be defined in two ways: by giving one
+    validator that should be applied to all elements  (e.g., List(Number())) or by giving a
+    validator for each position in the list (e.g., List(Number(), Type()))
+
+    :param validators: Validator or multiple validators (one for each position)
+    :type validators: :class:`~easycv.validators.Validator`
+    :param length: Exact length of the list
+    :type length: :class:`int`
+    """
+
     def __init__(self, *validators, length=None, default=None):
         super().__init__(default=default)
         if len(validators) != 1:
