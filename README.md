@@ -1,4 +1,4 @@
-![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+![Image of Yaktocat](https://github.com/easycv/easycv/blob/logo/logo1.svg)
 
 Computer Vision made easy.
 
