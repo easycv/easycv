@@ -1,4 +1,4 @@
-![Logo](https://github.com/easycv/easycv/blob/logo/logo2.svg =250x250)
+![Logo](https://github.com/easycv/easycv/blob/logo/logo2.svg | width=100)
 
 Computer Vision made easy.
 
