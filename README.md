@@ -1,4 +1,4 @@
-![Logo](https://github.com/easycv/easycv/blob/logo/logo2.svg | width=100)
+<img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="100" height="100">
 
 Computer Vision made easy.
 
