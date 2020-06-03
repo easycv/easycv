@@ -149,14 +149,14 @@ class Circles(Transform):
     :type size: :class:`int`, optional
     :param dp: Inverse ratio of the accumulator resolution to the image resolution, defaults to 1.
     :type dp: :class:`int`, optional
-    :param minDist: Minimal distance between centers of circles, defaults to 1.
-    :type minDist: :class:`int`/:class:`float`, optional
-    :param minRadius: Minimum radius of a circle, defaults to 0
-    :type minRadius: :class:`int`/:class:`float`, optional
-    :param maxRadius: Maximum radius of a circle, defaults to 0
-    :type maxRadius: :class:`int`/:class:`float`, optional
-    :param cannyThreshold: Threshold to be used in canny, defaults to 200
-    :type cannyThreshold: :class:`int`, optional
+    :param min_dist: Minimal distance between centers of circles, defaults to 1.
+    :type min_dist: :class:`int`/:class:`float`, optional
+    :param min_radius: Minimum radius of a circle, defaults to 0
+    :type min_radius: :class:`int`/:class:`float`, optional
+    :param max_radius: Maximum radius of a circle, defaults to 0
+    :type max_radius: :class:`int`/:class:`float`, optional
+    :param canny_threshold: Threshold to be used in canny, defaults to 200
+    :type canny_threshold: :class:`int`, optional
     :param threshold: Threshold of votes, defaults to 200
     :type threshold: :class:`int`, optional
     """
@@ -164,10 +164,10 @@ class Circles(Transform):
     arguments = {
         "size": Number(min_value=1, only_integer=True, only_odd=True, default=1),
         "dp": Number(min_value=1, only_integer=True, default=1),
-        "minDist": Number(min_value=0, default=1),
-        "minRadius": Number(min_value=0, default=0),
-        "maxRadius": Number(min_value=0, default=0),
-        "cannyThreshold": Number(min_value=0, only_integer=True, default=200),
+        "min_dist": Number(min_value=0, default=1),
+        "min_radius": Number(min_value=0, default=0),
+        "max_radius": Number(min_value=0, default=0),
+        "canny_threshold": Number(min_value=0, only_integer=True, default=200),
         "threshold": Number(min_value=0, only_integer=True, default=200),
     }
 
@@ -182,10 +182,10 @@ class Circles(Transform):
             gray,
             cv2.HOUGH_GRADIENT,
             kwargs["dp"],
-            kwargs["minDist"],
-            param1=kwargs["cannyThreshold"],
+            kwargs["min_dist"],
+            param1=kwargs["canny_threshold"],
             param2=kwargs["threshold"],
-            minRadius=kwargs["minRadius"],
-            maxRadius=kwargs["maxRadius"],
+            minRadius=kwargs["min_radius"],
+            maxRadius=kwargs["max_radius"],
         )
         return {"circles": circles[0]}
