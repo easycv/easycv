@@ -155,8 +155,8 @@ class Circles(Transform):
     :type min_radius: :class:`int`/:class:`float`, optional
     :param max_radius: Maximum radius of a circle, defaults to 0
     :type max_radius: :class:`int`/:class:`float`, optional
-    :param canny_threshold: Threshold to be used in canny, defaults to 200
-    :type canny_threshold: :class:`int`, optional
+    :param high: High canny threshold, defaults to 200
+    :type high: :class:`int`, optional
     :param threshold: Threshold of votes, defaults to 200
     :type threshold: :class:`int`, optional
     """
@@ -167,7 +167,7 @@ class Circles(Transform):
         "min_dist": Number(min_value=0, default=1),
         "min_radius": Number(min_value=0, default=0),
         "max_radius": Number(min_value=0, default=0),
-        "canny_threshold": Number(min_value=0, only_integer=True, default=200),
+        "high": Number(min_value=0, only_integer=True, default=200),
         "threshold": Number(min_value=0, only_integer=True, default=200),
     }
 
@@ -183,7 +183,7 @@ class Circles(Transform):
             cv2.HOUGH_GRADIENT,
             kwargs["dp"],
             kwargs["min_dist"],
-            param1=kwargs["canny_threshold"],
+            param1=kwargs["high"],
             param2=kwargs["threshold"],
             minRadius=kwargs["min_radius"],
             maxRadius=kwargs["max_radius"],
