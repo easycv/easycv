@@ -1,8 +1,9 @@
+<p class="aligncenter">
+    <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" alt="centered image" />
+</p>
 <style>
-img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.aligncenter {
+    text-align: center;
 }
 </style>
 <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="300" height="300" style="width:50%;">
