@@ -6,10 +6,11 @@ Transforms
 
    color
    draw
+   detect
    edges
    filter
    noise
    selectors
-   spatial
    perspective
-   detect
+   spatial
+

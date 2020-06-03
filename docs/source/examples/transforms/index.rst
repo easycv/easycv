@@ -6,9 +6,9 @@ Transforms examples
 
    color.ipynb
    draw.ipynb
+   detect.ipynb
    edges.ipynb
    filter.ipynb
    noise.ipynb
-   spatial.ipynb
-   detect.ipynb
    perspective.ipynb
+   spatial.ipynb

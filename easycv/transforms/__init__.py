@@ -5,6 +5,7 @@ from types import FunctionType
 from easycv.transforms.noise import Noise
 from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
+from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.color import (
     GammaCorrection,
     GrayScale,
@@ -12,17 +13,20 @@ from easycv.transforms.color import (
     PhotoSketch,
     Negative,
     Cartoon,
+    Sepia,
+    ColorTransfer,
 )
-from easycv.transforms.edges import Gradient, GradientAngle, Canny
-from easycv.transforms.spatial import Resize, Crop, Rotate, Translate
+from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
 from easycv.transforms.selectors import Select
 from easycv.transforms.draw import Draw
-from easycv.transforms.detect import Scan
+from easycv.transforms.detect import Scan, Lines, Circles
 
 transforms = [
     Blur,
     Canny,
+    Circles,
     Cartoon,
+    ColorTransfer,
     Crop,
     Draw,
     FilterChannels,
@@ -30,14 +34,17 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
+    Lines,
     Negative,
     Noise,
     Perspective,
     PhotoSketch,
+    Rescale,
     Resize,
     Rotate,
     Scan,
     Select,
+    Sepia,
     Sharpen,
     Sharpness,
     Translate,

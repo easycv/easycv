@@ -139,3 +139,6 @@ test-images/
 
 #pipelines
 *.pipe
+
+#dowloaded models
+easycv/resources/downloaded/*

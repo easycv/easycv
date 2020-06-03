@@ -139,6 +139,7 @@ class Transform(Operation, metaclass=Metadata):
         pass
 
     def run(self, image, forwarded=None):
+        self.initialize()
         if forwarded is None:
             args = self._args
         else:
