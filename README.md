@@ -1,5 +1,5 @@
-<p class="aligncenter">
-    <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" alt="centered image" width="300" height="300" />
+<p align="center">
+  <img width="460" height="300" src="http://www.fillmurray.com/460/300">
 </p>
 <img src="https://github.com/easycv/easycv/blob/logo/logo2.svg" width="300" height="300" style="width:50%;">
 
