@@ -39,6 +39,7 @@ class Validator:
         :type arg_name: :class:`str`
         :param kwargs: Dictionary containing all arguments and their values
         :type kwargs: :class:`dict`
+        :raise InvalidArgumentError: Show when a validator fails to validate the argument.
         """
         try:
             return self.validate(value)

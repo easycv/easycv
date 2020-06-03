@@ -49,6 +49,8 @@ def open_image(path):
     :type path: :class:`str`
     :return: Image as an array
     :rtype: :class:`~numpy:numpy.ndarray`
+    :raises ImageDownloadError: Unable to download the image from the given path.
+    :raises InvalidPathError: Occurs when the path is not from an image file.
     """
     try:
         if os.path.isfile(path):
@@ -76,6 +78,7 @@ def random_dog_image():
 
     :return: Link to a random dog image
     :rtype: :class:`str`
+    :raises ImageDownloadError: Unable to download the image from the given path.
     """
     response = urlopen("https://dog.ceo/api/breeds/image/random")
     if response.getcode() != 200:

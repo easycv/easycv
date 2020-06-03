@@ -27,6 +27,8 @@ class Image(Collection):
     :param lazy: `True` if the image is lazy (computations are delayed until needed), defaults to \
     False
     :type lazy: :class:`boolean`, optional
+    :raise InvalidImageInputSource: Occurs when the input is not a path in string form nor a valid\
+        array
     """
 
     def __init__(self, source, pipeline=None, lazy=False):

@@ -22,6 +22,8 @@ class Pipeline:
     :type source: :class:`list`/:class:`str`
     :param name: Name of the **pipeline**, "pipeline" if no name is specified
     :type name: :class:`str`, optional
+    :raise InvalidPipelineInputSource: Raised if the parameter 'source' is not according with it's\
+        definition.
     """
 
     def __init__(self, source, name=None):
@@ -165,6 +167,8 @@ class Pipeline:
         :class:`~easycv.pipeline.Pipeline`
         :param index: Index to add the transform, end of the list by default
         :type index: :class:`int`, optional
+        :raise ValueError: This error is shown when the user tries to add an object \
+            that is not a Transform nor a Pipeline.
         """
         if isinstance(transform, (Transform, Pipeline)):
             if index is not None:

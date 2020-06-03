@@ -59,6 +59,8 @@ def get_resource(resource_name, filename=None, show_progress=True):
     :type show_progress: :class:`bool`, optional
     :return: A path to the resource folder or to the given file
     :rtype: :class:`pathlib.Path`
+    :raises FileNotInResource: Raised if the file passed in is not in the resources.
+    :raises InvalidResource: Raised when the resource is not available to download.
     """
     if resource_name in downloaded_resources():
         resource_folder = get_resources_folder() / resource_name

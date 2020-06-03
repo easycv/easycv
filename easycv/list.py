@@ -18,6 +18,8 @@ class List:
 
     :param images: List of the images to include
     :type images: :class:`list`
+    :raise InvalidListInputSource: The source given must be a list of images.
+    :raise TypeError: To access a specific image(s) the user needs to use an int or a slice.
     """
 
     def __init__(self, images):

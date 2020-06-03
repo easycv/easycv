@@ -33,6 +33,8 @@ class Operation:
         :type index: :class:`int`, optional
         :param forwarded: List of arguments forwarded to the operation, defaults to no forwards
         :type forwarded: :class:`list`/:class:`tuple`, optional
+        :raise MissingArgumentError: Is shown when a needed argument is not given nor is it \
+            defined by default.
         """
 
         for arg in self.arguments:

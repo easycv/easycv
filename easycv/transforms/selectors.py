@@ -20,6 +20,8 @@ class Select(Transform):
 
     :param n: Number of points to select
     :type n: :class:`int`
+    :raise InvalidSelectionError: The selected points are not suitable to create the shape
+        specified in the method
 """
 
     methods = {
