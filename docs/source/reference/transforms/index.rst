@@ -5,10 +5,11 @@ Transforms
    :maxdepth: 2
 
    color
+   detect
    edges
    filter
    noise
    selectors
-   spatial
    perspective
-   detect
+   spatial
+

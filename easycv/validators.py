@@ -26,7 +26,17 @@ class Validator:
 
     @property
     def default(self):
+        """
+        Default Value for the argument
+        """
         return self._default
+
+    @property
+    def required(self):
+        """
+        Whether or not the argument is required
+        """
+        return self._default is None
 
     def check(self, name, value):
         """
@@ -74,10 +84,6 @@ class Validator:
         :type other: :class:`Validator`
         """
         pass
-
-    @property
-    def required(self):
-        return self._default is None
 
 
 class File(Validator):
