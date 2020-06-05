@@ -49,8 +49,11 @@ class Select(Transform):
     }
 
     def process(self, image, **kwargs):
-        if "DISPLAY" in os.environ:
-            mpl.use("Qt5Agg")
+        if "DISPLAY" not in os.environ:
+            raise Exception("Can't run selectors without a display!")
+
+        mpl.use("Qt5Agg")
+
         fig, current_ax = plt.subplots()
         plt.tick_params(
             axis="both",
