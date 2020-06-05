@@ -16,7 +16,14 @@ from easycv.transforms.color import (
     Sepia,
     ColorTransfer,
 )
-from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
+from easycv.transforms.spatial import (
+    Resize,
+    Rescale,
+    Crop,
+    Mirror,
+    Rotate,
+    Translate,
+)
 from easycv.transforms.selectors import Select
 from easycv.transforms.detect import Scan, Lines, Circles
 
@@ -32,6 +39,7 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
+    Mirror,
     Lines,
     Negative,
     Noise,
