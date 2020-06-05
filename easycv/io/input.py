@@ -2,6 +2,7 @@ import os
 
 from urllib.error import URLError
 from urllib.request import urlopen
+from json import loads
 
 import cv2
 import numpy as np
@@ -37,7 +38,7 @@ def valid_image_source(source):
     """
     source_is_str = isinstance(source, str)
     source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array)
+    return source_is_str or (source_is_array and valid_image_array(source))
 
 
 def open_image(path):
@@ -54,11 +55,11 @@ def open_image(path):
             img = cv2.imread(path)
         else:
             response = urlopen(path)
-            img = np.asarray(bytearray(response.read()), dtype="uint8")
             if response.getcode() != 200:
                 raise ImageDownloadError(
                     "Failed to Download file, error {}.".format(response.getcode())
                 )
+            img = np.asarray(bytearray(response.read()), dtype="uint8")
             img = cv2.imdecode(img, cv2.IMREAD_COLOR)
             if not isinstance(img, np.ndarray):
                 raise InvalidPathError("The given path is not an image.")
@@ -66,6 +67,24 @@ def open_image(path):
 
     except URLError:
         raise InvalidPathError("File path is invalid.") from None
+
+
+def random_dog_image():
+    """
+    Makes a request to `DogApi <https://dog.ceo/dog-api/>`_ for a random image and
+    extracts the link from the response.
+
+    :return: Link to a random dog image
+    :rtype: :class:`str`
+    """
+    response = urlopen("https://dog.ceo/api/breeds/image/random")
+    if response.getcode() != 200:
+        raise ImageDownloadError(
+            "Failed to Download file, error {}.".format(response.getcode())
+        )
+    buf = response.read()
+    result = loads(buf.decode("utf-8"))
+    return result["message"]
 
 
 def get_image_array(image_source):

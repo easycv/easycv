@@ -6,3 +6,6 @@ scipy
 matplotlib
 nbsphinx
 sphinx_rtd_theme
+pyzbar
+tqdm
+color_transfer

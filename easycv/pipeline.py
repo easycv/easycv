@@ -1,11 +1,13 @@
 import os
 import pickle
+from copy import deepcopy
 
 from easycv.transforms.base import Transform
-from easycv.errors.io import InvalidPipelineInputSource
+from easycv.errors import InvalidPipelineInputSource
 
 
 class Pipeline:
+
     """
     This class represents a **pipeline**.
 
@@ -23,11 +25,15 @@ class Pipeline:
     """
 
     def __init__(self, source, name=None):
-        if isinstance(source, list) and all(
-            [isinstance(x, (Transform, Pipeline)) for x in source]
-        ):
+        if isinstance(source, list):
+            self.forwards = Pipeline._calculate_forwards(source)
+
+            self.arguments = source[0].arguments if source else {}
+            self.outputs = source[-1].outputs if source else {}
+
             self._name = name if name else "pipeline"
-            self._transforms = source
+            self._transforms = deepcopy(source)
+
         elif isinstance(source, str) and os.path.isfile(source):
             try:
                 with open(source, "rb") as f:
@@ -41,6 +47,57 @@ class Pipeline:
                 raise InvalidPipelineInputSource() from None
         else:
             raise InvalidPipelineInputSource()
+
+    @staticmethod
+    def _calculate_forwards(source):
+        outputs = {}
+        forwards = {}
+
+        for i in range(len(source)):
+            forwards[i] = {}
+
+            if isinstance(source[i], Transform):
+                for output_index in list(outputs):
+                    for argument in list(outputs[output_index]):
+                        if source[i].can_be_forwarded(
+                            argument, outputs[output_index][argument]
+                        ):
+                            if argument not in forwards[i]:
+                                forwards[i][argument] = output_index
+                                outputs[output_index].pop(argument)
+                                if not outputs[output_index]:
+                                    outputs.pop(output_index)
+
+                source[i].initialize(index=i, forwarded=forwards[i].keys())
+
+            elif not isinstance(source[i], Pipeline):
+                raise InvalidPipelineInputSource()
+
+            if source[i].outputs:
+                outputs[i] = source[i].outputs
+
+        return forwards
+
+    def __call__(self, image):
+        if self._transforms:
+            outputs = {}
+            for i in range(len(self._transforms)):
+                transform = self._transforms[i]
+                forwarded = {
+                    arg: outputs[self.forwards[i][arg]][arg] for arg in self.forwards[i]
+                }
+                if isinstance(transform, Transform):
+                    output = transform(image, forwarded=forwarded)
+                else:
+                    output = transform(image)
+
+                if "image" in output:
+                    image = output["image"]
+
+                outputs[i] = output
+
+            return outputs[len(self._transforms) - 1]
+        return {"image": image}
 
     @property
     def name(self):
@@ -111,9 +168,10 @@ class Pipeline:
         """
         if isinstance(transform, (Transform, Pipeline)):
             if index is not None:
-                self._transforms.insert(index, transform)
+                self._transforms.insert(index, transform.copy())
             else:
-                self._transforms.append(transform)
+                self._transforms.append(transform.copy())
+            self.forwards = Pipeline._calculate_forwards(self._transforms)
         else:
             raise ValueError("Pipelines can only contain Transforms or other pipelines")
 
@@ -133,7 +191,7 @@ class Pipeline:
         :return: Pipeline copy
         :rtype: :class:`~cv.pipeline.Pipeline`
         """
-        return Pipeline(self._transforms.copy(), name=self._name)
+        return deepcopy(self)
 
     def clear(self):
         """
@@ -166,8 +224,3 @@ class Pipeline:
 
     def __repr__(self):
         return str(self)
-
-    def __call__(self, image):
-        for transform in self._transforms:
-            image = transform(image)
-        return image

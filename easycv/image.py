@@ -1,27 +1,18 @@
 import io
 import os
+import base64
+import json
 
 import numpy as np
-from functools import wraps
 
-from easycv.pipeline import Pipeline
+from easycv.collection import Collection, auto_compute
 from easycv.errors.io import InvalidImageInputSource
-from easycv.io import save, valid_image_source, get_image_array, show
+from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
+from easycv.output import Output
+from easycv.transforms.base import Transform
 
 
-def auto_compute(decorated):
-    """ Decorator to auto-compute **image** before running method. Add this to all methods that \
-    need the updated image array to function properly."""
-
-    @wraps(decorated)
-    def wrapper(image, *args):
-        image.compute(in_place=True)
-        return decorated(image, *args)
-
-    return wrapper
-
-
-class Image:
+class Image(Collection):
     """
     This class represents an image.
     Images can be created from a NumPy array containing the **image** data, a path to a local file
@@ -41,20 +32,28 @@ class Image:
     """
 
     def __init__(self, source, pipeline=None, lazy=False):
-        self._lazy = lazy
-        self._pending = (
-            Pipeline([], name="pending") if pipeline is None else pipeline.copy()
-        )
-
         if not valid_image_source(source):
             raise InvalidImageInputSource()
+
+        super().__init__(pending=pipeline, lazy=lazy)
 
         if self._lazy:
             self._source = source
             self._img = None
         else:
+            self._img = self._pending(get_image_array(source))["image"]
             self._pending.clear()
-            self._img = self._pending(get_image_array(source))
+
+    @classmethod
+    def random(cls, lazy=False):
+        """
+        Get a random image. Currently all images are from `DogApi <https://dog.ceo/dog-api/>`_.
+
+        :return: Random Image
+        :rtype: :class:`Image`
+        """
+        path = random_dog_image()
+        return cls(path, lazy=lazy)
 
     @property
     def loaded(self):
@@ -65,16 +64,6 @@ class Image:
         :rtype: :class:`bool`
         """
         return self._img is not None
-
-    @property
-    def pending(self):
-        """
-        Returns all pending transforms/pipelines.
-
-        :return: Pipeline containing pending operations
-        :rtype: :class:`~eascv.pipeline.Pipeline`
-        """
-        return self._pending
 
     @property
     @auto_compute
@@ -97,6 +86,21 @@ class Image:
         :rtype: :class:`int`
         """
         return self._img.shape[1]
+
+    @property
+    @auto_compute
+    def channels(self):
+        """
+        Returns **image** number of channels.
+
+        :return: Image numeber of channels
+        :rtype: :class:`int`
+        """
+
+        if len(self._img.shape) == 2:
+            return 1
+        else:
+            return self._img.shape[2]
 
     @property
     @auto_compute
@@ -134,21 +138,33 @@ class Image:
         :return: The new **image** if `in_place` is *False*
         :rtype: :class:`~eascv.image.Image`
         """
-        if in_place:
-            if self._lazy:
-                self._pending.add_transform(transform)
+
+        if isinstance(transform, Transform):
+            transform.initialize()
+        outputs = transform.outputs
+
+        if self._lazy:
+            if outputs == {}:  # If transform outputs an image
+                if in_place:
+                    self._pending.add_transform(transform)
+                else:
+                    new_source = self._img if self.loaded else self._source
+                    new_image = Image(new_source, pipeline=self._pending, lazy=True)
+                    new_image.apply(transform, in_place=True)
+                    return new_image
             else:
                 self.load()
-                self._img = transform(self._img)
+                return Output(self._img, pending=transform)
         else:
-            if self._lazy:
-                new_pending = self._pending.copy()
-                new_pending.add_transform(transform)
-                new_source = self._img if self.loaded else self._source
-                return Image(new_source, pipeline=new_pending, lazy=True)
+            self.load()
+            if outputs == {}:  # If transform outputs an image
+                if in_place:
+                    self._img = transform(self._img)["image"]
+                else:
+                    new_image = transform(self._img.copy())["image"]
+                    return Image(new_image)
             else:
-                self.load()
-                return Image(transform(self._img))
+                return transform(self._img)
 
     def compute(self, in_place=True):
         """
@@ -164,12 +180,46 @@ class Image:
         """
         self.load()
         if in_place:
-            self._img = self._pending(self._img)
+            self._img = self._pending(self._img)["image"]
             self._pending.clear()
             return self
         else:
-            result = Image(self._pending(self._img), lazy=True)
+            result = Image(self._pending(self._img)["image"], lazy=self._lazy)
             return result
+
+    @auto_compute
+    def encode(self):
+        """
+        Returns a encoded version of the **image**
+
+        :return: Encoded image
+        :rtype: :class:`str`
+        """
+        image_data = base64.b64encode(self.array.copy(order="C")).decode("utf-8")
+        encoded = {
+            "width": self.width,
+            "height": self.height,
+            "channels": self.channels,
+            "dtype": str(self.array.dtype),
+            "data": image_data,
+        }
+        return json.dumps(encoded)
+
+    @classmethod
+    def decode(cls, encoded):
+        """
+        Creates an image by decoding a previously encoded encoded image.
+
+        :return: Decoded image
+        :rtype: :class:`~eascv.image.Image`
+        """
+        encoded = json.loads(encoded)
+        shape = (encoded["height"], encoded["width"], encoded["channels"])
+        image_data = bytes(encoded["data"], encoding="utf-8")
+        image_array = np.frombuffer(
+            base64.decodebytes(image_data), dtype=encoded["dtype"]
+        )
+        return cls(image_array.reshape(shape))
 
     @auto_compute
     def show(self, name="Image"):

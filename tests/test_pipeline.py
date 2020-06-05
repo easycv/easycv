@@ -1,15 +1,13 @@
 import os
 
 from easycv.pipeline import Pipeline
-from easycv.transforms.noise import Noise
+from easycv.transforms import Blur, Noise
 
 
 def test_name():
-    p = Pipeline(
-        [Noise(method="gaussian"), Noise(method="pepper"), Noise(method="s&p")]
-    )
+    p = Pipeline([Noise(method="gaussian"), Noise(method="pepper"), Noise(method="sp")])
     assert p.name == "pipeline"
-    p = Pipeline([Noise(method="s&p"), Noise(method="gaussian")], name="test-pipeline")
+    p = Pipeline([Noise(method="sp"), Noise(method="gaussian")], name="test-pipeline")
     assert p.name == "test-pipeline"
 
 
@@ -23,37 +21,29 @@ def test_description():
 
 
 def test_num_transforms():
-    p = Pipeline(
-        [Noise(method="s&p"), Noise(method="pepper"), Noise(method="gaussian")]
-    )
-    p2 = Pipeline([Noise(method="s&p"), p, Noise(method="gaussian")])
+    p = Pipeline([Noise(method="sp"), Noise(method="pepper"), Noise(method="gaussian")])
+    p2 = Pipeline([Noise(method="sp"), p, Noise(method="gaussian")])
     assert p2.num_transforms() == 5
 
 
 def test_add_transform():
-    p1 = Pipeline([Noise(method="s&p")])
-    p2 = Pipeline([Noise(method="s&p"), Noise(method="gaussian")])
+    p1 = Pipeline([Blur()])
+    p2 = Pipeline([Blur(), Noise(method="gaussian")])
     p1.add_transform(Noise(method="gaussian"))
     assert p1 == p2
-    p3 = Pipeline([Noise(method="s&p"), Noise(method="salt"), Noise(method="gaussian")])
+    p3 = Pipeline([Blur(), Noise(method="salt"), Noise(method="gaussian")])
     p2.add_transform(Noise(method="salt"), index=1)
     assert p2 == p3
 
 
 def test_transforms():
-    p = Pipeline(
-        [Noise(method="s&p"), Noise(method="pepper"), Noise(method="gaussian")]
-    )
+    p = Pipeline([Noise(method="sp"), Noise(method="pepper"), Noise(method="gaussian")])
     assert len(p.transforms()) == p.num_transforms()
 
 
 def test_save():
     p = Pipeline(
-        [
-            Noise(method="s&p", amount=0.1523),
-            Noise(method="pepper"),
-            Noise(method="gaussian", var=0.4),
-        ],
+        [Blur(), Noise(method="pepper"), Noise(method="gaussian", var=0.4)],
         name="test",
     )
     p.save()
