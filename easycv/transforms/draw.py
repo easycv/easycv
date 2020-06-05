@@ -10,31 +10,29 @@ from easycv.utils import font
 class Draw(Transform):
     """
     The Draw transform provides a way to draw 2D shapes or text on a image. Currently supported\
-    shapes are:
+    methods are:
 
-    \t**∙ ellipse**\n
-    \t**∙ line**\n
-    \t**∙ polylines** - An easy way to draw multiple lines or polygons\n
-    \t**∙ rectangle**\n
-    \t**∙ text**\n
+    \t**∙ ellipse** - Draw an ellipse on an image\n
+    \t**∙ line** - Draw a line on an image\n
+    \t**∙ polygon** - Draw a polygon on an image\n
+    \t**∙ rectangle** - Draw a rectangle on an image\n
+    \t**∙ text** - Write text on an image\n
 
     :param ellipse: Tuple made up by: three arguments(center(int,int), axis1(int), axis2(int)) \
     regarding the ellipse.
     :type ellipse: :class:`tuple`
-    :param center: center of the shape
-    :type center: :class:`tuple`
     :param color: color of the shape in BGR, defaults to "(0,0,0)" - black.
     :type color: :class:`list`/:class:`tuple`, optional
     :param end_angle: Ending angle of the elliptic arc in degrees, defaults to "360".
     :type end_angle: :class:`int`, optional
-    :param font: Font to be used whe putting text, defaults to "SIMPLEX".
+    :param font: Font to be used, defaults to "SIMPLEX".
     :type font: :class:`str`, optional
     :param filled: True if shape is to be filled, defaults to "false".
     :type filled: :class:`bool`, optional
-    :param isClosed: If true, a line is drawn from the las vertex to
-    :type isClosed: :class:`str`, optional
-    :param lineType: Line type to be used when drawing a shape, defaults to "line_AA".
-    :type lineType: :class:`str`, optional
+    :param closed: If true, a line is drawn from the last vertex to the first
+    :type closed: :class:`str`, optional
+    :param line_type: Line type to be used when drawing a shape, defaults to "line_AA".
+    :type line_type: :class:`str`, optional
     :param org: Bottom-left corner of the text in the image.
     :type org: :class:`tuple`
     :param pt1: First point to define a shape.
@@ -72,22 +70,22 @@ class Draw(Transform):
                 "filled",
                 "color",
                 "thickness",
-                "lineType",
+                "line_type",
             ]
         },
-        "line": {"arguments": ["pt1", "pt2", "color", "thickness", "lineType"]},
-        "polylines": {
+        "line": {"arguments": ["pt1", "pt2", "color", "thickness", "line_type"]},
+        "polygon": {
             "arguments": [
                 "points",
-                "isClosed",
+                "closed",
                 "color",
                 "thickness",
-                "lineType",
+                "line_type",
                 "filled",
             ]
         },
         "rectangle": {
-            "arguments": ["rectangle", "color", "thickness", "lineType", "filled"]
+            "arguments": ["rectangle", "color", "thickness", "line_type", "filled"]
         },
         "text": {
             "arguments": [
@@ -98,11 +96,10 @@ class Draw(Transform):
                 "x_mirror",
                 "color",
                 "thickness",
-                "lineType",
+                "line_type",
             ]
         },
     }
-    method_name = "shape"
 
     arguments = {
         "ellipse": List(
@@ -129,8 +126,8 @@ class Draw(Transform):
             default=0,
         ),
         "filled": Type(bool, default=False),
-        "isClosed": Type(bool, default=True),
-        "lineType": Option(["line_AA", "line_4", "line_8"], default=0),
+        "closed": Type(bool, default=True),
+        "line_type": Option(["line_AA", "line_4", "line_8"], default=0),
         "org": List(Number(min_value=0, only_integer=True), length=2),
         "pt1": List(Number(min_value=0, only_integer=True), length=2),
         "pt2": List(Number(min_value=0, only_integer=True), length=2),
@@ -152,24 +149,29 @@ class Draw(Transform):
                 + (0.11 * kwargs["color"][2])
             )
 
-        method = kwargs.pop("shape")
-        kwargs["lineType"] = lines[kwargs["lineType"]]
+        method = kwargs.pop("method")
+
+        kwargs["lineType"] = lines[kwargs.pop("line_type")]
 
         if method == "line":
-            return cv.line(image, **kwargs,)
+            kwargs["pt1"] = tuple(kwargs["pt1"])
+            kwargs["pt2"] = tuple(kwargs["pt2"])
+            return cv.line(image, **kwargs)
 
-        if method == "polylines":
+        if method == "polygon":
             kwargs["pts"] = kwargs.pop("points")
             kwargs["pts"] = np.array(kwargs.pop("pts"), np.int32)
             kwargs["pts"] = [kwargs["pts"].reshape((-1, 1, 2))]
             if kwargs.pop("filled"):
                 kwargs.pop("thickness")
-                kwargs.pop("isClosed")
+                kwargs.pop("closed")
                 return cv.fillPoly(image, **kwargs)
             else:
+                kwargs["isClosed"] = kwargs.pop("closed")
                 return cv.polylines(image, **kwargs)
 
         if method == "text":
+            kwargs["org"] = tuple(kwargs["org"])
             kwargs["font"] = font[kwargs["font"]]
             kwargs["fontFace"] = kwargs.pop("font")
             kwargs["fontScale"] = kwargs.pop("size")

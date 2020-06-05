@@ -37,6 +37,7 @@ setup(
         "tqdm",
         "pyyaml",
         "color_transfer",
+        "pyqt5==5.14.2",
     ],
     classifiers=[
         "Intended Audience :: Developers",
