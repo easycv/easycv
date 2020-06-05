@@ -36,6 +36,7 @@ setup(
         "pyzbar",
         "tqdm",
         "pyyaml",
+        "color_transfer",
     ],
     classifiers=[
         "Intended Audience :: Developers",

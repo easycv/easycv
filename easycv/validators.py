@@ -2,6 +2,7 @@ import re
 
 import numpy as np
 from pathlib import Path
+import easycv.image
 
 from easycv.errors import (
     InvalidArgumentError,
@@ -238,6 +239,18 @@ class Type(Validator):
 
 
 class List(Validator):
+    """
+
+    Validator to check if an argument is a List. Lists can be defined in two ways: by giving one
+    validator that should be applied to all elements  (e.g., List(Number())) or by giving a
+    validator for each position in the list (e.g., List(Number(), Type()))
+
+    :param validators: Validator or multiple validators (one for each position)
+    :type validators: :class:`~easycv.validators.Validator`
+    :param length: Exact length of the list
+    :type length: :class:`int`
+    """
+
     def __init__(self, *validators, length=None, default=None):
         super().__init__(default=default)
         if len(validators) != 1:
@@ -316,3 +329,16 @@ class List(Validator):
     @property
     def manual(self):
         return isinstance(self.validator, list)
+
+
+class Image(Validator):
+    """
+    Validator to check if an argument is an image.
+    """
+
+    def validate(self, value):
+        if not isinstance(value, easycv.image.Image):
+            raise ValidatorError("be an image")
+
+    def accepts(self, other):
+        return isinstance(other, Image)

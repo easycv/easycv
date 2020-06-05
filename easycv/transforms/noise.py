@@ -59,4 +59,6 @@ class Noise(Transform):
         kwargs["seed"] = kwargs["seed"] if kwargs["seed"] else None
         if kwargs["mode"] == "gaussian":
             kwargs["var"] = kwargs["var"] / 255
+        if kwargs["mode"] == "sp":
+            kwargs["mode"] = "s&p"
         return random_noise(image, **kwargs)
