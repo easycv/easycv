@@ -11,5 +11,3 @@ mv docs/source/examples/* $tmp
 rm -r ./*
 mv $tmp/* .
 find . -type f -name '*.rst' -delete
-
-apt-get install libzbar0
