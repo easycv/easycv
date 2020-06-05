@@ -52,8 +52,8 @@ Arguments
 ----------
 
 Some transforms depend on hyper-parameters or other configurations. EasyCV calls them arguments and they can \
-specified be inside the transform class by assigning a dictionary containing the argument specifications to the variable \
-``arguments``. In this dictionary argument names are the keys and the values are the argument ``validators``. \
+specified be inside the transform class by assigning a dictionary containing the argument specifications to the \
+variable ``arguments``. In this dictionary argument names are the keys and the values are the argument ``validators``. \
 Validators enable easy and reliable argument validation/forwarding, more details about validators can be found \
 :doc:`here <../validators>`.
 
@@ -61,16 +61,17 @@ EasyCV will check if the user is inserting the required arguments (arguments wit
 considered required) and if the inserted values are valid. A helpful error message is generated automatically from the \
 argument validator is generated in case of an error.
 
-Let's add argument to the transform we created above. We'll add the argument ``fill_value`` to enable people to change the \
-value we use to fill the channel! Since ``fill_value`` must be an 8-bit integer we'll use a ``Number`` validator with \
-some restrictions applied.
+Let's add argument to the transform we created above. We'll add the argument ``fill_value`` to enable people to change \
+the value we use to fill the channel! Since ``fill_value`` must be an 8-bit integer we'll use a ``Number`` validator \
+with some restrictions applied.
 
 Arguments are given to ``process`` through ``kwargs``. You can assume that process only runs if all arguments are \
 valid and all required arguments have been filled.
 
 .. note::
-    The **process** method receives all the specified arguments on ``kwargs`` regardless of which arguments the user enters (default values are \
-    used for this). There is an exception to this case we'll discuss later (method-specific arguments).
+    The **process** method receives all the specified arguments on ``kwargs`` regardless of which arguments the user \
+    enters (default values are used for this). There is an exception to this case we'll discuss later \
+    (method-specific arguments).
 
 .. code-block:: python
 
@@ -110,7 +111,6 @@ But what happens if the argument is invalid? Let's check!
 
 As we can see a helpful message is displayed warning the user that ``fill_value`` must be an integer between 0 \
 and 255.
-
 
 List of Transforms
 ------------------
