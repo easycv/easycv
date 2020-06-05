@@ -18,7 +18,8 @@ class Draw(Transform):
     \t**∙ rectangle**\n
     \t**∙ text**\n
 
-    :param ellipse: Tuple made up by: three arguments(center(int,int), axis1(int), axis2(int))regarding the ellipse.
+    :param ellipse: Tuple made up by: three arguments(center(int,int), axis1(int), axis2(int)) \
+    regarding the ellipse.
     :type ellipse: :class:`tuple`
     :param center: center of the shape
     :type center: :class:`tuple`
@@ -44,7 +45,8 @@ class Draw(Transform):
     :type points: :class:`list`/:class:`tuple`
     :param radius: Radius of the circle.
     :type radius: :class:`int`
-    :param rectangle: Tuple made up by: two points(upper left corner(int,int), lower right corner(int,int))regarding the rectangle.
+    :param rectangle: Tuple made up by: two points(upper left corner(int,int), lower right \
+    corner(int,int))regarding the rectangle.
     :type rectangle: :class:`tuple`
     :param rotation_angle: Angle of rotation.
     :type rotation_angle: :class:`int`
