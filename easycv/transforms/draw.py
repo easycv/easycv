@@ -18,8 +18,8 @@ class Draw(Transform):
     \t**∙ rectangle**\n
     \t**∙ text**\n
 
-    :param ellipse: Half of the size of the ellipse main axes.
-    :type ellipse: :class:`tuple`#todo
+    :param ellipse: Tuple made up by: three arguments(center(int,int), axis1(int), axis2(int))regarding the ellipse.
+    :type ellipse: :class:`tuple`
     :param center: center of the shape
     :type center: :class:`tuple`
     :param color: color of the shape in BGR, defaults to "(0,0,0)" - black.
