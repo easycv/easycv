@@ -44,6 +44,8 @@ class Draw(Transform):
     :type points: :class:`list`/:class:`tuple`
     :param radius: Radius of the circle.
     :type radius: :class:`int`
+    :param rectangle: Tuple made up by: two points(upper left corner(int,int), lower right corner(int,int))regarding the rectangle.
+    :type rectangle: :class:`tuple`
     :param rotation_angle: Angle of rotation.
     :type rotation_angle: :class:`int`
     :param size: Size of the text to be drawn, defaults to "5".
