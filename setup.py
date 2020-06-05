@@ -11,7 +11,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="easycv",
-    version="0.1.2",
+    version="0.2.0",
     license="MIT",
     description="Computer Vision made easy",
     long_description=long_description,
@@ -19,7 +19,7 @@ setup(
     author="EasyCV Developers",
     author_email="easycv.developers@gmail.com",
     url="https://github.com/easycv/easycv",
-    download_url="https://github.com/easycv/easycv/archive/v0.1.2.tar.gz",
+    download_url="https://github.com/easycv/easycv/archive/v0.2.0.tar.gz",
     keywords=["easycv", "computer vision", "python", "ai"],
     setup_requires=["setuptools>=38.6.0"],
     packages=find_packages(),
