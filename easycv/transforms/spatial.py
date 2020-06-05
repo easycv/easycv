@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Type
+from easycv.validators import Number, List, Type, Option
 from easycv.utils import interpolation_methods
 from easycv.errors.transforms import InvalidArgumentError
 
@@ -207,15 +207,20 @@ class Translate(Transform):
 
 class Mirror(Transform):
     """
-    Mirror is a transform that flips the image according to an axis 0(x), 1(y) or -1(x and y)
+    Mirror is a transform that flips the image according to an axis x, y or both
 
-    :param axis: defines flipping axis:, defaults to 1
-    :type axis: :class:`int`, optional
+    :param axis: defines flipping axis, defaults to y
+    :type axis: :class:`str`, optional
     """
 
     arguments = {
-        "axis": Number(min_value=-1, max_value=1, only_integer=True, default=1)
+        "axis": Option(["both", "x", "y"], default=2),
     }
 
     def process(self, image, **kwargs):
-        return cv2.flip(image, kwargs["axis"])
+        if kwargs["axis"] == "x":
+            return cv2.flip(image, 0)
+        if kwargs["axis"] == "y":
+            return cv2.flip(image, 1)
+        if kwargs["axis"] == "both":
+            return cv2.flip(image, -1)
