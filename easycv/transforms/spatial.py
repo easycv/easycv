@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Type
+from easycv.validators import Number, List, Type, Option
 from easycv.utils import interpolation_methods
 from easycv.errors.transforms import InvalidArgumentError
 
@@ -202,3 +202,24 @@ class Translate(Transform):
         matrix = np.float32([[1, 0, kwargs["x"]], [0, 1, kwargs["y"]]])
 
         return cv2.warpAffine(image, matrix, (width, height))
+
+
+class Mirror(Transform):
+    """
+    Mirror is a transform that flips the image according to an axis x, y or both
+
+    :param axis: defines flipping axis, defaults to y
+    :type axis: :class:`str`, optional
+    """
+
+    arguments = {
+        "axis": Option(["both", "x", "y"], default=2),
+    }
+
+    def process(self, image, **kwargs):
+        if kwargs["axis"] == "x":
+            return cv2.flip(image, 0)
+        if kwargs["axis"] == "y":
+            return cv2.flip(image, 1)
+        if kwargs["axis"] == "both":
+            return cv2.flip(image, -1)
