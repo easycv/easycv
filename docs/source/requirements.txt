@@ -9,3 +9,4 @@ sphinx_rtd_theme
 pyzbar
 tqdm
 color_transfer
+pyqt5==5.14.2

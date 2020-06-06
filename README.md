@@ -1,4 +1,6 @@
-# EasyCV
+<p align="center">
+  <img src="https://raw.githubusercontent.com/easycv/easycv/master/images/logo.png">
+</p>
 
 Computer Vision made easy.
 

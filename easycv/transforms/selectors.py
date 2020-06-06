@@ -34,20 +34,26 @@ class Select(Transform):
     }
 
     outputs = {
+        # rectangle
         "rectangle": List(
             List(Number(min_value=0, only_integer=True), length=2), length=2
         ),
+        # ellipse
         "ellipse": List(
             List(Number(only_integer=True, min_value=0), length=2),
-            Number(only_integer=True, min_value=0),
-            Number(only_integer=True, min_value=0),
+            Number(min_value=0, only_integer=True),
+            Number(min_value=0, only_integer=True),
         ),
+        # point
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
     }
 
     def process(self, image, **kwargs):
-        if "DISPLAY" in os.environ:
-            mpl.use("Qt5Agg")
+        if "DISPLAY" not in os.environ:
+            raise Exception("Can't run selectors without a display!")
+
+        mpl.use("Qt5Agg")
+
         fig, current_ax = plt.subplots()
         plt.tick_params(
             axis="both",
@@ -120,12 +126,12 @@ class Select(Transform):
             return {"rectangle": [(x, y), (x + width, y + height)]}
 
         elif kwargs["method"] == "ellipse":
-            width = round(selector.S.to_draw.width)
-            height = round(selector.S.to_draw.height)
-            center = [round(x) for x in selector.S.to_draw.get_center()]
+            width = int(round(selector.S.to_draw.width))
+            height = int(round(selector.S.to_draw.height))
+            center = [int(round(x)) for x in selector.S.to_draw.get_center()]
             if width == 0 or height == 0:
                 raise InvalidSelectionError("Must select an ellipse.")
-            return {"ellipse": [center, width, height]}
+            return {"ellipse": [tuple(center), int(width / 2), int(height / 2)]}
         else:
             if len(res) != kwargs["n"]:
                 raise InvalidSelectionError(

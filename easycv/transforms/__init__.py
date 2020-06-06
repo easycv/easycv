@@ -16,9 +16,17 @@ from easycv.transforms.color import (
     Sepia,
     ColorTransfer,
 )
-from easycv.transforms.spatial import Resize, Rescale, Crop, Rotate, Translate
+from easycv.transforms.spatial import (
+    Resize,
+    Rescale,
+    Crop,
+    Mirror,
+    Rotate,
+    Translate,
+)
 from easycv.transforms.selectors import Select
 from easycv.transforms.detect import Scan, Eyes, Faces, Smiles, Lines, Circles
+from easycv.transforms.draw import Draw
 
 transforms = [
     Blur,
@@ -29,11 +37,13 @@ transforms = [
     Crop,
     Eyes,
     Faces,
+    Draw,
     FilterChannels,
     GammaCorrection,
     Gradient,
     GradientAngle,
     GrayScale,
+    Mirror,
     Lines,
     Negative,
     Noise,
