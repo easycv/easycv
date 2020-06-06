@@ -86,8 +86,6 @@ class Faces(Transform):
     arguments = {
         "scale": Number(default=1.3),
         "min_neighbors": Number(min_value=0, only_integer=True, default=5),
-        "min_size": Number(min_value=0, default="auto"),
-        "max_size": Number(min_value=0, default="auto"),
     }
 
     outputs = {
@@ -106,10 +104,8 @@ class Faces(Transform):
 class Eyes(Transform):
 
     arguments = {
-        "scale": Number(default=1.3),
-        "min_neighbors": Number(min_value=0, only_integer=True, default=5),
-        "min_size": Number(min_value=0, default="auto"),
-        "max_size": Number(min_value=0, default="auto"),
+        "scale": Number(default=1.1),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=3),
     }
 
     outputs = {
@@ -130,7 +126,7 @@ class Eyes(Transform):
             for eye in eyes:
                 adjusted = []
                 for i in range(len(eye)):
-                    adjusted.append([eye[i][0] + face[0][0], eye[i][1] + face[0][1]])
+                    adjusted.append((eye[i][0] + face[0][0], eye[i][1] + face[0][1]))
                 rectangles.append(adjusted)
 
         return {"rectangles": rectangles}
@@ -139,10 +135,8 @@ class Eyes(Transform):
 class Smiles(Transform):
 
     arguments = {
-        "scale": Number(default=1.3),
-        "min_neighbors": Number(min_value=0, only_integer=True, default=5),
-        "min_size": Number(min_value=0, default="auto"),
-        "max_size": Number(min_value=0, default="auto"),
+        "scale": Number(default=1.2),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=20),
     }
 
     outputs = {
@@ -161,7 +155,12 @@ class Smiles(Transform):
                 face_image
             )["rectangles"]
             if smile:
-                rectangles.append(smile)
+                adjusted = []
+                for i in range(len(smile[0])):
+                    adjusted.append(
+                        (smile[0][i][0] + face[0][0], smile[0][i][1] + face[0][1])
+                    )
+                rectangles.append(adjusted)
         return {"rectangles": rectangles}
 
 
