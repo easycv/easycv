@@ -4,6 +4,8 @@ import numpy as np
 from color_transfer import color_transfer
 from easycv.validators import Option, List, Number, Image
 from easycv.transforms.base import Transform
+from easycv.transforms.selectors import Select
+from easycv.transforms.spatial import Crop
 
 
 class GrayScale(Transform):
@@ -128,3 +130,29 @@ class ColorTransfer(Transform):
 
     def process(self, image, **kwargs):
         return color_transfer(kwargs["source"].array, image)
+
+
+class ColorPick(Transform):
+    """
+    ColorPick is a transform that returns the color of a selected point or the \
+    average color of a selected rectangle.
+
+    :param method: Method to be used, defaults to "point"
+    :type method: :class:`str`, optional
+    """
+
+    methods = ["point", "rectangle"]
+    default_method = "point"
+
+    outputs = {
+        "color": List(Number(min_value=0, max_value=255, only_integer=True), length=3)
+    }
+
+    def process(self, image, **kwargs):
+        if kwargs["method"] == "point":
+            point = Select(method="point", n=1).apply(image)["points"][0]
+            return {"color": list(image[point[1]][point[0]][::-1])}
+        if kwargs["method"] == "rectangle":
+            rectangle = Select(method="rectangle").apply(image)["rectangle"]
+            cropped = Crop(rectangle=rectangle).apply(image)
+            return {"color": list(cropped.mean(axis=(1, 0)).round().astype("uint8"))}
