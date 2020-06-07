@@ -121,7 +121,6 @@ class List:
             if in_place:
                 self._images = operation_outputs
             else:
-                print(123)
                 return List(operation_outputs)
         else:
             return operation_outputs
