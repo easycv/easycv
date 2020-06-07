@@ -15,6 +15,9 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
     ColorTransfer,
+    Hue,
+    Contrast,
+    Brightness,
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -29,11 +32,13 @@ from easycv.transforms.draw import Draw
 from easycv.transforms.detect import Scan, Lines, Circles
 
 transforms = [
+    Brightness,
     Blur,
     Canny,
     Circles,
     Cartoon,
     ColorTransfer,
+    Contrast,
     Crop,
     Draw,
     FilterChannels,
@@ -41,6 +46,7 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
+    Hue,
     Mirror,
     Lines,
     Negative,

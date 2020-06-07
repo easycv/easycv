@@ -128,3 +128,41 @@ class ColorTransfer(Transform):
 
     def process(self, image, **kwargs):
         return color_transfer(kwargs["source"].array, image)
+
+
+class Hue(Transform):
+    """
+    Hue is a transform that adds to the hue of the image
+
+    :param value: Value of Hue to Add
+    :type value: :class:`int`
+    """
+
+    arguments = {
+        "value": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        image[:, :, 0] = (image[:, :, 0] + kwargs["value"]) % 180
+        return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+
+
+class Contrast(Transform):
+    arguments = {
+        "alpha": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = np.clip(kwargs["alpha"] * image, 0, 255)
+        return image
+
+
+class Brightness(Transform):
+    arguments = {
+        "beta": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.add(image, kwargs["beta"])
+        return image
