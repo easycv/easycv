@@ -135,7 +135,7 @@ class ColorTransfer(Transform):
 class ColorPick(Transform):
     """
     ColorPick is a transform that returns the color of a selected point or the \
-    average color of a selected rectangle.
+    average color of a selected rectangle. Returns the color in RGB.
 
     :param method: Method to be used, defaults to "point"
     :type method: :class:`str`, optional
@@ -155,4 +155,6 @@ class ColorPick(Transform):
         if kwargs["method"] == "rectangle":
             rectangle = Select(method="rectangle").apply(image)["rectangle"]
             cropped = Crop(rectangle=rectangle).apply(image)
-            return {"color": list(cropped.mean(axis=(1, 0)).round().astype("uint8"))}
+            return {
+                "color": list(cropped.mean(axis=(1, 0)).round().astype("uint8"))[::-1]
+            }
