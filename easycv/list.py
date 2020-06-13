@@ -21,15 +21,16 @@ class List:
     """
 
     def __init__(self, source, recursive=False, lazy=False):
-        images = [
-            easycv.image.Image(img, lazy=lazy)
-            for img in get_image_list(source, recursive=recursive)
-        ]
-        if isinstance(images, list) and all(
-            isinstance(i, easycv.image.Image) for i in images
+        if isinstance(source, list) and all(
+            isinstance(i, easycv.image.Image) for i in source
         ):
+            self._images = source
+        elif isinstance(source, str):
+            images = [
+                easycv.image.Image(img, lazy=lazy)
+                for img in get_image_list(source, recursive=recursive)
+            ]
             self._images = images
-        else:
             raise InvalidListInputSource()
 
     def __getitem__(self, key):

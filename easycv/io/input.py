@@ -113,7 +113,7 @@ def open_folder(list_source, recursive=False):
         paths = [os.path.join(list_source, fn) for fn in next(os.walk(list_source))[2]]
     else:
         paths = []
-        for root, directories, files in os.walk(list_source):
+        for root, _, files in os.walk(list_source):
             for filename in files:
                 paths.append(os.path.join(root, filename))
     images = []
