@@ -3,7 +3,7 @@ from copy import deepcopy
 import ray
 
 import easycv.image
-from easycv.io import show_grid
+from easycv.io import show_grid, get_image_list
 from easycv.collection import auto_compute
 from easycv.transforms.base import Transform
 from easycv.errors.list import InvalidListInputSource
@@ -20,7 +20,11 @@ class List:
     :type images: :class:`list`
     """
 
-    def __init__(self, images):
+    def __init__(self, source, recursive=False, lazy=False):
+        images = [
+            easycv.image.Image(img, lazy=lazy)
+            for img in get_image_list(source, recursive=recursive)
+        ]
         if isinstance(images, list) and all(
             isinstance(i, easycv.image.Image) for i in images
         ):

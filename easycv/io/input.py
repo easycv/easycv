@@ -98,3 +98,42 @@ def get_image_array(image_source):
         return open_image(image_source)
     else:
         return np.copy(image_source)
+
+
+def open_folder(list_source, recursive=False):
+    """
+    :param list_source: Path to a folder of images
+    :type list_source: :class:`str`
+    :param recursive: Flag to allow search in the all directories of the folder
+    :type recursive: :class:`bool`
+    :return: list of images
+    :rtype: :class:`list`
+    """
+    if not recursive:
+        paths = [os.path.join(list_source, fn) for fn in next(os.walk(list_source))[2]]
+    else:
+        paths = []
+        for root, directories, files in os.walk(list_source):
+            for filename in files:
+                paths.append(os.path.join(root, filename))
+    images = []
+    for file in paths:
+        tmp = get_image_array(file)
+        if tmp is not None:
+            images.append(tmp)
+    return images
+
+
+def get_image_list(list_source, recursive=False):
+    """
+    :param list_source: Path to a folder of images
+    :type list_source: :class:`str`
+    :param recursive: Flag to allow search in the all directories of the folder
+    :type recursive: :class:`bool`
+    :return: list of images
+    :rtype: :class:`list`
+    """
+    if isinstance(list_source, str):
+        return open_folder(list_source, recursive=recursive)
+    else:
+        return np.copy(list_source)
