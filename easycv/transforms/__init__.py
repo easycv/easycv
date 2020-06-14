@@ -27,7 +27,7 @@ from easycv.transforms.spatial import (
 )
 from easycv.transforms.selectors import Select
 from easycv.transforms.draw import Draw
-from easycv.transforms.detect import Scan, Lines, Circles
+from easycv.transforms.detect import Scan, Lines, Circles, Detect
 
 transforms = [
     Blur,
@@ -38,6 +38,7 @@ transforms = [
     ColorTransfer,
     Crop,
     Draw,
+    Detect,
     FilterChannels,
     GammaCorrection,
     Gradient,

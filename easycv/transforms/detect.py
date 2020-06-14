@@ -5,6 +5,7 @@ from easycv.transforms.base import Transform
 from easycv.validators import Type, List, Number
 from easycv.transforms.color import GrayScale
 from easycv.transforms.edges import Canny
+from easycv.resources import get_resource
 import easycv.transforms.filter
 
 try:
@@ -189,3 +190,98 @@ class Circles(Transform):
             maxRadius=kwargs["max_radius"],
         )
         return {"circles": circles[0]}
+
+
+class Detect(Transform):
+    methods = ["yolo"]
+    default_method = "yolo"
+
+    arguments = {
+        "confidence": Number(min_value=0, max_value=1, default=0.5),
+        "threshold": Number(min_value=0, max_value=1, default=0.3),
+    }
+
+    @staticmethod
+    def labels():
+        labels_path = get_resource("yolov3", "coco.names")
+        labels = open(str(labels_path)).read().strip().split("\n")
+        return labels
+
+    def process(self, image, **kwargs):
+        config = get_resource("yolov3", "yolov3.cfg")
+        weights = get_resource("yolov3", "yolov3.weights")
+        labels = self.labels()
+
+        np.random.seed(42)
+        colors = np.random.randint(0, 255, size=(len(labels), 3), dtype="uint8")
+
+        net = cv2.dnn.readNetFromDarknet(str(config), str(weights))
+
+        ln = net.getLayerNames()
+        ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+
+        blob = cv2.dnn.blobFromImage(
+            image, 1 / 255.0, (416, 416), swapRB=True, crop=False
+        )
+
+        h, w = image.shape[:2]
+        net.setInput(blob)
+        layerOutputs = net.forward(ln)
+
+        boxes = []
+        confidences = []
+        classIDs = []
+
+        # loop over each of the layer outputs
+        for output in layerOutputs:
+            # loop over each of the detections
+            for detection in output:
+                # extract the class ID and confidence (i.e., probability) of
+                # the current object detection
+                scores = detection[5:]
+                classID = np.argmax(scores)
+                confidence = scores[classID]
+
+                # filter out weak predictions by ensuring the detected
+                # probability is greater than the minimum probability
+                if confidence > kwargs["confidence"]:
+                    # scale the bounding box coordinates back relative to the
+                    # size of the image, keeping in mind that YOLO actually
+                    # returns the center (x, y)-coordinates of the bounding
+                    # box followed by the boxes' width and height
+                    box = detection[0:4] * np.array([w, h, w, h])
+                    (centerX, centerY, width, height) = box.astype("int")
+
+                    # use the center (x, y)-coordinates to derive the top and
+                    # and left corner of the bounding box
+                    x = int(centerX - (width / 2))
+                    y = int(centerY - (height / 2))
+
+                    # update our list of bounding box coordinates, confidences,
+                    # and class IDs
+                    boxes.append([x, y, int(width), int(height)])
+                    confidences.append(float(confidence))
+                    classIDs.append(classID)
+
+        # apply non-maxima suppression to suppress weak, overlapping bounding
+        # boxes
+        idxs = cv2.dnn.NMSBoxes(
+            boxes, confidences, kwargs["confidence"], kwargs["threshold"]
+        )
+
+        # ensure at least one detection exists
+        if len(idxs) > 0:
+            # loop over the indexes we are keeping
+            for i in idxs.flatten():
+                # extract the bounding box coordinates
+                (x, y) = (boxes[i][0], boxes[i][1])
+                (w, h) = (boxes[i][2], boxes[i][3])
+
+                # draw a bounding box rectangle and label on the image
+                color = [int(c) for c in colors[classIDs[i]]]
+                cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+                text = "{}: {:.4f}".format(labels[classIDs[i]], confidences[i])
+                cv2.putText(
+                    image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2
+                )
+        return image
