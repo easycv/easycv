@@ -201,6 +201,14 @@ class Detect(Transform):
         "threshold": Number(min_value=0, max_value=1, default=0.3),
     }
 
+    outputs = {
+        "boxes": List(
+            List(List(Number(), length=2), length=2),
+            List(Number(), length=3),
+            Type(str),
+        )
+    }
+
     @staticmethod
     def labels():
         labels_path = get_resource("yolov3", "coco.names")
@@ -217,8 +225,8 @@ class Detect(Transform):
 
         net = cv2.dnn.readNetFromDarknet(str(config), str(weights))
 
-        ln = net.getLayerNames()
-        ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+        layers = net.getLayerNames()
+        layers = [layers[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
         blob = cv2.dnn.blobFromImage(
             image, 1 / 255.0, (416, 416), swapRB=True, crop=False
@@ -226,62 +234,43 @@ class Detect(Transform):
 
         h, w = image.shape[:2]
         net.setInput(blob)
-        layerOutputs = net.forward(ln)
+        outputs = net.forward(layers)
 
-        boxes = []
+        rectangles = []
         confidences = []
-        classIDs = []
+        class_ids = []
 
-        # loop over each of the layer outputs
-        for output in layerOutputs:
-            # loop over each of the detections
+        for output in outputs:
             for detection in output:
-                # extract the class ID and confidence (i.e., probability) of
-                # the current object detection
                 scores = detection[5:]
-                classID = np.argmax(scores)
-                confidence = scores[classID]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
 
-                # filter out weak predictions by ensuring the detected
-                # probability is greater than the minimum probability
                 if confidence > kwargs["confidence"]:
-                    # scale the bounding box coordinates back relative to the
-                    # size of the image, keeping in mind that YOLO actually
-                    # returns the center (x, y)-coordinates of the bounding
-                    # box followed by the boxes' width and height
-                    box = detection[0:4] * np.array([w, h, w, h])
-                    (centerX, centerY, width, height) = box.astype("int")
+                    # scale the bounding box back
+                    rectangle = detection[0:4] * np.array([w, h, w, h])
+                    (centerX, centerY, width, height) = rectangle.astype("int")
 
-                    # use the center (x, y)-coordinates to derive the top and
-                    # and left corner of the bounding box
+                    # compute top-left corner
                     x = int(centerX - (width / 2))
                     y = int(centerY - (height / 2))
 
-                    # update our list of bounding box coordinates, confidences,
-                    # and class IDs
-                    boxes.append([x, y, int(width), int(height)])
+                    rectangles.append([x, y, int(width), int(height)])
                     confidences.append(float(confidence))
-                    classIDs.append(classID)
+                    class_ids.append(class_id)
 
-        # apply non-maxima suppression to suppress weak, overlapping bounding
-        # boxes
-        idxs = cv2.dnn.NMSBoxes(
-            boxes, confidences, kwargs["confidence"], kwargs["threshold"]
+        # apply non-maximum suppression
+        indexes_to_keep = cv2.dnn.NMSBoxes(
+            rectangles, confidences, kwargs["confidence"], kwargs["threshold"]
         )
 
-        # ensure at least one detection exists
-        if len(idxs) > 0:
-            # loop over the indexes we are keeping
-            for i in idxs.flatten():
-                # extract the bounding box coordinates
-                (x, y) = (boxes[i][0], boxes[i][1])
-                (w, h) = (boxes[i][2], boxes[i][3])
+        boxes = []
+        if len(indexes_to_keep) > 0:
+            for i in indexes_to_keep.flatten():
+                (x, y) = (rectangles[i][0], rectangles[i][1])
+                (w, h) = (rectangles[i][2], rectangles[i][3])
+                color = [int(c) for c in colors[class_ids[i]]]
+                label = "{}: {:.4f}".format(labels[int(class_ids[i])], confidences[i])
+                boxes.append([[(x, y), (w, h)], color, label])
 
-                # draw a bounding box rectangle and label on the image
-                color = [int(c) for c in colors[classIDs[i]]]
-                cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
-                text = "{}: {:.4f}".format(labels[classIDs[i]], confidences[i])
-                cv2.putText(
-                    image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2
-                )
-        return image
+        return {"boxes": boxes}
