@@ -3,7 +3,7 @@ import yaml
 import shutil
 from pathlib import Path
 
-from easycv.resources.download import download_resource
+import easycv.resources.download
 from easycv.errors import InvalidResource, FileNotInResource
 
 
@@ -72,7 +72,9 @@ def get_resource(resource_name, filename=None, show_progress=True):
                 raise FileNotInResource(resource_name)
     elif resource_name in available_resources():
         print(resource_name + " is not installed. Downloading...")
-        download_resource(resource_name, show_progress=show_progress)
+        easycv.resources.download.download_resource(
+            resource_name, show_progress=show_progress
+        )
         return get_resource(resource_name, filename=filename)
     else:
         raise InvalidResource(resource_name)
