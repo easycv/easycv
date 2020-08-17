@@ -34,5 +34,8 @@ class Camera:
     def apply(self, operation):
         self._pending.add_transform(operation)
 
+    def pending(self):
+        return self._pending
+
     def clear(self):
         self._pending.clear()
