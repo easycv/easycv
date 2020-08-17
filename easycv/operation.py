@@ -61,6 +61,12 @@ class Operation:
             return self.arguments[arg_name].accepts(validator)
         return False
 
+    def required(self):
+        pass
+
+    def optional(self):
+        pass
+
     def run(self, image, forwarded=None):
         """
         This method applies the operation to the given image array and returns the result.

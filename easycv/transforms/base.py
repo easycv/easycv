@@ -66,6 +66,14 @@ class Transform(Operation, metaclass=Metadata):
     def __eq__(self, other):
         return isinstance(other, Transform) and self.args == other.args
 
+    def required(self):
+        return [arg for arg in self.arguments if self.arguments[arg].default is None]
+
+    def optional(self):
+        return [
+            arg for arg in self.arguments if self.arguments[arg].default is not None
+        ]
+
     def __repr__(self):
         self.initialize()
         return str(self)
