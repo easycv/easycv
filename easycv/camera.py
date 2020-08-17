@@ -5,11 +5,12 @@ from easycv.image import Image
 
 
 class Camera:
-    def __init__(self):
+    def __init__(self, device=0):
+        self._device = device
         self._pending = Pipeline([])
 
     def show(self, name="Camera"):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(self._device)
         ret, frame = cap.read()
         cv2.namedWindow(name, cv2.WINDOW_KEEPRATIO)
         cv2.resizeWindow(name, frame.shape[1], frame.shape[0])
@@ -25,7 +26,7 @@ class Camera:
         cv2.destroyAllWindows()
 
     def capture(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(self._device)
         ret, frame = cap.read()
         cap.release()
         return Image(frame).apply(self._pending)
