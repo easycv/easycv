@@ -225,3 +225,15 @@ class Pipeline(Operation):
 
     def __repr__(self):
         return str(self)
+
+    def required(self):
+        res = []
+        for transform in self._transforms:
+            res += transform.required()
+        return res
+
+    def optional(self):
+        res = []
+        for transform in self._transforms:
+            res += transform.optional()
+        return res
