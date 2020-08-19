@@ -10,6 +10,7 @@ from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 from easycv.output import Output
 from easycv.transforms.base import Transform
+import cv2
 
 
 class Image(Collection):
@@ -265,3 +266,15 @@ class Image(Collection):
         b = io.BytesIO()
         save(self._img, b, "PNG")
         return b.getvalue()
+
+    def hash(self, hash_size=8):
+        """
+        Function to calculate the hash function of an Image based of on the implemention of
+        difference hash
+
+        :param hash_size: Square root of the number of bits of the hash, defaults to 8
+        :type hash_size: :class:`int`, optional
+        """
+        resized = cv2.resize(self.array, (hash_size + 1, hash_size))
+        diff = resized[:, 1:] > resized[:, :-1]
+        return sum([2 ** i for (i, v) in enumerate(diff.flatten()) if v])
