@@ -7,7 +7,8 @@ from easycv.errors import MissingArgumentError
 class Operation:
     arguments = None  # Validators for arguments
     outputs = None  # Validators for outputs
-
+    required = None  # Name of required args
+    optional = None  # Name of optional args
     _args = None  # Argument values
 
     @property
@@ -60,12 +61,6 @@ class Operation:
         if arg_name in self.arguments and arg_name not in self._args:
             return self.arguments[arg_name].accepts(validator)
         return False
-
-    def required(self):
-        pass
-
-    def optional(self):
-        pass
 
     def run(self, image, forwarded=None):
         """

@@ -27,13 +27,19 @@ class Pipeline(Operation):
 
     def __init__(self, source, name=None):
         if isinstance(source, list):
-            self.forwards = Pipeline._calculate_forwards(source)
+            # self.forwards = Pipeline._calculate_forwards(source)
 
             self.arguments = source[0].arguments if source else {}
             self.outputs = source[-1].outputs if source else {}
 
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
+            self.required = sum(
+                [transform.required for transform in self._transforms], []
+            )
+            self.optional = sum(
+                [transform.optional for transform in self._transforms], []
+            )
 
         elif isinstance(source, str) and os.path.isfile(source):
             try:
@@ -225,15 +231,3 @@ class Pipeline(Operation):
 
     def __repr__(self):
         return str(self)
-
-    def required(self):
-        res = []
-        for transform in self._transforms:
-            res += transform.required()
-        return res
-
-    def optional(self):
-        res = []
-        for transform in self._transforms:
-            res += transform.optional()
-        return res
