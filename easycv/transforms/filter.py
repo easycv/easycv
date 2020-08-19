@@ -11,10 +11,12 @@ from easycv.validators import Number, Type
 class Blur(Transform):
     """
     Blur is a transform that blurs an image.
+
     \t**∙ uniform** - Uniform Filter\n
     \t**∙ gaussian** - Gaussian-distributed additive noise\n
     \t**∙ median** - Median Filter\n
     \t**∙ bilateral** - Edge preserving blur\n
+
     :param method: Blur method to be used, defaults to "uniform"
     :type method: :class:`str`, optional
     :param size: Kernel size, defaults to auto
@@ -67,10 +69,12 @@ class Blur(Transform):
 class Sharpness(Transform):
     """
     Sharpness is a transform that measures how sharpen an image is. Images are classified as \
-    sharpen when above a certain value of sharpness given by the threshold.
+    sharpen when above a certain value of sharpness given by the threshold. \
     Currently supported interpolation methods:
+
     \t**∙ laplace** - Uses laplacian to calculate Sharpness\n
     \t**∙ fft** - Uses Fast Fourier Transform to calculate Sharpness\n
+
     :param threshold: Threshold to classify images as sharpen, defaults to 100 (for fft this \
     should be arround 10)
     :type threshold: :class:`int`/:class:`float`, optional
@@ -119,6 +123,7 @@ class Sharpness(Transform):
 class Sharpen(Transform):
     """
     Sharpen is a transform that sharpens an image.
+
     :param sigma: Kernel sigma, defaults to 1
     :type sigma: :class:`float`, optional
     :param amount: Amount to sharpen, defaults to 1
