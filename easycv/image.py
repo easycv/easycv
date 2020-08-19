@@ -269,8 +269,7 @@ class Image(Collection):
 
     def hash(self, hash_size=8):
         """
-        Function to calculate the hash function of an Image based of on the implemention of
-        difference hash
+        Function to calculate the hash function of an Image using dhash
 
         :param hash_size: Square root of the number of bits of the hash, defaults to 8
         :type hash_size: :class:`int`, optional
