@@ -31,6 +31,7 @@ class List:
                 for img in get_image_list(source, recursive=recursive)
             ]
             self._images = images
+        else:
             raise InvalidListInputSource()
 
     def __getitem__(self, key):
