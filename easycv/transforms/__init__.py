@@ -16,6 +16,7 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
     ColorTransfer,
+    Colarize,
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -34,6 +35,7 @@ transforms = [
     Canny,
     Circles,
     Cartoon,
+    Colarize,
     ColorPick,
     ColorTransfer,
     Crop,
