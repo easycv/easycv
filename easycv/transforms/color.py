@@ -161,9 +161,9 @@ class ColorPick(Transform):
             }
 
 
-class Colarize(Transform):
+class Colorize(Transform):
     """
-    Colarize is a transform that puts the color in a grayscale image
+    Colorize is a transform that puts the color in a grayscale image
     """
 
     def process(self, image, **kwargs):
