@@ -102,6 +102,8 @@ def get_image_array(image_source):
 
 def open_folder(list_source, recursive=False):
     """
+    Searches in the folder path given for the images present
+
     :param list_source: Path to a folder of images
     :type list_source: :class:`str`
     :param recursive: Flag to allow search in the all directories of the folder
@@ -126,6 +128,8 @@ def open_folder(list_source, recursive=False):
 
 def get_image_list(list_source, recursive=False):
     """
+    Gets all the images from a folder
+
     :param list_source: Path to a folder of images
     :type list_source: :class:`str`
     :param recursive: Flag to allow search in the all directories of the folder
