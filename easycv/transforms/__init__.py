@@ -17,6 +17,7 @@ from easycv.transforms.color import (
     Sepia,
     ColorTransfer,
     Colorize,
+    Quantitization,
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -52,6 +53,7 @@ transforms = [
     Noise,
     Perspective,
     PhotoSketch,
+    Quantitization,
     Rescale,
     Resize,
     Rotate,
