@@ -8,17 +8,23 @@ from easycv.transforms.color import GrayScale
 
 class Gradient(Transform):
     """
-    Gradient is a transform that computes the gradient of an image.
+    Gradient is a transform that computes the gradient of an image. Available methods:
+
+    \t**∙ sobel** - Gradient using Sobel kernel\n
+    \t**∙ laplace** - Laplacian of an image\n
+    \t**∙ morphological** - Morphological Gradient (difference between dilation and erosion).\n
 
     :param axis: Axis to compute, defaults to "both" (magnitude)
     :type axis: :class:`str`, optional
-    :param method: Gradient calculation method, defaults to "sobel"
-    :type method: :class:`str`, optional
     :param size: Kernel size, defaults to 5
     :type size: :class:`int`, optional
     """
 
-    methods = {"sobel": {"arguments": ["axis", "size"]}, "laplace": {}}
+    methods = {
+        "sobel": {"arguments": ["axis", "size"]},
+        "morphological": {"arguments": ["size"]},
+        "laplace": {},
+    }
     default_method = "sobel"
 
     arguments = {
@@ -39,8 +45,11 @@ class Gradient(Transform):
                 return cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kwargs["size"])
             else:
                 return cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kwargs["size"])
-        else:
+        elif kwargs["method"] == "laplace":
             return cv2.Laplacian(image, cv2.CV_64F)
+        else:
+            kernel = np.ones((kwargs["size"], kwargs["size"]), np.uint8)
+            return cv2.morphologyEx(image, cv2.MORPH_GRADIENT, kernel)
 
 
 class GradientAngle(Transform):
