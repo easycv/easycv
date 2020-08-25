@@ -72,17 +72,28 @@ class Canny(Transform):
     :type low: :class:`int`, optional
     :param high: High threshold, defaults to 200
     :type high: :class:`int`, optional
-    :param size: Kernel size, defaults to 5
+    :param size: Aperture size, defaults to 5
     :type size: :class:`int`, optional
+    :param sigma: Sigma for auto canny size, defaults to 0.33
+    :type sigma: :class:`float`, optional
     """
 
     arguments = {
-        "low": Number(min_value=1, max_value=255, only_integer=True, default=100),
-        "high": Number(min_value=1, max_value=255, only_integer=True, default=200),
+        "low": Number(min_value=1, max_value=255, only_integer=True, default="auto"),
+        "high": Number(min_value=1, max_value=255, only_integer=True, default="auto"),
         "size": Number(
             min_value=3, max_value=7, only_integer=True, only_odd=True, default=3
         ),
+        "sigma": Number(min_value=0, default=0.33),
     }
 
     def process(self, image, **kwargs):
-        return cv2.Canny(image, kwargs["low"], kwargs["high"], kwargs["size"])
+        if kwargs["low"] == "auto":
+            v = np.median(image)
+            kwargs["low"] = int(max(0, (1.0 - kwargs["sigma"]) * v))
+        if kwargs["high"] == "auto":
+            v = np.median(image)
+            kwargs["high"] = int(min(255, (1.0 + kwargs["sigma"]) * v))
+        return cv2.Canny(
+            image, kwargs["low"], kwargs["high"], apertureSize=kwargs["size"]
+        )

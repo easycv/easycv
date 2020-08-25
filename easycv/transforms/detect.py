@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 
-from easycv.resources import get_resource
 from easycv.transforms.base import Transform
 from easycv.transforms.color import GrayScale
 from easycv.transforms.spatial import Crop
 from easycv.transforms.edges import Canny
+from easycv.resources import get_resource
 import easycv.transforms.filter
 from easycv.validators import Type, List, Number, File
 
@@ -132,7 +132,7 @@ class Eyes(Transform):
         return {"rectangles": rectangles}
 
 
-class Smiles(Transform):
+class Smile(Transform):
 
     arguments = {
         "scale": Number(default=1.2),
@@ -309,3 +309,87 @@ class Circles(Transform):
             maxRadius=kwargs["max_radius"],
         )
         return {"circles": circles[0]}
+
+
+class Detect(Transform):
+    methods = ["yolo"]
+    default_method = "yolo"
+
+    arguments = {
+        "confidence": Number(min_value=0, max_value=1, default=0.5),
+        "threshold": Number(min_value=0, max_value=1, default=0.3),
+    }
+
+    outputs = {
+        "boxes": List(
+            List(List(Number(), length=2), length=2),
+            List(Number(), length=3),
+            Type(str),
+        )
+    }
+
+    @staticmethod
+    def labels():
+        labels_path = get_resource("yolov3", "coco.names")
+        labels = open(str(labels_path)).read().strip().split("\n")
+        return labels
+
+    def process(self, image, **kwargs):
+        config = get_resource("yolov3", "yolov3.cfg")
+        weights = get_resource("yolov3", "yolov3.weights")
+        labels = self.labels()
+
+        np.random.seed(42)
+        colors = np.random.randint(0, 255, size=(len(labels), 3), dtype="uint8")
+
+        net = cv2.dnn.readNetFromDarknet(str(config), str(weights))
+
+        layers = net.getLayerNames()
+        layers = [layers[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+
+        blob = cv2.dnn.blobFromImage(
+            image, 1 / 255.0, (416, 416), swapRB=True, crop=False
+        )
+
+        h, w = image.shape[:2]
+        net.setInput(blob)
+        outputs = net.forward(layers)
+
+        rectangles = []
+        confidences = []
+        class_ids = []
+
+        for output in outputs:
+            for detection in output:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+
+                if confidence > kwargs["confidence"]:
+                    # scale the bounding box back
+                    rectangle = detection[0:4] * np.array([w, h, w, h])
+                    (centerX, centerY, width, height) = rectangle.astype("int")
+
+                    # compute top-left corner
+                    x = int(centerX - (width / 2))
+                    y = int(centerY - (height / 2))
+
+                    rectangles.append([x, y, int(width), int(height)])
+                    confidences.append(float(confidence))
+                    class_ids.append(class_id)
+
+        # apply non-maximum suppression
+        indexes_to_keep = cv2.dnn.NMSBoxes(
+            rectangles, confidences, kwargs["confidence"], kwargs["threshold"]
+        )
+
+        boxes = []
+        if len(indexes_to_keep) > 0:
+            for i in indexes_to_keep.flatten():
+                (x, y) = (rectangles[i][0], rectangles[i][1])
+                (w, h) = (rectangles[i][2], rectangles[i][3])
+                color = [int(c) for c in colors[class_ids[i]]]
+                label = "{}: {:.4f}".format(labels[int(class_ids[i])], confidences[i])
+                boxes.append([[(x, y), (w, h)], color, label])
+
+        return {"boxes": boxes}

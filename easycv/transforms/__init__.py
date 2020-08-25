@@ -16,6 +16,7 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
     ColorTransfer,
+    Colorize,
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -26,7 +27,7 @@ from easycv.transforms.spatial import (
     Translate,
 )
 from easycv.transforms.selectors import Select
-from easycv.transforms.detect import Scan, Eyes, Faces, Smiles, Lines, Circles
+from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
 
 transforms = [
@@ -34,12 +35,14 @@ transforms = [
     Canny,
     Circles,
     Cartoon,
+    Colorize,
     ColorPick,
     ColorTransfer,
     Crop,
     Eyes,
     Faces,
     Draw,
+    Detect,
     FilterChannels,
     GammaCorrection,
     Gradient,
@@ -59,7 +62,7 @@ transforms = [
     Sepia,
     Sharpen,
     Sharpness,
-    Smiles,
+    Smile,
     Translate,
 ]
 

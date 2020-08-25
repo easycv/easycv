@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from skimage.filters import unsharp_mask
 
 from easycv.transforms.base import Transform
@@ -67,25 +68,56 @@ class Blur(Transform):
 
 class Sharpness(Transform):
     """
-    Sharpness is a transform that measures how sharpen an image is. The sharpness metric is \
-    calculated using the laplacian of the image. Images are classified as sharpen when above a \
-    certain value of sharpness given by the threshold.
+    Sharpness is a transform that measures how sharpen an image is. Images are classified as \
+    sharpen when above a certain value of sharpness given by the threshold. \
+    Currently supported interpolation methods:
 
-    :param threshold: Threshold to classify images as sharpen, defaults to 100
+    \t**∙ laplace** - Uses laplacian to calculate Sharpness\n
+    \t**∙ fft** - Uses Fast Fourier Transform to calculate Sharpness\n
+
+    :param threshold: Threshold to classify images as sharpen, defaults to 100 (for fft this \
+    should be arround 10)
     :type threshold: :class:`int`/:class:`float`, optional
+    :param size: Radius around the centerpoint to zero out the FFT shift
+    :type size: :class:`int`, optional
     """
 
-    arguments = {"threshold": Number(min_value=0, default=100)}
+    methods = {
+        "laplace": {"arguments": ["threshold"]},
+        "fft": {"arguments": ["size", "threshold"]},
+    }
+    default_method = "laplace"
+
+    arguments = {
+        "threshold": Number(min_value=0, default=100),
+        "size": Number(min_value=0, only_integer=True, default=60),
+    }
 
     outputs = {"sharpness": Number(), "sharpen": Type(bool)}
 
     def process(self, image, **kwargs):
         grayscale = GrayScale().apply(image)
-        variance = (
-            easycv.transforms.edges.Gradient(method="laplace").apply(grayscale).var()
-        )
-        sharpen = variance >= kwargs["threshold"]
-        return {"sharpness": variance, "sharpen": sharpen}
+
+        if kwargs["method"] == "laplace":
+            sharpness = (
+                easycv.transforms.edges.Gradient(method="laplace")
+                .apply(grayscale)
+                .var()
+            )
+        else:
+            h, w = grayscale.shape
+            centerx, centery = (int(w / 2.0), int(h / 2.0))
+            fft = np.fft.fft2(grayscale)
+            fft_shift = np.fft.fftshift(fft)
+            size = kwargs["size"]
+            fft_shift[
+                centery - size : centery + size, centerx - size : centerx + size
+            ] = 0
+            fft_shift = np.fft.ifftshift(fft_shift)
+            recon = np.fft.ifft2(fft_shift)
+            sharpness = np.mean(20 * np.log(np.abs(recon)))
+
+        return {"sharpness": sharpness, "sharpen": sharpness >= kwargs["threshold"]}
 
 
 class Sharpen(Transform):
