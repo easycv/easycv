@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from sklearn.cluster import MiniBatchKMeans
 
 from color_transfer import color_transfer
 from easycv.validators import Option, List, Number, Image
@@ -192,3 +193,30 @@ class Colorize(Transform):
         colorized = np.concatenate((L[:, :, np.newaxis], ab), axis=2)
         colorized = cv2.cvtColor(colorized, cv2.COLOR_LAB2BGR)
         return (255 * np.clip(colorized, 0, 1)).astype("uint8")
+
+
+class Quantitization(Transform):
+    """
+    Quantitization is a Transform that reduces the number of colors to the on give
+
+    :param clusters: Number of colors that the image will have
+    :type clusters: :class:`int`, required
+    """
+
+    arguments = {
+        "clusters": Number(min_value=1, only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        (h, w) = image.shape[:2]
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        image = image.reshape((image.shape[0] * image.shape[1], 3))
+
+        clt = MiniBatchKMeans(n_clusters=kwargs["clusters"])
+        labels = clt.fit_predict(image)
+
+        quant = clt.cluster_centers_.astype("uint8")[labels]
+        quant = quant.reshape((h, w, 3))
+        quant = cv2.cvtColor(quant, cv2.COLOR_LAB2BGR)
+
+        return quant
