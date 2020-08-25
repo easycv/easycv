@@ -2,11 +2,13 @@ import cv2
 import numpy as np
 
 from easycv.transforms.base import Transform
-from easycv.validators import Type, List, Number
 from easycv.transforms.color import GrayScale
+from easycv.transforms.spatial import Crop
 from easycv.transforms.edges import Canny
 from easycv.resources import get_resource
 import easycv.transforms.filter
+from easycv.validators import Type, List, Number, File
+
 
 try:
     from pyzbar import pyzbar
@@ -43,6 +45,123 @@ class Scan(Transform):
             rectangles.append([(x, y), (x + width, y + height)])
 
         return {"detections": len(decoded), "data": data, "rectangles": rectangles}
+
+
+class CascadeDetector(Transform):
+
+    arguments = {
+        "cascade": File(),
+        "scale": Number(default=1.1),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=3),
+        "min_size": Number(min_value=0, default="auto"),
+        "max_size": Number(min_value=0, default="auto"),
+    }
+
+    outputs = {
+        "rectangles": List(
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
+        ),
+    }
+
+    def process(self, image, **kwargs):
+        cascade = cv2.CascadeClassifier(kwargs["cascade"])
+        gray = GrayScale().apply(image)
+        detections = cascade.detectMultiScale(
+            gray,
+            scaleFactor=kwargs["scale"],
+            minNeighbors=kwargs["min_neighbors"],
+            minSize=kwargs["min_size"] if kwargs["min_size"] != "auto" else None,
+            maxSize=kwargs["max_size"] if kwargs["max_size"] != "auto" else None,
+        )
+
+        rectangles = []
+        for x, y, w, h in detections:
+            rectangles.append([(x, y), (x + w, y + h)])
+
+        return {"rectangles": rectangles}
+
+
+class Faces(Transform):
+
+    arguments = {
+        "scale": Number(default=1.3),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=5),
+    }
+
+    outputs = {
+        "rectangles": List(
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
+        ),
+    }
+
+    def process(self, image, **kwargs):
+        cascade_file = get_resource(
+            "haar-face-cascade", "haarcascade_frontalface_default.xml"
+        )
+        return CascadeDetector(cascade=str(cascade_file), **kwargs).apply(image)
+
+
+class Eyes(Transform):
+
+    arguments = {
+        "scale": Number(default=1.1),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=3),
+    }
+
+    outputs = {
+        "rectangles": List(
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
+        ),
+    }
+
+    def process(self, image, **kwargs):
+        cascade_file = get_resource("haar-eye-cascade", "haarcascade_eye.xml")
+
+        rectangles = []
+        for face in Faces().apply(image)["rectangles"]:
+            face_image = Crop(rectangle=face).apply(image)
+            eyes = CascadeDetector(cascade=str(cascade_file), **kwargs).apply(
+                face_image
+            )["rectangles"]
+            for eye in eyes:
+                adjusted = []
+                for i in range(len(eye)):
+                    adjusted.append((eye[i][0] + face[0][0], eye[i][1] + face[0][1]))
+                rectangles.append(adjusted)
+
+        return {"rectangles": rectangles}
+
+
+class Smile(Transform):
+
+    arguments = {
+        "scale": Number(default=1.2),
+        "min_neighbors": Number(min_value=0, only_integer=True, default=20),
+    }
+
+    outputs = {
+        "rectangles": List(
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
+        ),
+    }
+
+    def process(self, image, **kwargs):
+        faces = Faces().apply(image)
+        cascade_file = get_resource("haar-smile-cascade", "haarcascade_smile.xml")
+        rectangles = []
+        for face in faces["rectangles"]:
+            face_image = Crop(rectangle=face).apply(image)
+            smile = CascadeDetector(cascade=str(cascade_file), **kwargs).apply(
+                face_image
+            )["rectangles"]
+            if smile:
+                adjusted = []
+                for i in range(len(smile[0])):
+                    adjusted.append(
+                        (smile[0][i][0] + face[0][0], smile[0][i][1] + face[0][1])
+                    )
+                rectangles.append(adjusted)
+        return {"rectangles": rectangles}
 
 
 class Lines(Transform):
