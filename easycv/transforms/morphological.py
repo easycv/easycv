@@ -8,7 +8,7 @@ from easycv.utils import morp_methods
 
 class Erode(Transform):
     arguments = {
-        "size": Number(min_value=1, only_integer=True, default=5),
+        "size": Number(min_value=1, only_integer=True, only_odd=True, default=5),
         "iterations": Number(min_value=1, only_integer=True, default=1),
     }
 
@@ -19,7 +19,7 @@ class Erode(Transform):
 
 class Dilate(Transform):
     arguments = {
-        "size": Number(min_value=1, only_integer=True, default=5),
+        "size": Number(min_value=1, only_integer=True, only_odd=True, default=5),
         "iterations": Number(min_value=1, only_integer=True, default=1),
     }
 
@@ -30,7 +30,7 @@ class Dilate(Transform):
 
 class Morphology(Transform):
     arguments = {
-        "size": Number(min_value=1, only_integer=True, default=5),
+        "size": Number(min_value=1, only_integer=True, only_odd=True, default=5),
         "iterations": Number(min_value=1, only_integer=True, default=1),
     }
 
