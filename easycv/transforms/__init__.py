@@ -30,6 +30,7 @@ from easycv.transforms.spatial import (
 from easycv.transforms.selectors import Select
 from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
+from easycv.transforms.morphological import Erode, Dilate, Morphology
 
 transforms = [
     Blur,
@@ -44,12 +45,15 @@ transforms = [
     Faces,
     Draw,
     Detect,
+    Dilate,
+    Erode,
     FilterChannels,
     GammaCorrection,
     Gradient,
     GradientAngle,
     GrayScale,
     Mirror,
+    Morphology,
     Lines,
     Negative,
     Noise,
