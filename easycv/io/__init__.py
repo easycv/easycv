@@ -4,6 +4,7 @@ from easycv.io.input import (
     valid_image_source,
     get_image_array,
     random_dog_image,
+    get_image_list,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "show",
     "show_grid",
     "valid_image_source",
+    "get_image_list",
 ]
