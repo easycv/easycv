@@ -38,6 +38,7 @@ setup(
         "pyyaml",
         "color_transfer",
         "pyqt5==5.14.2",
+        "sklearn",
     ],
     classifiers=[
         "Intended Audience :: Developers",
