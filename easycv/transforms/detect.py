@@ -312,7 +312,10 @@ class Circles(Transform):
 
 
 class Detect(Transform):
-    methods = ["yolo"]
+    methods = {
+        "yolo": {"arguments": ["confidence", "threshold"]},
+        "ssd": {"arguments": ["confidence"]},
+    }
     default_method = "yolo"
 
     arguments = {
@@ -329,67 +332,121 @@ class Detect(Transform):
     }
 
     @staticmethod
-    def labels():
-        labels_path = get_resource("yolov3", "coco.names")
-        labels = open(str(labels_path)).read().strip().split("\n")
+    def labels(model):
+        if model == "yolo":
+            labels_path = get_resource("yolov3", "coco.names")
+            labels = open(str(labels_path)).read().strip().split("\n")
+        else:
+            labels = [
+                "background",
+                "aeroplane",
+                "bicycle",
+                "bird",
+                "boat",
+                "bottle",
+                "bus",
+                "car",
+                "cat",
+                "chair",
+                "cow",
+                "diningtable",
+                "dog",
+                "horse",
+                "motorbike",
+                "person",
+                "pottedplant",
+                "sheep",
+                "sofa",
+                "train",
+                "tvmonitor",
+            ]
         return labels
 
     def process(self, image, **kwargs):
-        config = get_resource("yolov3", "yolov3.cfg")
-        weights = get_resource("yolov3", "yolov3.weights")
-        labels = self.labels()
-
-        np.random.seed(42)
+        labels = self.labels(kwargs["method"])
         colors = np.random.randint(0, 255, size=(len(labels), 3), dtype="uint8")
 
-        net = cv2.dnn.readNetFromDarknet(str(config), str(weights))
+        if kwargs["method"] == "yolo":
+            config = get_resource("yolov3", "yolov3.cfg")
+            weights = get_resource("yolov3", "yolov3.weights")
 
-        layers = net.getLayerNames()
-        layers = [layers[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+            net = cv2.dnn.readNetFromDarknet(str(config), str(weights))
 
-        blob = cv2.dnn.blobFromImage(
-            image, 1 / 255.0, (416, 416), swapRB=True, crop=False
-        )
+            layers = net.getLayerNames()
+            layers = [layers[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-        h, w = image.shape[:2]
-        net.setInput(blob)
-        outputs = net.forward(layers)
+            blob = cv2.dnn.blobFromImage(
+                image, 1 / 255.0, (416, 416), swapRB=True, crop=False
+            )
 
-        rectangles = []
-        confidences = []
-        class_ids = []
+            h, w = image.shape[:2]
+            net.setInput(blob)
+            outputs = net.forward(layers)
 
-        for output in outputs:
-            for detection in output:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
+            rectangles = []
+            confidences = []
+            class_ids = []
+
+            for output in outputs:
+                for detection in output:
+                    scores = detection[5:]
+                    class_id = np.argmax(scores)
+                    confidence = scores[class_id]
+
+                    if confidence > kwargs["confidence"]:
+                        # scale the bounding box back
+                        rectangle = detection[0:4] * np.array([w, h, w, h])
+                        (centerX, centerY, width, height) = rectangle.astype("int")
+
+                        # compute top-left corner
+                        x = int(centerX - (width / 2))
+                        y = int(centerY - (height / 2))
+
+                        rectangles.append([x, y, int(width), int(height)])
+                        confidences.append(float(confidence))
+                        class_ids.append(class_id)
+
+            # apply non-maximum suppression
+            indexes_to_keep = cv2.dnn.NMSBoxes(
+                rectangles, confidences, kwargs["confidence"], kwargs["threshold"]
+            )
+
+            boxes = []
+            if len(indexes_to_keep) > 0:
+                for i in indexes_to_keep.flatten():
+                    (x, y) = (rectangles[i][0], rectangles[i][1])
+                    (w, h) = (rectangles[i][2], rectangles[i][3])
+                    color = [int(c) for c in colors[class_ids[i]]]
+                    label = "{}: {:.4f}".format(
+                        labels[int(class_ids[i])], confidences[i]
+                    )
+                    boxes.append([[(x, y), (w, h)], color, label])
+
+            return {"boxes": boxes}
+        else:
+            prototxt = get_resource("ssd-mobilenet", "MobileNetSSD_deploy.prototxt")
+            model = get_resource("ssd-mobilenet", "MobileNetSSD_deploy.caffemodel")
+            net = cv2.dnn.readNetFromCaffe(str(prototxt), str(model))
+
+            (h, w) = image.shape[:2]
+            blob = cv2.dnn.blobFromImage(
+                cv2.resize(image, (300, 300)), 0.007843, (300, 300), 127.5
+            )
+            net.setInput(blob)
+            detections = net.forward()
+
+            boxes = []
+            for i in np.arange(0, detections.shape[2]):
+                confidence = detections[0, 0, i, 2]
 
                 if confidence > kwargs["confidence"]:
-                    # scale the bounding box back
-                    rectangle = detection[0:4] * np.array([w, h, w, h])
-                    (centerX, centerY, width, height) = rectangle.astype("int")
+                    idx = int(detections[0, 0, i, 1])
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")
+                    width, height = int(endX - startX), int(endY - startY)
+                    label = "{}: {:.4f}".format(labels[idx], confidence)
+                    color = [int(c) for c in colors[idx]]
 
-                    # compute top-left corner
-                    x = int(centerX - (width / 2))
-                    y = int(centerY - (height / 2))
+                    boxes.append([[(startX, startY), (width, height)], color, label])
 
-                    rectangles.append([x, y, int(width), int(height)])
-                    confidences.append(float(confidence))
-                    class_ids.append(class_id)
-
-        # apply non-maximum suppression
-        indexes_to_keep = cv2.dnn.NMSBoxes(
-            rectangles, confidences, kwargs["confidence"], kwargs["threshold"]
-        )
-
-        boxes = []
-        if len(indexes_to_keep) > 0:
-            for i in indexes_to_keep.flatten():
-                (x, y) = (rectangles[i][0], rectangles[i][1])
-                (w, h) = (rectangles[i][2], rectangles[i][3])
-                color = [int(c) for c in colors[class_ids[i]]]
-                label = "{}: {:.4f}".format(labels[int(class_ids[i])], confidences[i])
-                boxes.append([[(x, y), (w, h)], color, label])
-
-        return {"boxes": boxes}
+            return {"boxes": boxes}
