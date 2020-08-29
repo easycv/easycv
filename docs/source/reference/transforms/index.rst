@@ -127,4 +127,5 @@ List of Transforms
    selectors
    perspective
    spatial
+   morphological
 
