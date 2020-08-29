@@ -16,6 +16,8 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
     ColorTransfer,
+    Colorize,
+    Quantitization,
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -26,29 +28,38 @@ from easycv.transforms.spatial import (
     Translate,
 )
 from easycv.transforms.selectors import Select
+from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
-from easycv.transforms.detect import Scan, Lines, Circles
+from easycv.transforms.morphological import Erode, Dilate, Morphology
 
 transforms = [
     Blur,
     Canny,
     Circles,
     Cartoon,
+    Colorize,
     ColorPick,
     ColorTransfer,
     Crop,
+    Eyes,
+    Faces,
     Draw,
+    Detect,
+    Dilate,
+    Erode,
     FilterChannels,
     GammaCorrection,
     Gradient,
     GradientAngle,
     GrayScale,
     Mirror,
+    Morphology,
     Lines,
     Negative,
     Noise,
     Perspective,
     PhotoSketch,
+    Quantitization,
     Rescale,
     Resize,
     Rotate,
@@ -57,6 +68,7 @@ transforms = [
     Sepia,
     Sharpen,
     Sharpness,
+    Smile,
     Translate,
 ]
 
@@ -87,13 +99,17 @@ def create_function(name, first_arg, args, defaults, function_code):
     return function
 
 
-def add_method_function(transform, method_name, default_values):
-    code = 'return cls(method="{}", **kwargs["arguments"])'.format(method_name)
-    method = create_function(
-        method_name, "cls", default_values, tuple(default_values.values()), code
+def add_method_function(transform, method_name, defaults):
+    method_code = 'return cls(method="{}", **kwargs["arguments"])'.format(method_name)
+    method_function = create_function(
+        method_name, "cls", default_values, tuple(defaults.values()), method_code
     )
-    method.__doc__ = transform.__doc__
-    setattr(transform, method_name, classmethod(show_args(method, exclude_method=True)))
+    method_function.__doc__ = transform.__doc__
+    setattr(
+        transform,
+        method_name,
+        classmethod(show_args(method_function, exclude_method=True)),
+    )
 
 
 if "sphinx" not in sys.modules:

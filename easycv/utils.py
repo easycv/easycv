@@ -57,3 +57,10 @@ font = {
     "SCRIPT_SIMPLEX": cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,
     "SCRIPT_COMPLEX": cv2.FONT_HERSHEY_SCRIPT_COMPLEX,
 }
+
+morp_methods = {
+    "opening": cv2.MORPH_OPEN,
+    "closing": cv2.MORPH_CLOSE,
+    "tophat": cv2.MORPH_TOPHAT,
+    "blackhat": cv2.MORPH_BLACKHAT,
+}

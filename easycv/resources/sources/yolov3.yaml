@@ -1,0 +1,10 @@
+files:
+- filename: yolov3.weights
+  sha256: 523e4e69e1d015393a1b0a441cef1d9c7659e3eb2d7e15f793f060a21b32f297
+  url: https://pjreddie.com/media/files/yolov3.weights
+- filename: yolov3.cfg
+  sha256: 22489ea38575dfa36c67a90048e8759576416a79d32dc11e15d2217777b9a953
+  url: https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3.cfg
+- filename: coco.names
+  sha256: 634a1132eb33f8091d60f2c346ababe8b905ae08387037aed883953b7329af84
+  url: https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
