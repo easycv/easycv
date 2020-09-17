@@ -23,7 +23,7 @@ class Operation:
         """
         return self._args
 
-    def initialize(self, index=None, forwarded=()):
+    def initialize(self, index=None, forwarded=(), nested=False):
         """
         Initializes the operation. Initializing is verifying if the operation has all the \
         required arguments to run and adding the default values for the arguments that were not \
@@ -38,7 +38,9 @@ class Operation:
 
         for arg in self.arguments:
             if arg not in self._args:
-                if self.arguments[arg].default is None and arg not in forwarded:
+                if (
+                    self.arguments[arg].default is None and arg not in forwarded
+                ) and not nested:
                     raise MissingArgumentError(arg, index=index)
 
                 validator = self.arguments[arg]

@@ -32,8 +32,16 @@ class Transform(Operation, metaclass=Metadata):
         self._method = self._extract_method(kwargs)
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
-        self.required = [val for val in self.arguments if self.arguments[val].required]
-        self.optional = [val for val in self.arguments if val not in self.required]
+        self.required = {
+            val: [self.arguments[val]]
+            for val in self.arguments
+            if self.arguments[val].required
+        }
+        self.optional = {
+            val: [self.arguments[val]]
+            for val in self.arguments
+            if val not in self.required
+        }
 
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)

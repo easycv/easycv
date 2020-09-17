@@ -27,19 +27,15 @@ class Pipeline(Operation):
 
     def __init__(self, source, name=None):
         if isinstance(source, list):
-            # self.forwards = Pipeline._calculate_forwards(source)
+            self.forwards = {}
 
             self.arguments = source[0].arguments if source else {}
             self.outputs = source[-1].outputs if source else {}
 
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
-            self.required = sum(
-                [transform.required for transform in self._transforms], []
-            )
-            self.optional = sum(
-                [transform.optional for transform in self._transforms], []
-            )
+            self.required = {}
+            self.initialize()
 
         elif isinstance(source, str) and os.path.isfile(source):
             try:
@@ -55,35 +51,55 @@ class Pipeline(Operation):
         else:
             raise InvalidPipelineInputSource()
 
-    @staticmethod
-    def _calculate_forwards(source):
+    def initialize(self, index=None, forwarded=(), nested=True):
         outputs = {}
-        forwards = {}
-
-        for i in range(len(source)):
-            forwards[i] = {}
-
-            if isinstance(source[i], Transform):
-                for output_index in list(outputs):
-                    for argument in list(outputs[output_index]):
-                        if source[i].can_be_forwarded(
-                            argument, outputs[output_index][argument]
-                        ):
-                            if argument not in forwards[i]:
-                                forwards[i][argument] = output_index
-                                outputs[output_index].pop(argument)
-                                if not outputs[output_index]:
-                                    outputs.pop(output_index)
-
-                source[i].initialize(index=i, forwarded=forwards[i].keys())
-
-            elif not isinstance(source[i], Pipeline):
-                raise InvalidPipelineInputSource()
-
-            if source[i].outputs:
-                outputs[i] = source[i].outputs
-
-        return forwards
+        for i, transform in enumerate(self._transforms):
+            used_args = []
+            outputs[i] = {}
+            self.forwards[i] = {}
+            for idx in outputs:
+                for arg in list(transform.required):
+                    for val in list(transform.required[arg]):
+                        if arg in outputs[idx]:
+                            if outputs[idx][arg][0].accepts(val):
+                                transform.required[arg].pop()
+                                if not transform.required[arg]:
+                                    transform.required.pop(arg)
+                                outputs[idx][arg].pop()
+                                if not outputs[idx][arg]:
+                                    outputs[idx].pop(arg)
+                                used_args.append(arg)
+                                if arg not in self.forwards[i]:
+                                    self.forwards[i][arg] = []
+                                self.forwards[i][arg].append(idx)
+            if transform.required:
+                for item in list(transform.required):
+                    if item not in self.required:
+                        self.required[item] = []
+                    self.required[item] += transform.required[item]
+                    for _ in list(transform.required[item]):
+                        if item not in self.forwards[i]:
+                            self.forwards[i][item] = []
+                        self.forwards[i][item].append("in")
+            if isinstance(transform, Transform):
+                transform.initialize(index=i, forwarded=used_args, nested=nested)
+                if transform.outputs:
+                    for arg in transform.outputs:
+                        outputs[i][arg] = [transform.outputs[arg]]
+            else:
+                if transform.outputs:
+                    for arg in transform.outputs:
+                        if arg not in outputs[i]:
+                            outputs[i][arg] = []
+                        for out in transform.outputs[arg]:
+                            outputs[i][arg].append(out)
+        self.outputs = {}
+        for idx in outputs:
+            for arg in outputs[idx]:
+                if arg not in self.outputs:
+                    self.outputs[arg] = []
+                for outs in outputs[idx][arg]:
+                    self.outputs[arg].append(outs)
 
     def __call__(self, image):
         if self._transforms:
