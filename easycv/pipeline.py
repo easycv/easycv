@@ -5,6 +5,7 @@ from copy import deepcopy
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
 from easycv.operation import Operation
+from easycv.errors import MissingArgumentError
 
 
 class Pipeline(Operation):
@@ -81,6 +82,9 @@ class Pipeline(Operation):
                         if item not in self.forwards[i]:
                             self.forwards[i][item] = []
                         self.forwards[i][item].append("in")
+                        transform.required[item].pop()
+                        if not transform.required[item]:
+                            transform.required.pop(item)
             if isinstance(transform, Transform):
                 transform.initialize(index=i, forwarded=used_args, nested=nested)
                 if transform.outputs:
@@ -101,26 +105,24 @@ class Pipeline(Operation):
                 for outs in outputs[idx][arg]:
                     self.outputs[arg].append(outs)
 
-    def __call__(self, image):
-        if self._transforms:
-            outputs = {}
-            for i in range(len(self._transforms)):
-                transform = self._transforms[i]
-                forwarded = {
-                    arg: outputs[self.forwards[i][arg]][arg] for arg in self.forwards[i]
-                }
-                if isinstance(transform, Transform):
+    def __call__(self, image, forwarded=()):
+        if not self.required:
+            if self._transforms:
+                outputs = {} if not forwarded else {"in": forwarded}
+                for i, transform in enumerate(self._transforms):
+                    forwarded = {
+                        arg: outputs[self.forwards[i][arg].pop()][arg]
+                        for arg in self.forwards[i]
+                    }
                     output = transform(image, forwarded=forwarded)
-                else:
-                    output = transform(image)
 
-                if "image" in output:
-                    image = output["image"]
+                    if "image" in output:
+                        image = output["image"]
+                    outputs[i] = output
 
-                outputs[i] = output
-
-            return outputs[len(self._transforms) - 1]
-        return {"image": image}
+                return outputs[len(self._transforms) - 1]
+            return {"image": image}
+        raise MissingArgumentError(1, index=1)  # TODO GIVE CORRECT ERROR MESSAGE
 
     @property
     def name(self):
