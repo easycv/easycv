@@ -186,7 +186,8 @@ class Mask(Transform):
 
             return x, y
 
-        cv2.namedWindow("image")
+        cv2.namedWindow("image", cv2.WINDOW_KEEPRATIO)
+        cv2.resizeWindow("image", image.shape[0], image.shape[1])
         cv2.setMouseCallback("image", paint_draw)
 
         while cv2.getWindowProperty("image", cv2.WND_PROP_VISIBLE) >= 1:
