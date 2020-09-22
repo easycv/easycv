@@ -28,7 +28,7 @@ from easycv.transforms.spatial import (
     Translate,
     Paste,
 )
-from easycv.transforms.selectors import Select
+from easycv.transforms.selectors import Select, Mask
 from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
 from easycv.transforms.morphological import Erode, Dilate, Morphology
@@ -53,6 +53,7 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
+    Mask,
     Paste,
     Mirror,
     Morphology,

@@ -139,12 +139,12 @@ class Rotate(Transform):
 
 class Crop(Transform):
     """
-        Crop is a transform that crops a rectangular portion of an image, if original is True then
-        the image size will be kept.
-        :param rectangle: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
-        :type rectangle: :class:`list`/:class:`tuple`
-        :param original: True to keep original image size, False to resize to cropped area
-        :type original: :class:`bool`, optional
+    Crop is a transform that crops a rectangular portion of an image, if original is True then
+    the image size will be kept.
+    :param rectangle: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
+    :type rectangle: :class:`list`/:class:`tuple`
+    :param original: True to keep original image size, False to resize to cropped area
+    :type original: :class:`bool`, optional
     """
 
     arguments = {
@@ -184,12 +184,12 @@ class Crop(Transform):
 
 class Translate(Transform):
     """
-        Translate is a transform that translates the image according to a vector xy
+    Translate is a transform that translates the image according to a vector xy
 
-        :param x: x value, defaults to 0
-        :type x: :class:`int`, optional
-        :param y: y value, defaults to 0
-        :type y: :class:`int`, optional
+    :param x: x value, defaults to 0
+    :type x: :class:`int`, optional
+    :param y: y value, defaults to 0
+    :type y: :class:`int`, optional
     """
 
     arguments = {
