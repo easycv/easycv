@@ -185,12 +185,12 @@ class Mask(Transform):
 
             return x, y
 
-        cv2.namedWindow("image", cv2.WINDOW_KEEPRATIO)
-        cv2.resizeWindow("image", image.shape[0], image.shape[1])
-        cv2.setMouseCallback("image", paint_draw)
+        cv2.namedWindow("Select Mask", cv2.WINDOW_KEEPRATIO)
+        cv2.resizeWindow("Select Mask", image.shape[0], image.shape[1])
+        cv2.setMouseCallback("Select Mask", paint_draw)
 
-        while cv2.getWindowProperty("image", cv2.WND_PROP_VISIBLE) >= 1:
-            cv2.imshow("image", cv2.addWeighted(image, 0.8, mask, 0.2, 0))
+        while cv2.getWindowProperty("Select Mask", cv2.WND_PROP_VISIBLE) >= 1:
+            cv2.imshow("Select Mask", cv2.addWeighted(image, 0.8, mask, 0.2, 0))
             key_code = cv2.waitKey(1)
 
             if (key_code & 0xFF) == ord("q"):
