@@ -145,7 +145,7 @@ class Select(Transform):
 
 class Mask(Transform):
     """
-    Mask is a transform that allows the user to create a mask in an image.
+    Mask is a transform that allows the user to create a mask from an image.
 
     :param brush: Brush size, defaults to 20
     :type brush: :class:`int`, optional
