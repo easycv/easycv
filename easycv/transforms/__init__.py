@@ -26,6 +26,7 @@ from easycv.transforms.spatial import (
     Mirror,
     Rotate,
     Translate,
+    Paste,
 )
 from easycv.transforms.selectors import Select, MaskSelector
 from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
@@ -53,6 +54,7 @@ transforms = [
     GradientAngle,
     GrayScale,
     MaskSelector,
+    Paste,
     Mirror,
     Morphology,
     Lines,
