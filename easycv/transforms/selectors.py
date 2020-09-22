@@ -2,8 +2,12 @@ from matplotlib.widgets import RectangleSelector, EllipseSelector
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
+import cv2
+import numpy as np
+
+
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List
+from easycv.validators import Number, List, Type
 from easycv.errors import InvalidSelectionError
 
 from easycv.io.output import prepare_image_to_output
@@ -138,3 +142,68 @@ class Select(Transform):
                     "Must select {} points.".format(kwargs["n"])
                 )
             return {"points": res}
+
+
+
+
+
+class MaskSelector(Transform):
+    """
+    MaskSelector is a transform that allows the user to create a mask in an image. 
+
+    :param brush: Brush size, defaults to 20
+    :type brush: :class:`int`, optional
+
+    :param color: Mask color, defaults to (0,255,0)
+    :type color: :class:`list`, optional
+    """
+
+    arguments = {
+        "brush": Number(only_integer=True, min_value=0, default=20),
+        "color": List(Number(only_integer=True, min_value=0, max_value=255), length=3, default=(0,255,0))
+    }
+
+    outputs = {
+        "mask": Type(np.ndarray)
+    }
+    
+    
+    def process(self, image, **kwargs):
+        mask = np.zeros(image.shape, np.uint8)
+
+        global drawing
+        drawing = False
+
+        def paint_draw(event, x, y, flags, param):
+            global ix, iy, drawing
+
+            if event == cv2.EVENT_LBUTTONDOWN:
+                drawing = True            
+            elif event == cv2.EVENT_LBUTTONUP:
+                drawing = False
+            elif event == cv2.EVENT_MOUSEMOVE and drawing:
+                cv2.line(mask, (ix, iy), (x, y), kwargs["color"], kwargs["brush"])
+
+            ix, iy = x, y
+
+            return x, y
+
+        cv2.namedWindow("image")
+        cv2.setMouseCallback("image", paint_draw)
+
+        while(cv2.getWindowProperty("image", cv2.WND_PROP_VISIBLE) >= 1):
+            cv2.imshow("image",cv2.addWeighted(image,0.8,mask,0.2,0))
+            key_code = cv2.waitKey(1)
+            
+            if (key_code & 0xFF) == ord("q"):
+                cv2.destroyAllWindows()
+                break
+            elif (key_code & 0xFF) == ord("+"):
+                kwargs["brush"] += 1
+            elif (key_code & 0xFF) == ord("-") and kwargs["brush"] > 1:
+                kwargs["brush"] -= 1
+
+        mask = np.sum(mask, axis=2)
+        mask[mask != 0] = 255
+
+        return {"mask": mask}
