@@ -1,15 +1,14 @@
-from matplotlib.widgets import RectangleSelector, EllipseSelector
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import os
+
 import cv2
 import numpy as np
-
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.widgets import RectangleSelector, EllipseSelector
 
 from easycv.transforms.base import Transform
-from easycv.validators import Number, List, Type
 from easycv.errors import InvalidSelectionError
-
+from easycv.validators import Number, List, Type
 from easycv.io.output import prepare_image_to_output
 
 
