@@ -144,12 +144,9 @@ class Select(Transform):
             return {"points": res}
 
 
-
-
-
-class MaskSelector(Transform):
+class Mask(Transform):
     """
-    MaskSelector is a transform that allows the user to create a mask in an image. 
+    Mask is a transform that allows the user to create a mask in an image.
 
     :param brush: Brush size, defaults to 20
     :type brush: :class:`int`, optional
@@ -160,14 +157,15 @@ class MaskSelector(Transform):
 
     arguments = {
         "brush": Number(only_integer=True, min_value=0, default=20),
-        "color": List(Number(only_integer=True, min_value=0, max_value=255), length=3, default=(0,255,0))
+        "color": List(
+            Number(only_integer=True, min_value=0, max_value=255),
+            length=3,
+            default=(0, 255, 0),
+        ),
     }
 
-    outputs = {
-        "mask": Type(np.ndarray)
-    }
-    
-    
+    outputs = {"mask": Type(np.ndarray)}
+
     def process(self, image, **kwargs):
         mask = np.zeros(image.shape, np.uint8)
 
@@ -178,7 +176,7 @@ class MaskSelector(Transform):
             global ix, iy, drawing
 
             if event == cv2.EVENT_LBUTTONDOWN:
-                drawing = True            
+                drawing = True
             elif event == cv2.EVENT_LBUTTONUP:
                 drawing = False
             elif event == cv2.EVENT_MOUSEMOVE and drawing:
@@ -191,10 +189,10 @@ class MaskSelector(Transform):
         cv2.namedWindow("image")
         cv2.setMouseCallback("image", paint_draw)
 
-        while(cv2.getWindowProperty("image", cv2.WND_PROP_VISIBLE) >= 1):
-            cv2.imshow("image",cv2.addWeighted(image,0.8,mask,0.2,0))
+        while cv2.getWindowProperty("image", cv2.WND_PROP_VISIBLE) >= 1:
+            cv2.imshow("image", cv2.addWeighted(image, 0.8, mask, 0.2, 0))
             key_code = cv2.waitKey(1)
-            
+
             if (key_code & 0xFF) == ord("q"):
                 cv2.destroyAllWindows()
                 break
