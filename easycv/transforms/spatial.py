@@ -3,7 +3,7 @@ import numpy as np
 
 from easycv.transforms.base import Transform
 from easycv.validators import Number, List, Type, Option
-from easycv.validators import Image as ImageVal
+from easycv.validators import Image
 from easycv.utils import interpolation_methods
 from easycv.errors.transforms import InvalidArgumentError
 
@@ -237,7 +237,7 @@ class Paste(Transform):
     """
 
     arguments = {
-        "paste": ImageVal(),
+        "paste": Image(),
         "rectangle": List(
             List(Number(min_value=0, only_integer=True), length=2), length=2
         ),
