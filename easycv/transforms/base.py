@@ -155,3 +155,9 @@ class Transform(Operation, metaclass=Metadata):
             args.update(forwarded)
 
         return self.process(image, **args)
+
+    def aux_export(self):
+        res = {}
+        res["name"] = self.__class__.__name__
+        res["args"] = self._args
+        return res

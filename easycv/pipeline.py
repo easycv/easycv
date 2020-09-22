@@ -4,6 +4,7 @@ from copy import deepcopy
 
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
+import yaml
 
 
 class Pipeline:
@@ -224,3 +225,16 @@ class Pipeline:
 
     def __repr__(self):
         return str(self)
+
+    def aux_export(self):
+        res = {}
+        res["name"] = "Pipeline"
+        res["transforms"] = []
+        for transform in self._transforms:
+            res["transforms"].append(transform.aux_export())
+        res["forwards"] = self.forwards
+        return res
+
+    def export(self, path):
+        with open(path, "w") as file:
+            yaml.dump(self.aux_export(), file)
