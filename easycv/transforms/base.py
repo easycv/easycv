@@ -32,7 +32,7 @@ class Transform(Operation, metaclass=Metadata):
         self._method = self._extract_method(kwargs)
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
-
+        self.changed_args = list(kwargs.keys())
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)
 
@@ -156,8 +156,8 @@ class Transform(Operation, metaclass=Metadata):
 
         return self.process(image, **args)
 
-    def aux_export(self):
-        res = {}
-        res["name"] = self.__class__.__name__
-        res["args"] = self._args
-        return res
+    def to_dict(self):
+        return {
+            "name": self.__class__.__name__,
+            "args": {arg: self._args[arg] for arg in self.changed_args},
+        }

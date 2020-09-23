@@ -1,10 +1,12 @@
 import os
 import pickle
 from copy import deepcopy
+import yaml
+
 
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
-import yaml
+from easycv.transforms.transforms import get_transform
 
 
 class Pipeline:
@@ -36,18 +38,33 @@ class Pipeline:
             self._transforms = deepcopy(source)
 
         elif isinstance(source, str) and os.path.isfile(source):
-            try:
-                with open(source, "rb") as f:
-                    saved = pickle.load(f)
-                    if isinstance(saved, Pipeline):
-                        self._name = name if name else saved.name
-                        self._transforms = saved.transforms()
-                    else:
-                        raise InvalidPipelineInputSource()
-            except pickle.UnpicklingError:
-                raise InvalidPipelineInputSource() from None
+            with open(source, "r") as file:
+                source = yaml.load(file, Loader=yaml.FullLoader)
+            self.from_dict(source)
+        elif isinstance(source, dict):
+            self.from_dict(source)
         else:
             raise InvalidPipelineInputSource()
+
+    def from_dict(self, source):
+        transforms = []
+        pipe = source["Pipeline"]
+        self.forwards = pipe["Forwards"]
+        self._name = pipe["name"]
+        for operation in pipe["Operations"]:
+            if "Transform" in operation:
+                transform = get_transform(operation["Transform"]["name"])
+                arguments = {
+                    arg: operation["Transform"]["args"][arg]
+                    for arg in operation["Transform"]["args"]
+                    if operation["Transform"]["args"][arg]
+                }
+                transforms.append(transform(**arguments))
+            elif "Pipeline" in operation:
+                transforms.append(Pipeline(operation))
+            else:
+                print("Deu Merda")
+        self._transforms = transforms
 
     @staticmethod
     def _calculate_forwards(source):
@@ -226,15 +243,16 @@ class Pipeline:
     def __repr__(self):
         return str(self)
 
-    def aux_export(self):
+    def to_dict(self):
         res = {}
-        res["name"] = "Pipeline"
-        res["transforms"] = []
+        res["Operations"] = []
+        res["name"] = self._name
         for transform in self._transforms:
-            res["transforms"].append(transform.aux_export())
-        res["forwards"] = self.forwards
+            key = "Pipeline" if isinstance(transform, Pipeline) else "Transform"
+            res["Operations"].append({key: transform.to_dict()})
+        res["Forwards"] = self.forwards
         return res
 
     def export(self, path):
         with open(path, "w") as file:
-            yaml.dump(self.aux_export(), file)
+            yaml.dump({"Pipeline": self.to_dict()}, file)

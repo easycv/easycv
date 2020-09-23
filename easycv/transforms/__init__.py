@@ -1,7 +1,7 @@
 import sys
 from functools import wraps
 from types import FunctionType
-
+from easycv.transforms.transforms import transforms
 from easycv.transforms.noise import Noise
 from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
@@ -32,7 +32,7 @@ from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, D
 from easycv.transforms.draw import Draw
 from easycv.transforms.morphological import Erode, Dilate, Morphology
 
-transforms = [
+__all__ = [
     Blur,
     Canny,
     Circles,
@@ -71,8 +71,6 @@ transforms = [
     Smile,
     Translate,
 ]
-
-__all__ = [transform.__name__ for transform in transforms]
 
 
 def show_args(function, exclude_method=False):
