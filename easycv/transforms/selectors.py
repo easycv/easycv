@@ -6,34 +6,47 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector, EllipseSelector
 
+import easycv.image as ecvImage
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidSelectionError
-from easycv.validators import Number, List, Type
+from easycv.validators import Number, List, Type, Image
 from easycv.io.output import prepare_image_to_output
 
 
 class Select(Transform):
     """
-    Select is a transform that allows the user to select a shape in an image. Currently \
+    Select is a transform that allows the user to select a shape or a mask in an image. Currently \
     supported shapes:
 
     \t**∙ rectangle** - Rectangle Shape\n
     \t**∙ point** - Point\n
     \t**∙ ellipse** - Ellipse Shape\n
+    \t**∙ mask** - Mask\n
 
     :param n: Number of points to select
     :type n: :class:`int`
-"""
+    :param brush: Brush size
+    :type brush: :class:`int`
+    :param color: Brush color
+    :type color: :class:`List`
+    """
 
     methods = {
         "rectangle": {"arguments": [], "outputs": ["rectangle"]},
         "point": {"arguments": ["n"], "outputs": ["points"]},
         "ellipse": {"arguments": [], "outputs": ["ellipse"]},
+        "mask": {"arguments": ["brush", "color"], "outputs": ["mask"]},
     }
     default_method = "rectangle"
 
     arguments = {
         "n": Number(only_integer=True, min_value=0, default=2),
+        "brush": Number(only_integer=True, min_value=0, default=20),
+        "color": List(
+            Number(only_integer=True, min_value=0, max_value=255),
+            length=3,
+            default=(0, 255, 0),
+        ),
     }
 
     outputs = {
@@ -49,11 +62,54 @@ class Select(Transform):
         ),
         # point
         "points": List(List(Number(min_value=0, only_integer=True), length=2)),
+        # mask
+        "mask": Image(),
     }
 
     def process(self, image, **kwargs):
         if "DISPLAY" not in os.environ:
             raise Exception("Can't run selectors without a display!")
+
+        if kwargs["method"] == "mask":
+            mask = np.zeros(image.shape, np.uint8)
+
+            global drawing
+            drawing = False
+
+            def paint_draw(event, x, y, flags, param):
+                global ix, iy, drawing
+
+                if event == cv2.EVENT_LBUTTONDOWN:
+                    drawing = True
+                elif event == cv2.EVENT_LBUTTONUP:
+                    drawing = False
+                elif event == cv2.EVENT_MOUSEMOVE and drawing:
+                    cv2.line(mask, (ix, iy), (x, y), kwargs["color"], kwargs["brush"])
+
+                ix, iy = x, y
+
+                return x, y
+
+            cv2.namedWindow("Select Mask", cv2.WINDOW_KEEPRATIO)
+            cv2.resizeWindow("Select Mask", image.shape[0], image.shape[1])
+            cv2.setMouseCallback("Select Mask", paint_draw)
+
+            while cv2.getWindowProperty("Select Mask", cv2.WND_PROP_VISIBLE) >= 1:
+                cv2.imshow("Select Mask", cv2.addWeighted(image, 0.8, mask, 0.2, 0))
+                key_code = cv2.waitKey(1)
+
+                if (key_code & 0xFF) == ord("q"):
+                    cv2.destroyAllWindows()
+                    break
+                elif (key_code & 0xFF) == ord("+"):
+                    kwargs["brush"] += 1
+                elif (key_code & 0xFF) == ord("-") and kwargs["brush"] > 1:
+                    kwargs["brush"] -= 1
+
+            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+            mask[mask != 0] = 255
+
+            return {"mask": ecvImage.Image(mask)}
 
         mpl.use("Qt5Agg")
 
@@ -145,63 +201,61 @@ class Select(Transform):
 
 class Mask(Transform):
     """
-    Mask is a transform that allows the user to create a mask from an image.
+    Mask applies a mask to an image.
 
-    :param brush: Brush size, defaults to 20
-    :type brush: :class:`int`, optional
-
-    :param color: Mask color, defaults to (0,255,0)
-    :type color: :class:`list`, optional
+    :param mask: Mask to apply
+    :type brush: :class:`Image`
+    :param inverse: Inverts mask
+    :type inverse: :class:`bool`
+    :param fill_color: Color to fill
+    :type fill_color: :class:`List`
     """
 
     arguments = {
-        "brush": Number(only_integer=True, min_value=0, default=20),
-        "color": List(
+        "mask": Image(),
+        "inverse": Type(bool, default=False),
+        "fill_color": List(
             Number(only_integer=True, min_value=0, max_value=255),
             length=3,
-            default=(0, 255, 0),
+            default=(0, 0, 0),
         ),
     }
 
-    outputs = {"mask": Type(np.ndarray)}
+    def process(self, image, **kwargs):
+
+        if kwargs["inverse"]:
+            mask = cv2.bitwise_not(kwargs["mask"].array)
+        else:
+            mask = kwargs["mask"].array
+
+        image = cv2.bitwise_and(image, image, mask=mask)
+        image[mask == 0] = kwargs["fill_color"]
+
+        return image
+
+
+class Inpaint(Transform):
+    """
+    Inpaint applies an inpainting technique to an image.
+
+    :param radius: Inpainting radius
+    :type radius: :class:`int`
+    :param mask: Mask to apply inpaint
+    :type mask: :class:`Image`
+    """
+
+    methods = {
+        "telea": {"arguments": ["radius", "mask"]},
+        "ns": {"arguments": ["radius", "mask"]},
+    }
+    default_method = "telea"
+
+    arguments = {
+        "radius": Number(only_integer=True, min_value=0, default=3),
+        "mask": Image(),
+    }
 
     def process(self, image, **kwargs):
-        mask = np.zeros(image.shape, np.uint8)
+        flag = cv2.INPAINT_TELEA if kwargs["method"] == "telea" else cv2.INPAINT_NS
 
-        global drawing
-        drawing = False
-
-        def paint_draw(event, x, y, flags, param):
-            global ix, iy, drawing
-
-            if event == cv2.EVENT_LBUTTONDOWN:
-                drawing = True
-            elif event == cv2.EVENT_LBUTTONUP:
-                drawing = False
-            elif event == cv2.EVENT_MOUSEMOVE and drawing:
-                cv2.line(mask, (ix, iy), (x, y), kwargs["color"], kwargs["brush"])
-
-            ix, iy = x, y
-
-            return x, y
-
-        cv2.namedWindow("Select Mask", cv2.WINDOW_KEEPRATIO)
-        cv2.resizeWindow("Select Mask", image.shape[0], image.shape[1])
-        cv2.setMouseCallback("Select Mask", paint_draw)
-
-        while cv2.getWindowProperty("Select Mask", cv2.WND_PROP_VISIBLE) >= 1:
-            cv2.imshow("Select Mask", cv2.addWeighted(image, 0.8, mask, 0.2, 0))
-            key_code = cv2.waitKey(1)
-
-            if (key_code & 0xFF) == ord("q"):
-                cv2.destroyAllWindows()
-                break
-            elif (key_code & 0xFF) == ord("+"):
-                kwargs["brush"] += 1
-            elif (key_code & 0xFF) == ord("-") and kwargs["brush"] > 1:
-                kwargs["brush"] -= 1
-
-        mask = np.sum(mask, axis=2)
-        mask[mask != 0] = 255
-
-        return {"mask": mask}
+        return cv2.inpaint(image, kwargs["mask"].array, kwargs["radius"], flags=flag)
