@@ -30,8 +30,10 @@ class Transform(Operation, metaclass=Metadata):
 
     def __init__(self, **kwargs):
         self._method = self._extract_method(kwargs)
+        self.renamed = kwargs.pop("rename") if "rename" in kwargs else []
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
+
         self.required = {
             val: [self.arguments[val]]
             for val in self.arguments

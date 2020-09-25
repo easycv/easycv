@@ -60,16 +60,19 @@ class Pipeline(Operation):
             self.forwards[i] = {}
             for idx in outputs:
                 for arg in list(transform.required):
+                    true_arg = arg
+                    if isinstance(transform, Transform) and arg in transform.renamed:
+                        true_arg = transform.renamed[arg]
                     for val in list(transform.required[arg]):
-                        if arg in outputs[idx]:
-                            if outputs[idx][arg][0].accepts(val):
+                        if true_arg in outputs[idx]:
+                            if outputs[idx][true_arg][0].accepts(val):
                                 transform.required[arg].pop()
                                 if not transform.required[arg]:
                                     transform.required.pop(arg)
-                                outputs[idx][arg].pop()
-                                if not outputs[idx][arg]:
-                                    outputs[idx].pop(arg)
-                                used_args.append(arg)
+                                outputs[idx][true_arg].pop()
+                                if not outputs[idx][true_arg]:
+                                    outputs[idx].pop(true_arg)
+                                used_args.append(true_arg)
                                 if arg not in self.forwards[i]:
                                     self.forwards[i][arg] = []
                                 self.forwards[i][arg].append(idx)
@@ -89,7 +92,13 @@ class Pipeline(Operation):
                 transform.initialize(index=i, forwarded=used_args, nested=nested)
                 if transform.outputs:
                     for arg in transform.outputs:
-                        outputs[i][arg] = [transform.outputs[arg]]
+                        temp_arg = arg
+                        if (
+                            isinstance(transform, Transform)
+                            and arg in transform.renamed
+                        ):
+                            temp_arg = transform.renamed[arg]
+                        outputs[i][temp_arg] = [transform.outputs[arg]]
             else:
                 if transform.outputs:
                     for arg in transform.outputs:
@@ -107,12 +116,12 @@ class Pipeline(Operation):
 
     def __call__(self, image, forwarded=()):
         if not self.required:
+            forwards = deepcopy(self.forwards)
             if self._transforms:
                 outputs = {} if not forwarded else {"in": forwarded}
                 for i, transform in enumerate(self._transforms):
                     forwarded = {
-                        arg: outputs[self.forwards[i][arg].pop()][arg]
-                        for arg in self.forwards[i]
+                        arg: outputs[forwards[i][arg].pop()][arg] for arg in forwards[i]
                     }
                     output = transform(image, forwarded=forwarded)
 
