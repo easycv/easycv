@@ -136,7 +136,7 @@ class ColorTransfer(Transform):
 
 class Hue(Transform):
     """
-    Hue is a transform that adds to the hue of the image
+    Hue is a transform that changes the image hue
 
     :param value: Value of Hue to Add
     :type value: :class:`int`
@@ -154,7 +154,7 @@ class Hue(Transform):
 
 class Contrast(Transform):
     """
-    Contrast is a transform that adds Contrast to an image
+    Contrast is a transform that changes the image contrast
 
     :param alpha: Value of contrast to Add
     :type alpha: :class:`float`
@@ -171,7 +171,7 @@ class Contrast(Transform):
 
 class Brightness(Transform):
     """
-    Brightness is a transform that adds brightness to an image
+    Brightness is a transform that changes the image brightness
 
     :param beta: Value of brightness to Add
     :type beta: :class:`int`
