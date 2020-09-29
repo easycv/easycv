@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/easycv/easycv/master/images/logo.png">
+  <img src="https://raw.githubusercontent.com/easycv/easycv/dev/images/logo.png?token=AJ3ZJ2QH5LGQS2ONGO7QXYK7MJQIW">
 </p>
 
 Computer Vision made easy.
