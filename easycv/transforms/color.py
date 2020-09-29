@@ -149,20 +149,43 @@ class Hue(Transform):
 
 
 class Contrast(Transform):
+    """
+    Contrast is a transform that adds Contrast to an image
+
+    :param alpha: Value of contrast to Add
+    :type alpha: :class:`float`
+    """
+
     arguments = {
-        "alpha": Number(only_integer=True),
+        "alpha": Number(only_integer=False),
     }
 
     def process(self, image, **kwargs):
-        image = np.clip(kwargs["alpha"] * image, 0, 255)
+        image = cv2.addWeighted(image, kwargs["alpha"], image, 0, 0)
         return image
 
 
 class Brightness(Transform):
+    """
+    Brightness is a transform that adds brightness to an image
+
+    :param beta: Value of brightness to Add
+    :type beta: :class:`int`
+    """
+
     arguments = {
         "beta": Number(only_integer=True),
     }
 
     def process(self, image, **kwargs):
-        image = cv2.add(image, kwargs["beta"])
+        image = cv2.addWeighted(image, 1, image, 0, kwargs["beta"])
         return image
+
+
+class Hsv(Transform):
+    """
+    Hsv is a transform that turns an image to hsv
+    """
+
+    def process(self, image, **kwargs):
+        return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)

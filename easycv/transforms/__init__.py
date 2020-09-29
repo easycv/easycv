@@ -16,6 +16,7 @@ from easycv.transforms.color import (
     Sepia,
     ColorTransfer,
     Hue,
+    Hsv,
     Contrast,
     Brightness,
 )
@@ -47,6 +48,7 @@ transforms = [
     GradientAngle,
     GrayScale,
     Hue,
+    Hsv,
     Mirror,
     Lines,
     Negative,
