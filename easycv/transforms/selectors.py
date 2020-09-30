@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector, EllipseSelector
 
-import easycv.image as ecvImage
+import easycv.image
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidSelectionError
 from easycv.validators import Number, List, Type, Image
@@ -109,7 +109,7 @@ class Select(Transform):
             mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
             mask[mask != 0] = 255
 
-            return {"mask": ecvImage.Image(mask)}
+            return {"mask": easycv.image.Image(mask)}
 
         mpl.use("Qt5Agg")
 
