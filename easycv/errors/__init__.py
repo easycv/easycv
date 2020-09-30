@@ -21,7 +21,7 @@ from easycv.errors.resources import (
     FileNotInResource,
 )
 
-from easycv.errors.list import InvalidListInputSource
+from easycv.errors.io import InvalidListInputSource
 
 
 __all__ = [

@@ -36,6 +36,11 @@ class InvalidImageInputSource(Exception):
         )
 
 
+class InvalidListInputSource(Exception):
+    def __init__(self):
+        super().__init__("Lists can only be created from a list of images.")
+
+
 class ImageNotLoaded(Exception):
     def __init__(self):
         super().__init__(
