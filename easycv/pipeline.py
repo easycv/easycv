@@ -36,6 +36,8 @@ class Pipeline(Operation):
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
             self.required = {}
+            self.optional = {}
+            self._arguments = {}
             self.initialize()
 
         elif isinstance(source, str) and os.path.isfile(source):
@@ -79,6 +81,10 @@ class Pipeline(Operation):
                                     transform.required[arg].pop()
                                     if not transform.required[arg]:
                                         transform.required.pop(arg)
+                                if arg in transform.optional:
+                                    transform.optional[arg].pop()
+                                    if not transform.optional[arg]:
+                                        transform.optional.pop(arg)
             if transform.required:
                 for item in list(transform.required):
                     if item not in self.required:
@@ -91,6 +97,11 @@ class Pipeline(Operation):
                         transform.required[item].pop()
                         if not transform.required[item]:
                             transform.required.pop(item)
+            if transform.optional:
+                for arg in transform.optional:
+                    if arg not in self.optional:
+                        self.optional[arg] = []
+                    self.optional[arg] += transform.optional[arg]
             if isinstance(transform, Transform):
                 transform.initialize(index=i, forwarded=used_args, nested=nested)
                 if transform.outputs:
@@ -116,6 +127,14 @@ class Pipeline(Operation):
                     self.outputs[arg] = []
                 for outs in outputs[idx][arg]:
                     self.outputs[arg].append(outs)
+        for arg in self.required:
+            if arg not in self._arguments:
+                self._arguments[arg] = []
+            self._arguments[arg] += self.required[arg]
+        for arg in self.optional:
+            if arg not in self._arguments:
+                self._arguments[arg] = []
+            self._arguments[arg] += self.optional[arg]
 
     def __call__(self, image, forwarded=()):
         if not self.required:
@@ -123,21 +142,32 @@ class Pipeline(Operation):
             if self._transforms:
                 outputs = {} if not forwarded else {"in": forwarded}
                 for i, transform in enumerate(self._transforms):
-                    forwarded = {
-                        arg: outputs[forwards[i][arg].pop()].pop(arg)
-                        for arg in forwards[i]
-                        if arg != "image"
-                    }
+                    forwarded = {}
+                    for arg in forwards[i]:
+                        if arg != "image":
+                            if arg not in forwarded:
+                                forwarded[arg] = []
+                            forwarded[arg] += outputs[forwards[i][arg].pop()][arg].pop()
                     output = transform(image, forwarded=forwarded)
                     if "image" in output:
                         image = output.pop("image")
-                    outputs[i] = output
-                    for arg in transform.renamed:
-                        if arg in outputs[i]:
-                            outputs[i][transform.renamed[arg]] = outputs[i].pop(arg)
-                final_outs = {
-                    arg: outputs[i][arg] for i in outputs for arg in outputs[i]
-                }
+                    if isinstance(transform, Transform):
+                        outputs[i] = {}
+                        for arg in output:
+                            if arg not in outputs[i]:
+                                outputs[i][arg] = []
+                            outputs[i][arg] += [output[arg]]
+                        for arg in transform.renamed:
+                            if arg in outputs[i]:
+                                outputs[i][transform.renamed[arg]] = outputs[i].pop(arg)
+                    else:
+                        outputs[i] = output
+                final_outs = {}
+                for i in outputs:
+                    for arg in outputs[i]:
+                        if arg not in final_outs:
+                            final_outs[arg] = []
+                        final_outs[arg] += outputs[i][arg]
                 final_outs["image"] = image
                 return final_outs
             return {"image": image}
