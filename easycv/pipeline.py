@@ -90,8 +90,8 @@ class Pipeline(Operation):
                     if item not in self.required:
                         self.required[item] = []
                     if item == "image" or (
-                        "image" in transform.renamed
-                        and transform.renamed["image"] == item
+                        "image" in transform.renamed_in
+                        and transform.renamed_in["image"] == item
                     ):
                         if not self.required[item]:
                             self.required[item] += transform.required[item]
@@ -116,9 +116,9 @@ class Pipeline(Operation):
                         temp_arg = arg
                         if (
                             isinstance(transform, Transform)
-                            and arg in transform.renamed
+                            and arg in transform.renamed_out  # todo problem
                         ):
-                            temp_arg = transform.renamed[arg]
+                            temp_arg = transform.renamed_out[arg]
                         outputs[i][temp_arg] = [transform.outputs[arg]]
             else:
                 if transform.outputs:
@@ -147,20 +147,39 @@ class Pipeline(Operation):
         if not self.required or (
             len(self.required.keys()) == 1 and list(self.required.keys()) == ["image"]
         ):
-            cur_img = "image"
             forwards = deepcopy(self.forwards)
             if self._transforms:
-                outputs = {} if not forwarded else {"in": forwarded}
+                outputs = {"in": {}}
+                if forwarded:
+                    outputs["in"] = forwarded
+                outputs["in"]["image"] = [image]
                 for i, transform in enumerate(self._transforms):
                     forwarded = {}
                     for arg in forwards[i]:
-                        if arg != cur_img:
-                            if arg not in forwarded:
-                                forwarded[arg] = []
-                            forwarded[arg] += outputs[forwards[i][arg].pop()][arg].pop()
-                        else:
-                            if forwards[i][arg][0] != "in":
-                                image = outputs[forwards[i][arg].pop()][arg].pop()
+                        for pos in forwards[i][arg]:
+                            if isinstance(transform, Transform):
+                                if arg == "image" or (
+                                    "image" in transform.renamed_in
+                                    and transform.renamed_in["image"] == arg
+                                ):
+                                    if forwards[i][arg][0] == "in":
+                                        image = outputs[pos][arg][0]
+                                    else:
+                                        image = outputs[pos][arg].pop()
+                                else:
+                                    if arg not in forwarded:
+                                        forwarded[arg] = []
+                                    forwarded[arg] += outputs[pos][arg].pop()
+                            else:
+                                if arg != "image":
+                                    if arg not in forwarded:
+                                        forwarded[arg] = []
+                                    forwarded[arg] += [outputs[pos][arg].pop()]
+                                else:
+                                    if forwards[i][arg][0] == "in":
+                                        image = outputs[pos][arg][0]
+                                    else:
+                                        image = outputs[pos][arg].pop()
                     output = transform(image, forwarded=forwarded)
                     if isinstance(transform, Transform):
                         outputs[i] = {}
@@ -168,19 +187,21 @@ class Pipeline(Operation):
                             if arg not in outputs[i]:
                                 outputs[i][arg] = []
                             outputs[i][arg] += [output[arg]]
-                        for arg in transform.renamed:
+                        for arg in transform.renamed_out:
                             if arg in outputs[i]:
-                                outputs[i][transform.renamed[arg]] = outputs[i].pop(arg)
-                            if arg == "image":
-                                cur_img = transform.renamed[arg]
+                                outputs[i][transform.renamed_out[arg]] = outputs[i].pop(
+                                    arg
+                                )
                     else:
                         outputs[i] = output
                 final_outs = {}
                 for i in outputs:
-                    for arg in outputs[i]:
-                        if arg not in final_outs:
-                            final_outs[arg] = []
-                        final_outs[arg] += outputs[i][arg]
+                    if i != "in":
+                        for arg in outputs[i]:
+                            if outputs[i][arg]:
+                                if arg not in final_outs:
+                                    final_outs[arg] = []
+                                final_outs[arg] += outputs[i][arg]
                 return final_outs
             return {"image": image}
         raise MissingArgumentsError(self.required)

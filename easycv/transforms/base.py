@@ -29,17 +29,17 @@ class Transform(Operation, metaclass=Metadata):
     default_method = None
     method_name = "method"
 
-    def __init__(self, rename=(), **kwargs):
+    def __init__(self, r_in=(), r_out=(), **kwargs):
         self._method = self._extract_method(kwargs)
-        self.renamed = rename
+        self.renamed_in = r_in
+        self.renamed_out = r_out
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
 
-        for arg in self.renamed:
-            if arg in self.arguments:
-                self.arguments[self.renamed[arg]] = self.arguments.pop(arg)
-            if arg in self.outputs:
-                self.outputs[self.renamed[arg]] = self.outputs.pop(arg)
+        for arg in self.renamed_in:
+            self.arguments[self.renamed_in[arg]] = self.arguments.pop(arg)
+        for arg in self.renamed_out:
+            self.outputs[self.renamed_out[arg]] = self.outputs.pop(arg)
         self.required = {
             val: [self.arguments[val]]
             for val in self.arguments
@@ -79,9 +79,9 @@ class Transform(Operation, metaclass=Metadata):
                     "uint8"
                 )
             output = {"image": output}
-        for arg in self.renamed:
+        for arg in self.renamed_out:
             if arg in output:
-                output[self.renamed[arg]] = output.pop(arg)
+                output[self.renamed_out[arg]] = output.pop(arg)
         return output
 
     def __eq__(self, other):
@@ -178,8 +178,8 @@ class Transform(Operation, metaclass=Metadata):
             args = self._args.copy()
             args.update(forwarded)
 
-        for arg in self.renamed:
-            if self.renamed[arg] in args:
-                args[arg] = args.pop(self.renamed[arg])
+        for arg in self.renamed_in:
+            if self.renamed_in[arg] in args:
+                args[arg] = args.pop(self.renamed_in[arg])
         args.pop("image")
         return self.process(image, **args)

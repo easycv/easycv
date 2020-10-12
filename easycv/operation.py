@@ -35,7 +35,6 @@ class Operation:
         :param forwarded: List of arguments forwarded to the operation, defaults to no forwards
         :type forwarded: :class:`list`/:class:`tuple`, optional
         """
-
         for arg in self.arguments:
             if arg not in self._args:
                 if (
