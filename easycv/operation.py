@@ -7,7 +7,8 @@ from easycv.errors import MissingArgumentError
 class Operation:
     arguments = None  # Validators for arguments
     outputs = None  # Validators for outputs
-
+    required = None  # Name of required args
+    optional = None  # Name of optional args
     _args = None  # Argument values
 
     @property
@@ -22,7 +23,7 @@ class Operation:
         """
         return self._args
 
-    def initialize(self, index=None, forwarded=()):
+    def initialize(self, index=None, forwarded=(), nested=False):
         """
         Initializes the operation. Initializing is verifying if the operation has all the \
         required arguments to run and adding the default values for the arguments that were not \
@@ -34,10 +35,11 @@ class Operation:
         :param forwarded: List of arguments forwarded to the operation, defaults to no forwards
         :type forwarded: :class:`list`/:class:`tuple`, optional
         """
-
         for arg in self.arguments:
             if arg not in self._args:
-                if self.arguments[arg].default is None and arg not in forwarded:
+                if (
+                    self.arguments[arg].default is None and arg not in forwarded
+                ) and not nested:
                     raise MissingArgumentError(arg, index=index)
 
                 validator = self.arguments[arg]

@@ -7,9 +7,11 @@ import yaml
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
 from easycv.transforms.transforms import get_transform
+from easycv.operation import Operation
+from easycv.errors import MissingArgumentsError
 
 
-class Pipeline:
+class Pipeline(Operation):
 
     """
     This class represents a **pipeline**.
@@ -29,13 +31,17 @@ class Pipeline:
 
     def __init__(self, source, name=None):
         if isinstance(source, list):
-            self.forwards = Pipeline._calculate_forwards(source)
+            self.forwards = {}
 
             self.arguments = source[0].arguments if source else {}
             self.outputs = source[-1].outputs if source else {}
 
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
+            self.required = {}
+            self.optional = {}
+            self._arguments = {}
+            self.initialize()
 
         elif isinstance(source, str) and os.path.isfile(source):
             with open(source, "r") as file:
@@ -66,56 +72,157 @@ class Pipeline:
                 print("Deu Merda")
         self._transforms = transforms
 
-    @staticmethod
-    def _calculate_forwards(source):
+    def initialize(self, index=None, forwarded=(), nested=True):
         outputs = {}
-        forwards = {}
-
-        for i in range(len(source)):
-            forwards[i] = {}
-
-            if isinstance(source[i], Transform):
-                for output_index in list(outputs):
-                    for argument in list(outputs[output_index]):
-                        if source[i].can_be_forwarded(
-                            argument, outputs[output_index][argument]
+        for i, transform in enumerate(self._transforms):
+            used_args = []
+            outputs[i] = {}
+            self.forwards[i] = {}
+            for idx in outputs:
+                for arg in list(transform._arguments):
+                    for val in list(transform._arguments[arg]):
+                        if arg in outputs[idx]:
+                            if outputs[idx][arg][0].accepts(val):
+                                if (
+                                    arg in transform.required
+                                    or arg in transform.optional
+                                ):
+                                    used_args.append(arg)
+                                    if arg not in self.forwards[i]:
+                                        self.forwards[i][arg] = []
+                                    self.forwards[i][arg].append(idx)
+                                    if arg != "image" or "image" in self.outputs:
+                                        outputs[idx][arg].pop()
+                                        if not outputs[idx][arg]:
+                                            outputs[idx].pop(arg)
+                                if arg in transform.required:
+                                    transform.required[arg].pop()
+                                    if not transform.required[arg]:
+                                        transform.required.pop(arg)
+                                if arg in transform.optional:
+                                    transform.optional[arg].pop()
+                                    if not transform.optional[arg]:
+                                        transform.optional.pop(arg)
+            if transform.required:
+                for item in list(transform.required):
+                    if item not in self.required:
+                        self.required[item] = []
+                    if item == "image" or (
+                        "image" in transform.renamed_in
+                        and transform.renamed_in["image"] == item
+                    ):
+                        if not self.required[item]:
+                            self.required[item] += transform.required[item]
+                    else:
+                        self.required[item] += transform.required[item]
+                    for _ in list(transform.required[item]):
+                        if item not in self.forwards[i]:
+                            self.forwards[i][item] = []
+                        self.forwards[i][item].append("in")
+                        transform.required[item].pop()
+                        if not transform.required[item]:
+                            transform.required.pop(item)
+            if transform.optional:
+                for arg in transform.optional:
+                    if arg not in self.optional:
+                        self.optional[arg] = []
+                    self.optional[arg] += transform.optional[arg]
+            if isinstance(transform, Transform):
+                transform.initialize(index=i, forwarded=used_args, nested=nested)
+                if transform.outputs:
+                    for arg in transform.outputs:
+                        temp_arg = arg
+                        if (
+                            isinstance(transform, Transform)
+                            and arg in transform.renamed_out  # todo problem
                         ):
-                            if argument not in forwards[i]:
-                                forwards[i][argument] = output_index
-                                outputs[output_index].pop(argument)
-                                if not outputs[output_index]:
-                                    outputs.pop(output_index)
+                            temp_arg = transform.renamed_out[arg]
+                        outputs[i][temp_arg] = [transform.outputs[arg]]
+            else:
+                if transform.outputs:
+                    for arg in transform.outputs:
+                        if arg not in outputs[i]:
+                            outputs[i][arg] = []
+                        for out in transform.outputs[arg]:
+                            outputs[i][arg].append(out)
+        self.outputs = {}
+        for idx in outputs:
+            for arg in outputs[idx]:
+                if arg not in self.outputs:
+                    self.outputs[arg] = []
+                for outs in outputs[idx][arg]:
+                    self.outputs[arg].append(outs)
+        for arg in self.required:
+            if arg not in self._arguments:
+                self._arguments[arg] = []
+            self._arguments[arg] += self.required[arg]
+        for arg in self.optional:
+            if arg not in self._arguments:
+                self._arguments[arg] = []
+            self._arguments[arg] += self.optional[arg]
 
-                source[i].initialize(index=i, forwarded=forwards[i].keys())
-
-            elif not isinstance(source[i], Pipeline):
-                raise InvalidPipelineInputSource()
-
-            if source[i].outputs:
-                outputs[i] = source[i].outputs
-
-        return forwards
-
-    def __call__(self, image):
-        if self._transforms:
-            outputs = {}
-            for i in range(len(self._transforms)):
-                transform = self._transforms[i]
-                forwarded = {
-                    arg: outputs[self.forwards[i][arg]][arg] for arg in self.forwards[i]
-                }
-                if isinstance(transform, Transform):
+    def __call__(self, image, forwarded=()):
+        if not self.required or (
+            len(self.required.keys()) == 1 and list(self.required.keys()) == ["image"]
+        ):
+            forwards = deepcopy(self.forwards)
+            if self._transforms:
+                outputs = {"in": {}}
+                if forwarded:
+                    outputs["in"] = forwarded
+                outputs["in"]["image"] = [image]
+                for i, transform in enumerate(self._transforms):
+                    forwarded = {}
+                    for arg in forwards[i]:
+                        for pos in forwards[i][arg]:
+                            if isinstance(transform, Transform):
+                                if arg == "image" or (
+                                    "image" in transform.renamed_in
+                                    and transform.renamed_in["image"] == arg
+                                ):
+                                    if forwards[i][arg][0] == "in":
+                                        image = outputs[pos][arg][0]
+                                    else:
+                                        image = outputs[pos][arg].pop()
+                                else:
+                                    if arg not in forwarded:
+                                        forwarded[arg] = []
+                                    forwarded[arg] += outputs[pos][arg].pop()
+                            else:
+                                if arg != "image":
+                                    if arg not in forwarded:
+                                        forwarded[arg] = []
+                                    forwarded[arg] += [outputs[pos][arg].pop()]
+                                else:
+                                    if forwards[i][arg][0] == "in":
+                                        image = outputs[pos][arg][0]
+                                    else:
+                                        image = outputs[pos][arg].pop()
                     output = transform(image, forwarded=forwarded)
-                else:
-                    output = transform(image)
-
-                if "image" in output:
-                    image = output["image"]
-
-                outputs[i] = output
-
-            return outputs[len(self._transforms) - 1]
-        return {"image": image}
+                    if isinstance(transform, Transform):
+                        outputs[i] = {}
+                        for arg in output:
+                            if arg not in outputs[i]:
+                                outputs[i][arg] = []
+                            outputs[i][arg] += [output[arg]]
+                        for arg in transform.renamed_out:
+                            if arg in outputs[i]:
+                                outputs[i][transform.renamed_out[arg]] = outputs[i].pop(
+                                    arg
+                                )
+                    else:
+                        outputs[i] = output
+                final_outs = {}
+                for i in outputs:
+                    if i != "in":
+                        for arg in outputs[i]:
+                            if outputs[i][arg]:
+                                if arg not in final_outs:
+                                    final_outs[arg] = []
+                                final_outs[arg] += outputs[i][arg]
+                return final_outs
+            return {"image": image}
+        raise MissingArgumentsError(self.required)
 
     @property
     def name(self):

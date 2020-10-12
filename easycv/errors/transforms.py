@@ -58,6 +58,17 @@ class MissingArgumentError(Exception):
         super().__init__(msg + "missing mandatory argument: {}".format(arg))
 
 
+class MissingArgumentsError(Exception):
+    """Raised when an transform is executed while missing a mandatory argument"""
+
+    def __init__(self, arg):
+        msg = "Pipeline missing mandatory arguments: "
+        for a in arg:
+            if a != "image":
+                msg += a + ", "
+        super().__init__(msg)
+
+
 class InvalidSelectionError(Exception):
     """Raised when an invalid selection is made in a selector"""
 

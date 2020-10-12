@@ -5,6 +5,7 @@ from easycv.errors.transforms import (
     InvalidSelectionError,
     UnsupportedArgumentError,
     MissingArgumentError,
+    MissingArgumentsError,
     ValidatorError,
 )
 from easycv.errors.io import (
@@ -40,5 +41,6 @@ __all__ = [
     "InvalidListInputSource",
     "InvalidPipelineInputSource",
     "MissingArgumentError",
+    "MissingArgumentsError",
     "ValidatorError",
 ]

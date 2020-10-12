@@ -6,6 +6,7 @@ from easycv.errors import (
     InvalidMethodError,
     ArgumentNotProvidedError,
 )
+from easycv.validators import Image
 
 
 class Metadata(type):
@@ -28,11 +29,30 @@ class Transform(Operation, metaclass=Metadata):
     default_method = None
     method_name = "method"
 
-    def __init__(self, **kwargs):
+    def __init__(self, r_in=(), r_out=(), **kwargs):
         self._method = self._extract_method(kwargs)
+        self.renamed_in = r_in
+        self.renamed_out = r_out
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
         self.changed_args = list(kwargs.keys())
+
+        for arg in self.renamed_in:
+            self.arguments[self.renamed_in[arg]] = self.arguments.pop(arg)
+        for arg in self.renamed_out:
+            self.outputs[self.renamed_out[arg]] = self.outputs.pop(arg)
+        self.required = {
+            val: [self.arguments[val]]
+            for val in self.arguments
+            if self.arguments[val].required
+        }
+        self.optional = {
+            val: [self.arguments[val]]
+            for val in self.arguments
+            if val not in self.required
+        }
+        self._arguments = {arg: [self.arguments[arg]] for arg in self.arguments}
+
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)
 
@@ -49,9 +69,7 @@ class Transform(Operation, metaclass=Metadata):
     def __call__(self, image, forwarded=None):
         output = self.run(image, forwarded=forwarded)
 
-        if isinstance(output, dict):
-            return output
-        else:
+        if not isinstance(output, dict):
             if output.min() >= 0 and output.max() <= 255:
                 if output.dtype.kind != "i":
                     if output.min() >= 0 and output.max() <= 1:
@@ -61,7 +79,11 @@ class Transform(Operation, metaclass=Metadata):
                 output = cv2.normalize(output, None, 0, 255, cv2.NORM_MINMAX).astype(
                     "uint8"
                 )
-            return {"image": output}
+            output = {"image": output}
+        for arg in self.renamed_out:
+            if arg in output:
+                output[self.renamed_out[arg]] = output.pop(arg)
+        return output
 
     def __eq__(self, other):
         return isinstance(other, Transform) and self.args == other.args
@@ -126,9 +148,12 @@ class Transform(Operation, metaclass=Metadata):
                     args = cls.methods[method].get(name)
                     if args is not None:
                         to_keep = args
-            return {key: collection[key] for key in to_keep}
+            attribute = {key: collection[key] for key in to_keep}
+            if name == "arguments":
+                attribute["image"] = Image()
+            return attribute
         else:
-            return {}
+            return {"image": Image()}
 
     def _extract_method(self, kwargs):
         if self.contains_methods():
@@ -154,6 +179,10 @@ class Transform(Operation, metaclass=Metadata):
             args = self._args.copy()
             args.update(forwarded)
 
+        for arg in self.renamed_in:
+            if self.renamed_in[arg] in args:
+                args[arg] = args.pop(self.renamed_in[arg])
+        args.pop("image")
         return self.process(image, **args)
 
     def to_dict(self):
