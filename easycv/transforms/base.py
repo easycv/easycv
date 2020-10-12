@@ -149,10 +149,10 @@ class Transform(Operation, metaclass=Metadata):
                         to_keep = args
             attribute = {key: collection[key] for key in to_keep}
             if name == "arguments":
-                attribute["image"] = Image(default="None")
+                attribute["image"] = Image()
             return attribute
         else:
-            return {"image": Image(default="None")}
+            return {"image": Image()}
 
     def _extract_method(self, kwargs):
         if self.contains_methods():

@@ -5,7 +5,7 @@ from copy import deepcopy
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
 from easycv.operation import Operation
-from easycv.errors import MissingArgumentError
+from easycv.errors import MissingArgumentsError
 
 
 class Pipeline(Operation):
@@ -89,7 +89,14 @@ class Pipeline(Operation):
                 for item in list(transform.required):
                     if item not in self.required:
                         self.required[item] = []
-                    self.required[item] += transform.required[item]
+                    if item == "image" or (
+                        "image" in transform.renamed
+                        and transform.renamed["image"] == item
+                    ):
+                        if not self.required[item]:
+                            self.required[item] += transform.required[item]
+                    else:
+                        self.required[item] += transform.required[item]
                     for _ in list(transform.required[item]):
                         if item not in self.forwards[i]:
                             self.forwards[i][item] = []
@@ -137,20 +144,24 @@ class Pipeline(Operation):
             self._arguments[arg] += self.optional[arg]
 
     def __call__(self, image, forwarded=()):
-        if not self.required:
+        if not self.required or (
+            len(self.required.keys()) == 1 and list(self.required.keys()) == ["image"]
+        ):
+            cur_img = "image"
             forwards = deepcopy(self.forwards)
             if self._transforms:
                 outputs = {} if not forwarded else {"in": forwarded}
                 for i, transform in enumerate(self._transforms):
                     forwarded = {}
                     for arg in forwards[i]:
-                        if arg != "image":
+                        if arg != cur_img:
                             if arg not in forwarded:
                                 forwarded[arg] = []
                             forwarded[arg] += outputs[forwards[i][arg].pop()][arg].pop()
+                        else:
+                            if forwards[i][arg][0] != "in":
+                                image = outputs[forwards[i][arg].pop()][arg].pop()
                     output = transform(image, forwarded=forwarded)
-                    if "image" in output:
-                        image = output.pop("image")
                     if isinstance(transform, Transform):
                         outputs[i] = {}
                         for arg in output:
@@ -160,6 +171,8 @@ class Pipeline(Operation):
                         for arg in transform.renamed:
                             if arg in outputs[i]:
                                 outputs[i][transform.renamed[arg]] = outputs[i].pop(arg)
+                            if arg == "image":
+                                cur_img = transform.renamed[arg]
                     else:
                         outputs[i] = output
                 final_outs = {}
@@ -168,10 +181,9 @@ class Pipeline(Operation):
                         if arg not in final_outs:
                             final_outs[arg] = []
                         final_outs[arg] += outputs[i][arg]
-                final_outs["image"] = image
                 return final_outs
             return {"image": image}
-        raise MissingArgumentError(1, index=1)  # TODO GIVE CORRECT ERROR MESSAGE
+        raise MissingArgumentsError(self.required)
 
     @property
     def name(self):
