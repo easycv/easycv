@@ -47,22 +47,11 @@ class UnsupportedArgumentError(Exception):
         super().__init__(msg)
 
 
-class MissingArgumentError(Exception):
-    """Raised when an transform is executed while missing a mandatory argument"""
-
-    def __init__(self, arg, index=None):
-        if index is None:
-            msg = "Transform "
-        else:
-            msg = "Transform at index {} ".format(index)
-        super().__init__(msg + "missing mandatory argument: {}".format(arg))
-
-
 class MissingArgumentsError(Exception):
     """Raised when an transform is executed while missing a mandatory argument"""
 
-    def __init__(self, arg):
-        msg = "Pipeline missing mandatory arguments: "
+    def __init__(self, arg, origin="Pipeline"):
+        msg = origin + " missing mandatory arguments: "
         for a in arg:
             if a != "image":
                 msg += a + ", "

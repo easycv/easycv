@@ -6,7 +6,8 @@ from easycv.errors import (
     InvalidMethodError,
     ArgumentNotProvidedError,
 )
-from easycv.validators import Image
+import easycv.validators as vals
+from easycv.utils import rename_args
 
 
 class Metadata(type):
@@ -40,16 +41,15 @@ class Transform(Operation, metaclass=Metadata):
             self.arguments[self.renamed_in[arg]] = self.arguments.pop(arg)
         for arg in self.renamed_out:
             self.outputs[self.renamed_out[arg]] = self.outputs.pop(arg)
-        self.required = {
-            val: [self.arguments[val]]
-            for val in self.arguments
-            if self.arguments[val].required
-        }
-        self.optional = {
-            val: [self.arguments[val]]
-            for val in self.arguments
-            if val not in self.required
-        }
+
+        self.required = {}
+        self.optional = {}
+        for val in self.arguments:
+            if self.arguments[val].required:
+                self.required[val] = [self.arguments[val]]
+            else:
+                self.optional[val] = [self.arguments[val]]
+
         self._arguments = {arg: [self.arguments[arg]] for arg in self.arguments}
 
         if any(arg not in self.arguments for arg in kwargs):
@@ -79,9 +79,7 @@ class Transform(Operation, metaclass=Metadata):
                     "uint8"
                 )
             output = {"image": output}
-        for arg in self.renamed_out:
-            if arg in output:
-                output[self.renamed_out[arg]] = output.pop(arg)
+        output = rename_args(output, self.renamed_out)
         return output
 
     def __eq__(self, other):
@@ -149,10 +147,10 @@ class Transform(Operation, metaclass=Metadata):
                         to_keep = args
             attribute = {key: collection[key] for key in to_keep}
             if name == "arguments":
-                attribute["image"] = Image()
+                attribute["image"] = vals.Image()
             return attribute
         else:
-            return {"image": Image()}
+            return {"image": vals.Image()}
 
     def _extract_method(self, kwargs):
         if self.contains_methods():
@@ -178,8 +176,6 @@ class Transform(Operation, metaclass=Metadata):
             args = self._args.copy()
             args.update(forwarded)
 
-        for arg in self.renamed_in:
-            if self.renamed_in[arg] in args:
-                args[arg] = args.pop(self.renamed_in[arg])
+        args = rename_args(args, self.renamed_in, direction="r")
         args.pop("image")
         return self.process(image, **args)

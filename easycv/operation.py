@@ -1,7 +1,7 @@
 from copy import copy
 
 import easycv.image
-from easycv.errors import MissingArgumentError
+from easycv.errors import MissingArgumentsError
 
 
 class Operation:
@@ -35,15 +35,18 @@ class Operation:
         :param forwarded: List of arguments forwarded to the operation, defaults to no forwards
         :type forwarded: :class:`list`/:class:`tuple`, optional
         """
+        error_args = []
         for arg in self.arguments:
             if arg not in self._args:
                 if (
                     self.arguments[arg].default is None and arg not in forwarded
                 ) and not nested:
-                    raise MissingArgumentError(arg, index=index)
+                    error_args.append(arg)
 
                 validator = self.arguments[arg]
                 self._args[arg] = validator.default
+        if error_args and not nested:
+            raise MissingArgumentsError(error_args, origin="Transform")
 
     def can_be_forwarded(self, arg_name, validator):
         """
