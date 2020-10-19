@@ -4,7 +4,6 @@ from easycv.errors.transforms import (
     InvalidMethodError,
     InvalidSelectionError,
     UnsupportedArgumentError,
-    MissingArgumentError,
     MissingArgumentsError,
     ValidatorError,
 )

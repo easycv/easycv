@@ -65,11 +65,18 @@ class Pipeline(Operation):
                     for arg in operation["Transform"]["args"]
                     if operation["Transform"]["args"][arg]
                 }
-                transforms.append(transform(**arguments))
+                transforms.append(
+                    transform(
+                        method=operation["Transform"]["method"],
+                        r_in=operation["Transform"]["renamed_in"],
+                        r_out=operation["Transform"]["renamed_out"],
+                        **arguments
+                    )
+                )
             elif "Pipeline" in operation:
                 transforms.append(Pipeline(operation))
             else:
-                print("Deu Merda")
+                raise MissingArgumentsError()
         self._transforms = transforms
 
     def initialize(self, index=None, forwarded=(), nested=True):
@@ -198,6 +205,7 @@ class Pipeline(Operation):
                                         image = outputs[pos][arg][0]
                                     else:
                                         image = outputs[pos][arg].pop()
+                    print(forwarded)
                     output = transform(image, forwarded=forwarded)
                     if isinstance(transform, Transform):
                         outputs[i] = {}

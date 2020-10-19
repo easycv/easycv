@@ -37,6 +37,17 @@ def running_on_notebook():
         return False
 
 
+def rename_args(args, renames, direction="f"):
+    res = args
+    if direction == "f":
+        for arg in renames:
+            res[renames[arg]] = args.pop(arg)
+    elif direction == "r":
+        for arg in renames:
+            res[arg] = args.pop(renames[arg])
+    return res
+
+
 interpolation_methods = {
     "nearest": cv2.INTER_NEAREST,
     "linear": cv2.INTER_LINEAR,
