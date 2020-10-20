@@ -45,6 +45,8 @@ class Operation:
 
                 validator = self.arguments[arg]
                 self._args[arg] = validator.default
+        if "image" in error_args:
+            error_args.pop(error_args.index("image"))
         if error_args and not nested:
             raise MissingArgumentsError(error_args, origin="Transform")
 

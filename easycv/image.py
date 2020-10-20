@@ -146,11 +146,7 @@ class Image(Collection):
         outputs = transform.outputs
 
         if self._lazy:
-            if (
-                len(outputs.keys()) == 1
-                and len(outputs[list(outputs.keys())[0]]) == 1
-                and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
-            ):  # If transform outputs an image
+            if self.check_outs(outputs, transform):  # If transform outputs an image
                 if in_place:
                     self._pending.add_transform(transform)
                 else:
@@ -163,17 +159,20 @@ class Image(Collection):
                 return Output(self._img, pending=transform)
         else:
             self.load()
-            if (
-                len(outputs.keys()) == 1
-                and len(outputs[list(outputs.keys())[0]]) == 1
-                and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
-            ):  # If transform outputs an image
+            if self.check_outs(outputs, transform):  # If transform outputs an image
                 img_key = list(outputs.keys())[0]
-                if in_place:
-                    self._img = transform(self._img)[img_key][0]
+                if isinstance(transform, Transform):
+                    if in_place:
+                        self._img = transform(self._img)[img_key]
+                    else:
+                        new_image = transform(self._img.copy())[img_key]
+                        return Image(new_image)
                 else:
-                    new_image = transform(self._img.copy())[img_key][0]
-                    return Image(new_image)
+                    if in_place:
+                        self._img = transform(self._img)[img_key][0]
+                    else:
+                        new_image = transform(self._img.copy())[img_key][0]
+                        return Image(new_image)
             else:
                 return transform(self._img)
 
@@ -197,6 +196,18 @@ class Image(Collection):
         else:
             result = Image(self._pending(self._img)["image"], lazy=self._lazy)
             return result
+
+    def check_outs(self, outputs, transform):
+        return len(outputs.keys()) == 1 and (
+            (
+                isinstance(transform, Transform)
+                and isinstance(outputs[list(outputs.keys())[0]], vals.Image)
+            )
+            or (
+                len(outputs[list(outputs.keys())[0]]) == 1
+                and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
+            )
+        )
 
     @auto_compute
     def encode(self):
