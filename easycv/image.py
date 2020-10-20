@@ -10,6 +10,7 @@ from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 from easycv.output import Output
 from easycv.transforms.base import Transform
+import easycv.validators as vals
 import cv2
 
 
@@ -145,7 +146,11 @@ class Image(Collection):
         outputs = transform.outputs
 
         if self._lazy:
-            if outputs == {}:  # If transform outputs an image
+            if (
+                len(outputs.keys()) == 1
+                and len(outputs[list(outputs.keys())[0]]) == 1
+                and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
+            ):  # If transform outputs an image
                 if in_place:
                     self._pending.add_transform(transform)
                 else:
@@ -158,11 +163,16 @@ class Image(Collection):
                 return Output(self._img, pending=transform)
         else:
             self.load()
-            if outputs == {}:  # If transform outputs an image
+            if (
+                len(outputs.keys()) == 1
+                and len(outputs[list(outputs.keys())[0]]) == 1
+                and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
+            ):  # If transform outputs an image
+                img_key = list(outputs.keys())[0]
                 if in_place:
-                    self._img = transform(self._img)["image"]
+                    self._img = transform(self._img)[img_key][0]
                 else:
-                    new_image = transform(self._img.copy())["image"]
+                    new_image = transform(self._img.copy())[img_key][0]
                     return Image(new_image)
             else:
                 return transform(self._img)
