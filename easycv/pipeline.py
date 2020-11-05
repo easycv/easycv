@@ -271,11 +271,14 @@ class Pipeline(Operation):
         :type index: :class:`int`, optional
         """
         if isinstance(transform, (Transform, Pipeline)):
+            transforms = self._transforms.copy()
             if index is not None:
-                self._transforms.insert(index, transform.copy())
+                transforms.insert(index, transform.copy())
             else:
-                self._transforms.append(transform.copy())
-            self.forwards = Pipeline._calculate_forwards(self._transforms)
+                transforms.append(transform.copy())
+            newP = Pipeline(transforms)
+            self.forwards = newP.forwards
+            self._transforms = transforms
         else:
             raise ValueError("Pipelines can only contain Transforms or other pipelines")
 
