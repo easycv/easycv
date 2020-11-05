@@ -10,6 +10,7 @@ from easycv.errors.io import InvalidImageInputSource
 from easycv.io import save, valid_image_source, get_image_array, show, random_dog_image
 from easycv.output import Output
 from easycv.transforms.base import Transform
+from easycv.pipeline import Pipeline
 import easycv.validators as vals
 import cv2
 
@@ -204,7 +205,8 @@ class Image(Collection):
                 and isinstance(outputs[list(outputs.keys())[0]], vals.Image)
             )
             or (
-                len(outputs[list(outputs.keys())[0]]) == 1
+                isinstance(transform, Pipeline)
+                and len(outputs[list(outputs.keys())[0]]) == 1
                 and isinstance(outputs[list(outputs.keys())[0]][0], vals.Image)
             )
         )

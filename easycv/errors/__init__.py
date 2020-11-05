@@ -39,7 +39,6 @@ __all__ = [
     "UnsupportedArgumentError",
     "InvalidListInputSource",
     "InvalidPipelineInputSource",
-    "MissingArgumentError",
     "MissingArgumentsError",
     "ValidatorError",
 ]

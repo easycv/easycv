@@ -63,28 +63,23 @@ class Pipeline(Operation):
             for idx in outputs:
                 for arg in list(transform._arguments):
                     for val in list(transform._arguments[arg]):
-                        if arg in outputs[idx]:
-                            if outputs[idx][arg][0].accepts(val):
-                                if (
-                                    arg in transform.required
-                                    or arg in transform.optional
-                                ):
-                                    used_args.append(arg)
-                                    if arg not in self.forwards[i]:
-                                        self.forwards[i][arg] = []
-                                    self.forwards[i][arg].append(idx)
-                                    if arg != "image" or "image" in self.outputs:
-                                        outputs[idx][arg].pop()
-                                        if not outputs[idx][arg]:
-                                            outputs[idx].pop(arg)
-                                if arg in transform.required:
-                                    transform.required[arg].pop()
-                                    if not transform.required[arg]:
-                                        transform.required.pop(arg)
-                                if arg in transform.optional:
-                                    transform.optional[arg].pop()
-                                    if not transform.optional[arg]:
-                                        transform.optional.pop(arg)
+                        if arg in outputs[idx] and outputs[idx][arg][0].accepts(val):
+                            used_args.append(arg)
+                            if arg not in self.forwards[i]:
+                                self.forwards[i][arg] = []
+                            self.forwards[i][arg].append(idx)
+                            if arg != "image" or "image" in self.outputs:
+                                outputs[idx][arg].pop()
+                                if not outputs[idx][arg]:
+                                    outputs[idx].pop(arg)
+                            if arg in transform.required:
+                                transform.required[arg].pop()
+                                if not transform.required[arg]:
+                                    transform.required.pop(arg)
+                            else:
+                                transform.optional[arg].pop()
+                                if not transform.optional[arg]:
+                                    transform.optional.pop(arg)
             if transform.required:
                 for item in list(transform.required):
                     if item not in self.required:
@@ -116,7 +111,7 @@ class Pipeline(Operation):
                         temp_arg = arg
                         if (
                             isinstance(transform, Transform)
-                            and arg in transform.renamed_out  # todo problem
+                            and arg in transform.renamed_out
                         ):
                             temp_arg = transform.renamed_out[arg]
                         outputs[i][temp_arg] = [transform.outputs[arg]]
@@ -262,7 +257,9 @@ class Pipeline(Operation):
                 num += 1
         return num
 
-    def add_transform(self, transform, index=None):
+    def add_transform(
+        self, transform, index=None
+    ):  # todo Create new Pipeline with the new transforms
         """
         Adds a transform/pipeline to the **pipeline**. The new transform/pipeline is added in the \
         end by default.

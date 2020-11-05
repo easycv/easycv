@@ -39,14 +39,14 @@ class Operation:
         for arg in self.arguments:
             if arg not in self._args:
                 if (
-                    self.arguments[arg].default is None and arg not in forwarded
-                ) and not nested:
+                    (self.arguments[arg].default is None and arg not in forwarded)
+                    and not nested
+                    and arg != "image"
+                ):
                     error_args.append(arg)
 
                 validator = self.arguments[arg]
                 self._args[arg] = validator.default
-        if "image" in error_args:
-            error_args.pop(error_args.index("image"))
         if error_args and not nested:
             raise MissingArgumentsError(error_args, origin="Transform")
 
