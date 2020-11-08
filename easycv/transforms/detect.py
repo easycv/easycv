@@ -325,9 +325,11 @@ class Detect(Transform):
 
     outputs = {
         "boxes": List(
-            List(List(Number(), length=2), length=2),
-            List(Number(), length=3),
-            Type(str),
+            List(
+                List(List(Number(min_value=0, only_integer=True), length=2), length=2),
+                List(Number(min_value=0, max_value=255, only_integer=True), length=3),
+                Type(str),
+            )
         )
     }
 
