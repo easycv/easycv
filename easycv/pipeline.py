@@ -4,9 +4,10 @@ from copy import deepcopy
 
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
+from easycv.operation import Operation
 
 
-class Pipeline:
+class Pipeline(Operation):
 
     """
     This class represents a **pipeline**.
