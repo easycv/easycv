@@ -216,7 +216,6 @@ class Draw(Transform):
         if method == "boxes":
             kwargs["font"] = font[kwargs["font"]]
             kwargs["fontFace"] = kwargs.pop("font")
-            kwargs["thickness"] = 2
             size = kwargs.pop("size")
             for box in kwargs.pop("boxes"):
                 image = cv.rectangle(
@@ -226,9 +225,10 @@ class Draw(Transform):
                     tuple(box[1]),
                     thickness=2,
                 )
-                kwargs["org"] = (box[0][0][0], box[0][0][1] - 10)
+                kwargs["org"] = (box[0][0][0], box[0][0][1] - 5)
                 kwargs["color"] = tuple(box[1])
                 kwargs["fontScale"] = size * (box[0][1][0]) * 0.0008
+                kwargs["thickness"] = int(2 / (box[0][1][0] * 0.5))
                 image = cv.putText(image, box[2], **kwargs)
             return image
 
