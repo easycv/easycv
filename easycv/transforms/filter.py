@@ -41,7 +41,7 @@ class Blur(Transform):
 
     arguments = {
         "size": Number(min_value=1, only_integer=True, only_odd=True, default="auto"),
-        "sigma": Number(min_value=0, default=0),
+        "sigma": Number(min_value=0, default=1),
         "sigma_color": Number(min_value=0, default=75),
         "sigma_space": Number(min_value=0, default=75),
         "truncate": Number(min_value=0, default=4),

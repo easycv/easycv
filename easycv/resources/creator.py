@@ -50,7 +50,7 @@ def create_resource(show_progress=True):
         pathlib.Path(__file__).parent.absolute() / "sources" / (name.lower() + ".yaml")
     )
     with open(filename, "w") as file:
-        yaml.dump({"files": files}, file)
+        yaml.dump({"type": "folder", "files": files}, file)
 
     print("Resource created successfully!")
 

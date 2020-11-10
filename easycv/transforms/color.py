@@ -134,6 +134,67 @@ class ColorTransfer(Transform):
         return color_transfer(kwargs["source"].array, image)
 
 
+class Hue(Transform):
+    """
+    Hue is a transform that changes the image hue
+
+    :param value: Value of Hue to Add
+    :type value: :class:`int`
+    """
+
+    arguments = {
+        "value": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        image[:, :, 0] = (image[:, :, 0] + kwargs["value"]) % 180
+        return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+
+
+class Contrast(Transform):
+    """
+    Contrast is a transform that changes the image contrast
+
+    :param alpha: Value of contrast to Add
+    :type alpha: :class:`float`
+    """
+
+    arguments = {
+        "alpha": Number(only_integer=False),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.addWeighted(image, kwargs["alpha"], image, 0, 0)
+        return image
+
+
+class Brightness(Transform):
+    """
+    Brightness is a transform that changes the image brightness
+
+    :param beta: Value of brightness to Add
+    :type beta: :class:`int`
+    """
+
+    arguments = {
+        "beta": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.addWeighted(image, 1, image, 0, kwargs["beta"])
+        return image
+
+
+class Hsv(Transform):
+    """
+    Hsv is a transform that turns an image to hsv
+    """
+
+    def process(self, image, **kwargs):
+        return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+
 class ColorPick(Transform):
     """
     ColorPick is a transform that returns the color of a selected point or the \

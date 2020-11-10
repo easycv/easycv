@@ -1,3 +1,4 @@
+type: folder
 files:
 - filename: haarcascade_fullbody.xml
   sha256: 041745c71eef1b5c86aef224f17ce75b042d33314cc8f6757424f8bd8cd30aa1

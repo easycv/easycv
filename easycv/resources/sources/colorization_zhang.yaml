@@ -1,3 +1,4 @@
+type: folder
 files:
 - filename: colorization_deploy_v2.prototxt
   sha256: d16418cef8df4ccd703a55ae0ef3960861d5010418f77c90d0a47689998a7169

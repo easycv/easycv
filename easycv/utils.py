@@ -30,9 +30,12 @@ def distance(point1, point2):
 
 def running_on_notebook():
     if "IPython" in sys.modules:
-        from IPython import get_ipython
+        try:
+            from IPython import get_ipython
 
-        return "IPKernelApp" in get_ipython().config
+            return "IPKernelApp" in get_ipython().config
+        except (AttributeError, ImportError):
+            return False
     else:
         return False
 

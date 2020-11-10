@@ -16,6 +16,10 @@ from easycv.transforms.color import (
     Cartoon,
     Sepia,
     ColorTransfer,
+    Hue,
+    Hsv,
+    Contrast,
+    Brightness,
     Colorize,
     Quantitization,
 )
@@ -26,13 +30,15 @@ from easycv.transforms.spatial import (
     Mirror,
     Rotate,
     Translate,
+    Paste,
 )
-from easycv.transforms.selectors import Select
+from easycv.transforms.selectors import Select, Mask, Inpaint
 from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
 from easycv.transforms.morphological import Erode, Dilate, Morphology
 
 transforms = [
+    Brightness,
     Blur,
     Canny,
     Circles,
@@ -40,6 +46,7 @@ transforms = [
     Colorize,
     ColorPick,
     ColorTransfer,
+    Contrast,
     Crop,
     Eyes,
     Faces,
@@ -52,6 +59,11 @@ transforms = [
     Gradient,
     GradientAngle,
     GrayScale,
+    Hue,
+    Hsv,
+    Inpaint,
+    Mask,
+    Paste,
     Mirror,
     Morphology,
     Lines,
