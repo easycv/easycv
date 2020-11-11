@@ -36,6 +36,7 @@ from easycv.transforms.selectors import Select, Mask, Inpaint
 from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
 from easycv.transforms.draw import Draw
 from easycv.transforms.morphological import Erode, Dilate, Morphology
+from easycv.transforms.style import StyleTransfer
 
 transforms = [
     Brightness,
@@ -81,6 +82,7 @@ transforms = [
     Sharpen,
     Sharpness,
     Smile,
+    StyleTransfer,
     Translate,
 ]
 
