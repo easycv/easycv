@@ -1,9 +1,13 @@
 import cv2
 import numpy as np
+from sklearn.cluster import MiniBatchKMeans
 
 from color_transfer import color_transfer
 from easycv.validators import Option, List, Number, Image
 from easycv.transforms.base import Transform
+from easycv.transforms.selectors import Select
+from easycv.transforms.spatial import Crop
+from easycv.resources import get_resource
 
 
 class GrayScale(Transform):
@@ -128,3 +132,152 @@ class ColorTransfer(Transform):
 
     def process(self, image, **kwargs):
         return color_transfer(kwargs["source"].array, image)
+
+
+class Hue(Transform):
+    """
+    Hue is a transform that changes the image hue
+
+    :param value: Value of Hue to Add
+    :type value: :class:`int`
+    """
+
+    arguments = {
+        "value": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        image[:, :, 0] = (image[:, :, 0] + kwargs["value"]) % 180
+        return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+
+
+class Contrast(Transform):
+    """
+    Contrast is a transform that changes the image contrast
+
+    :param alpha: Value of contrast to Add
+    :type alpha: :class:`float`
+    """
+
+    arguments = {
+        "alpha": Number(only_integer=False),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.addWeighted(image, kwargs["alpha"], image, 0, 0)
+        return image
+
+
+class Brightness(Transform):
+    """
+    Brightness is a transform that changes the image brightness
+
+    :param beta: Value of brightness to Add
+    :type beta: :class:`int`
+    """
+
+    arguments = {
+        "beta": Number(only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        image = cv2.addWeighted(image, 1, image, 0, kwargs["beta"])
+        return image
+
+
+class Hsv(Transform):
+    """
+    Hsv is a transform that turns an image to hsv
+    """
+
+    def process(self, image, **kwargs):
+        return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+
+class ColorPick(Transform):
+    """
+    ColorPick is a transform that returns the color of a selected point or the \
+    average color of a selected rectangle. Returns the color in RGB.
+
+    :param method: Method to be used, defaults to "point"
+    :type method: :class:`str`, optional
+    """
+
+    methods = ["point", "rectangle"]
+    default_method = "point"
+
+    outputs = {
+        "color": List(Number(min_value=0, max_value=255, only_integer=True), length=3)
+    }
+
+    def process(self, image, **kwargs):
+        if kwargs["method"] == "point":
+            point = Select(method="point", n=1).apply(image)["points"][0]
+            return {"color": list(image[point[1]][point[0]][::-1])}
+        if kwargs["method"] == "rectangle":
+            rectangle = Select(method="rectangle").apply(image)["rectangle"]
+            cropped = Crop(rectangle=rectangle).apply(image)
+            return {
+                "color": list(cropped.mean(axis=(1, 0)).round().astype("uint8"))[::-1]
+            }
+
+
+class Colorize(Transform):
+    """
+    Colorize is a transform that puts the color in a grayscale image
+    """
+
+    def process(self, image, **kwargs):
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+        proto = get_resource("colorization_zhang", "colorization_deploy_v2.prototxt")
+        model = get_resource("colorization_zhang", "colorization_release_v2.caffemodel")
+        pts = np.load(str(get_resource("colorization_zhang", "pts_in_hull.npy")))
+
+        net = cv2.dnn.readNetFromCaffe(str(proto), str(model))
+        class8 = net.getLayerId("class8_ab")
+        conv8 = net.getLayerId("conv8_313_rh")
+        pts = pts.transpose().reshape(2, 313, 1, 1)
+        net.getLayer(class8).blobs = [pts.astype("float32")]
+        net.getLayer(conv8).blobs = [np.full([1, 313], 2.606, dtype="float32")]
+
+        scaled = image.astype("float32") / 255.0
+        lab = cv2.cvtColor(scaled, cv2.COLOR_BGR2LAB)
+        resized = cv2.resize(lab, (224, 224))
+        L = cv2.split(resized)[0] - 50
+        net.setInput(cv2.dnn.blobFromImage(L))
+        ab = net.forward()[0, :, :, :].transpose((1, 2, 0))
+        ab = cv2.resize(ab, (image.shape[1], image.shape[0]))
+        L = cv2.split(lab)[0]
+
+        colorized = np.concatenate((L[:, :, np.newaxis], ab), axis=2)
+        colorized = cv2.cvtColor(colorized, cv2.COLOR_LAB2BGR)
+        return (255 * np.clip(colorized, 0, 1)).astype("uint8")
+
+
+class Quantitization(Transform):
+    """
+    Quantitization is a Transform that reduces the number of colors to the on give
+
+    :param clusters: Number of colors that the image will have
+    :type clusters: :class:`int`, required
+    """
+
+    arguments = {
+        "clusters": Number(min_value=1, only_integer=True),
+    }
+
+    def process(self, image, **kwargs):
+        (h, w) = image.shape[:2]
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        image = image.reshape((image.shape[0] * image.shape[1], 3))
+
+        clt = MiniBatchKMeans(n_clusters=kwargs["clusters"])
+        labels = clt.fit_predict(image)
+
+        quant = clt.cluster_centers_.astype("uint8")[labels]
+        quant = quant.reshape((h, w, 3))
+        quant = cv2.cvtColor(quant, cv2.COLOR_LAB2BGR)
+
+        return quant

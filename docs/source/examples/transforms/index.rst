@@ -12,3 +12,4 @@ Transforms examples
    noise.ipynb
    perspective.ipynb
    spatial.ipynb
+   morphological.ipynb

@@ -3,6 +3,7 @@ import numpy as np
 
 from easycv.transforms.base import Transform
 from easycv.validators import Number, List, Type, Option
+from easycv.validators import Image
 from easycv.utils import interpolation_methods
 from easycv.errors.transforms import InvalidArgumentError
 
@@ -138,12 +139,12 @@ class Rotate(Transform):
 
 class Crop(Transform):
     """
-        Crop is a transform that crops a rectangular portion of an image, if original is True then
-        the image size will be kept.
-        :param rectangle: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
-        :type rectangle: :class:`list`/:class:`tuple`
-        :param original: True to keep original image size, False to resize to cropped area
-        :type original: :class:`bool`, optional
+    Crop is a transform that crops a rectangular portion of an image, if original is True then
+    the image size will be kept.
+    :param rectangle: A 4-tuple defining the left, right, upper, and lower pixel coordinate.
+    :type rectangle: :class:`list`/:class:`tuple`
+    :param original: True to keep original image size, False to resize to cropped area
+    :type original: :class:`bool`, optional
     """
 
     arguments = {
@@ -183,12 +184,12 @@ class Crop(Transform):
 
 class Translate(Transform):
     """
-        Translate is a transform that translates the image according to a vector xy
+    Translate is a transform that translates the image according to a vector xy
 
-        :param x: x value, defaults to 0
-        :type x: :class:`int`, optional
-        :param y: y value, defaults to 0
-        :type y: :class:`int`, optional
+    :param x: x value, defaults to 0
+    :type x: :class:`int`, optional
+    :param y: y value, defaults to 0
+    :type y: :class:`int`, optional
     """
 
     arguments = {
@@ -223,3 +224,30 @@ class Mirror(Transform):
             return cv2.flip(image, 1)
         if kwargs["axis"] == "both":
             return cv2.flip(image, -1)
+
+
+class Paste(Transform):
+    """
+    ImagePaste is a transform that pastes an image on to another
+
+    :param paste: image to paste on
+    :type paste: :class:`~eascv.image.Image`, optional
+    :param rectangle: rectangle to paste the image on
+    :type rectangle: :class:`list`, required
+    """
+
+    arguments = {
+        "paste": Image(),
+        "rectangle": List(
+            List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
+    }
+
+    def process(self, image, **kwargs):
+        rect = kwargs["rectangle"]
+        paste = kwargs["paste"]
+        width = rect[1][0] - rect[0][0]
+        height = rect[1][1] - rect[0][1]
+        paste = paste.apply(Resize(width=width, height=height)).array
+        image[rect[0][1] : rect[1][1], rect[0][0] : rect[1][0], :] = paste
+        return image

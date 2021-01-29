@@ -30,9 +30,12 @@ def distance(point1, point2):
 
 def running_on_notebook():
     if "IPython" in sys.modules:
-        from IPython import get_ipython
+        try:
+            from IPython import get_ipython
 
-        return "IPKernelApp" in get_ipython().config
+            return "IPKernelApp" in get_ipython().config
+        except (AttributeError, ImportError):
+            return False
     else:
         return False
 
@@ -56,4 +59,11 @@ font = {
     "COMPLEX_SMALL": cv2.FONT_HERSHEY_COMPLEX_SMALL,
     "SCRIPT_SIMPLEX": cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,
     "SCRIPT_COMPLEX": cv2.FONT_HERSHEY_SCRIPT_COMPLEX,
+}
+
+morp_methods = {
+    "opening": cv2.MORPH_OPEN,
+    "closing": cv2.MORPH_CLOSE,
+    "tophat": cv2.MORPH_TOPHAT,
+    "blackhat": cv2.MORPH_BLACKHAT,
 }

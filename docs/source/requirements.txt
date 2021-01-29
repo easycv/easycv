@@ -10,3 +10,4 @@ pyzbar
 tqdm
 color_transfer
 pyqt5==5.14.2
+sklearn

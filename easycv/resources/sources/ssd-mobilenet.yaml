@@ -1,0 +1,8 @@
+type: folder
+files:
+- filename: MobileNetSSD_deploy.prototxt
+  sha256: e781559c4f5beaec2a486ccd952af5b6fa408e9498761bf5f4fb80b4e9f0d25e
+  url: https://raw.githubusercontent.com/chuanqi305/MobileNet-SSD/master/voc/MobileNetSSD_deploy.prototxt
+- filename: MobileNetSSD_deploy.caffemodel
+  sha256: 761c86fbae3d8361dd454f7c740a964f62975ed32f4324b8b85994edec30f6af
+  url: https://github.com/PINTO0309/MobileNet-SSD-RealSense/blob/master/caffemodel/MobileNetSSD/MobileNetSSD_deploy.caffemodel?raw=true
