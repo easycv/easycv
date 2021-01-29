@@ -4,9 +4,10 @@ from copy import deepcopy
 
 from easycv.transforms.base import Transform
 from easycv.errors import InvalidPipelineInputSource
+from easycv.operation import Operation
 
 
-class Pipeline:
+class Pipeline(Operation):
 
     """
     This class represents a **pipeline**.
@@ -26,10 +27,11 @@ class Pipeline:
 
     def __init__(self, source, name=None):
         if isinstance(source, list):
-            self.forwards = Pipeline._calculate_forwards(source)
 
-            self.arguments = source[0].arguments if source else {}
-            self.outputs = source[-1].outputs if source else {}
+            self.arguments = {}  # source[0].arguments if source else {}
+            # self.outputs = {}  # source[-1].outputs if source else {}
+
+            self.forwards, self.outputs = self._calculate_forwards(source)
 
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
@@ -48,17 +50,16 @@ class Pipeline:
         else:
             raise InvalidPipelineInputSource()
 
-    @staticmethod
-    def _calculate_forwards(source):
+    def _calculate_forwards(self, source):
         outputs = {}
         forwards = {}
-
         for i in range(len(source)):
             forwards[i] = {}
 
-            if isinstance(source[i], Transform):
+            if isinstance(source[i], Transform) or isinstance(source[i], Pipeline):
                 for output_index in list(outputs):
                     for argument in list(outputs[output_index]):
+                        print(source[i])
                         if source[i].can_be_forwarded(
                             argument, outputs[output_index][argument]
                         ):
@@ -68,7 +69,22 @@ class Pipeline:
                                 if not outputs[output_index]:
                                     outputs.pop(output_index)
 
-                source[i].initialize(index=i, forwarded=forwards[i].keys())
+            if isinstance(source[i], Transform):
+                # Add the missing args for forwarding
+                missing_args = source[i].initialize(
+                    index=i, forwarded=forwards[i].keys(), nested=True
+                )
+                if missing_args:
+                    for arg in missing_args:
+                        if arg not in self.arguments:
+                            self.arguments[arg] = []
+                        self.arguments[arg].append(missing_args[arg])
+            elif isinstance(source[i], Pipeline):
+                args = source[i].arguments
+                for arg in args:
+                    if arg not in self.arguments:
+                        self.arguments[arg] = []
+                    self.arguments[arg] += args[arg]
 
             elif not isinstance(source[i], Pipeline):
                 raise InvalidPipelineInputSource()
@@ -76,7 +92,24 @@ class Pipeline:
             if source[i].outputs:
                 outputs[i] = source[i].outputs
 
-        return forwards
+        return forwards, self.format_outputs(outputs)
+
+    def format_outputs(self, outputs):
+        f_outs = {}
+        for idx in outputs:
+            for arg in outputs[idx]:
+                if arg not in f_outs:
+                    f_outs[arg] = []
+                if isinstance(outputs[idx][arg], list):
+                    f_outs[arg] += outputs[idx][arg]
+                else:
+                    f_outs[arg].append(outputs[idx][arg])
+        return f_outs
+
+    def can_be_forwarded(self, arg_name, validator):
+        if arg_name in self.arguments:
+            return self.arguments[arg_name][0].accepts(validator)
+        return False
 
     def __call__(self, image):
         if self._transforms:

@@ -22,7 +22,7 @@ class Operation:
         """
         return self._args
 
-    def initialize(self, index=None, forwarded=()):
+    def initialize(self, index=None, forwarded=(), nested=False):
         """
         Initializes the operation. Initializing is verifying if the operation has all the \
         required arguments to run and adding the default values for the arguments that were not \
@@ -35,13 +35,20 @@ class Operation:
         :type forwarded: :class:`list`/:class:`tuple`, optional
         """
 
+        if nested:
+            missing_args = {}
         for arg in self.arguments:
             if arg not in self._args:
                 if self.arguments[arg].default is None and arg not in forwarded:
-                    raise MissingArgumentError(arg, index=index)
+                    if nested:
+                        missing_args[arg] = self.arguments[arg]
+                    else:
+                        raise MissingArgumentError(arg, index=index)
 
                 validator = self.arguments[arg]
                 self._args[arg] = validator.default
+        if nested:
+            return missing_args
 
     def can_be_forwarded(self, arg_name, validator):
         """
