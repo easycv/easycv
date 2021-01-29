@@ -231,7 +231,7 @@ class Paste(Transform):
     ImagePaste is a transform that pastes an image on to another
 
     :param paste: image to paste on
-    :type paste: :class:``, optional
+    :type paste: :class:`~eascv.image.Image`, optional
     :param rectangle: rectangle to paste the image on
     :type rectangle: :class:`list`, required
     """
