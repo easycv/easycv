@@ -85,7 +85,7 @@ class Draw(Transform):
             ]
         },
         "rectangle": {
-            "arguments": ["rectangle", "color", "thickness", "line_type", "filled"]
+            "arguments": ["rectangles", "color", "thickness", "line_type", "filled"]
         },
         "text": {
             "arguments": [
@@ -99,6 +99,10 @@ class Draw(Transform):
                 "line_type",
             ]
         },
+        "boxes": {"arguments": ["boxes", "line_type", "font", "size"]},
+        "rectangles": {
+            "arguments": ["rectangles", "color", "thickness", "line_type", "filled"]
+        },
     }
 
     arguments = {
@@ -109,6 +113,9 @@ class Draw(Transform):
         ),
         "rectangle": List(
             List(Number(min_value=0, only_integer=True), length=2), length=2
+        ),
+        "rectangles": List(
+            List(List(Number(min_value=0, only_integer=True), length=2), length=2)
         ),
         "color": List(Number(min_value=0, max_value=255), length=3, default=(0, 0, 0)),
         "end_angle": Number(default=360),
@@ -139,6 +146,13 @@ class Draw(Transform):
         "text": Type(str),
         "thickness": Number(min_value=0, default=5, only_integer=True),
         "x_mirror": Type(bool, default=False),
+        "boxes": List(
+            List(
+                List(List(Number(min_value=0, only_integer=True), length=2), length=2),
+                List(Number(min_value=0, max_value=255, only_integer=True), length=3),
+                Type(str),
+            )
+        ),
     }
 
     def process(self, image, **kwargs):
@@ -198,3 +212,27 @@ class Draw(Transform):
         if method == "rectangle":
             pts = kwargs.pop("rectangle")
             return cv.rectangle(image, pts[0], pts[1], **kwargs)
+
+        if method == "boxes":
+            kwargs["font"] = font[kwargs["font"]]
+            kwargs["fontFace"] = kwargs.pop("font")
+            size = kwargs.pop("size")
+            for box in kwargs.pop("boxes"):
+                image = cv.rectangle(
+                    image,
+                    box[0][0],
+                    (box[0][0][0] + box[0][1][0], box[0][0][1] + box[0][1][1]),
+                    tuple(box[1]),
+                    thickness=2,
+                )
+                kwargs["org"] = (box[0][0][0], box[0][0][1] - 5)
+                kwargs["color"] = tuple(box[1])
+                kwargs["fontScale"] = size * (box[0][1][0]) * 0.0008
+                kwargs["thickness"] = int(2 / (box[0][1][0] * 0.5))
+                image = cv.putText(image, box[2], **kwargs)
+            return image
+
+        if method == "rectangles":
+            for rectangle in kwargs.pop("rectangles"):
+                image = cv.rectangle(image, rectangle[0], rectangle[1], **kwargs)
+            return image
