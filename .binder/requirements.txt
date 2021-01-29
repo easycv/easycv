@@ -1,5 +1,5 @@
 numpy==1.18.2
-Pillow==7.0.0
+Pillow==7.1.0
 requests==2.23.0
 matplotlib==3.2.1
 opencv-python==4.2.0.32
