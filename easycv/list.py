@@ -7,6 +7,7 @@ from easycv.io import show_grid, get_image_list
 from easycv.collection import auto_compute
 from easycv.transforms.base import Transform
 from easycv.errors.list import InvalidListInputSource
+from easycv.utils import hamming_distance
 
 
 class List:
@@ -178,3 +179,10 @@ class List:
         :type shape: :class:`tuple`, optional
         """
         show_grid(self._images, size=size, shape=shape)
+
+    def reverse_image_search(self, image, size=1):
+        hash_image = image.hash()
+        s_list = sorted(
+            self._images, key=lambda x: hamming_distance(str(x.hash()), str(hash_image))
+        )
+        return s_list[0] if size == 1 else List(s_list[:size])
