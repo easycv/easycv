@@ -53,8 +53,8 @@ class CascadeDetector(Transform):
         "cascade": File(),
         "scale": Number(default=1.1),
         "min_neighbors": Number(min_value=0, only_integer=True, default=3),
-        "min_size": Number(min_value=0, default="auto"),
-        "max_size": Number(min_value=0, default="auto"),
+        "min_size": List(Number(min_value=0), length=2, default="auto"),
+        "max_size": List(Number(min_value=0), length=2, default="auto"),
     }
 
     outputs = {
@@ -135,8 +135,10 @@ class Eyes(Transform):
 class Smile(Transform):
 
     arguments = {
-        "scale": Number(default=1.2),
+        "scale": Number(default=1.8),
         "min_neighbors": Number(min_value=0, only_integer=True, default=20),
+        "min_size_h": Number(min_value=0, max_value=1, default=0.2),
+        "min_size_w": Number(min_value=0, max_value=1, default=0.3),
     }
 
     outputs = {
@@ -149,11 +151,18 @@ class Smile(Transform):
         faces = Faces().apply(image)
         cascade_file = get_resource("haar-smile-cascade", "haarcascade_smile.xml")
         rectangles = []
+        min_size_h = kwargs.pop("min_size_h")
+        min_size_w = kwargs.pop("min_size_w")
+
         for face in faces["rectangles"]:
+            face_w = int((face[1][0] - face[0][0]) * min_size_w)
+            face_h = int((face[1][1] - face[0][1]) * min_size_h)
+            print(face_w, face_h)
             face_image = Crop(rectangle=face).apply(image)
-            smile = CascadeDetector(cascade=str(cascade_file), **kwargs).apply(
-                face_image
-            )["rectangles"]
+            smile = CascadeDetector(
+                cascade=str(cascade_file), min_size=(face_w, face_h), **kwargs
+            ).apply(face_image)["rectangles"]
+            print(smile)
             if smile:
                 adjusted = []
                 for j in range(len(smile)):
