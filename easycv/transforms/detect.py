@@ -156,11 +156,14 @@ class Smile(Transform):
             )["rectangles"]
             if smile:
                 adjusted = []
-                for i in range(len(smile[0])):
-                    adjusted.append(
-                        (smile[0][i][0] + face[0][0], smile[0][i][1] + face[0][1])
-                    )
-                rectangles.append(adjusted)
+                for j in range(len(smile)):
+                    rect = []
+                    for i in range(len(smile[0])):
+                        rect.append(
+                            (smile[j][i][0] + face[0][0], smile[j][i][1] + face[0][1])
+                        )
+                    adjusted.append(rect)
+                rectangles += adjusted
         return {"rectangles": rectangles}
 
 
