@@ -44,7 +44,6 @@ class Operation:
                         missing_args[arg] = self.arguments[arg]
                     else:
                         raise MissingArgumentError(arg, index=index)
-
                 validator = self.arguments[arg]
                 self._args[arg] = validator.default
         if nested:

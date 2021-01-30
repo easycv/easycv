@@ -85,7 +85,7 @@ class Draw(Transform):
             ]
         },
         "rectangle": {
-            "arguments": ["rectangles", "color", "thickness", "line_type", "filled"]
+            "arguments": ["rectangle", "color", "thickness", "line_type", "filled"]
         },
         "text": {
             "arguments": [

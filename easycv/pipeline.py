@@ -27,7 +27,7 @@ class Pipeline(Operation):
 
     def __init__(self, source, name=None):
         if isinstance(source, list):
-
+            self.forwarded = {}
             self.arguments = {}  # source[0].arguments if source else {}
             # self.outputs = {}  # source[-1].outputs if source else {}
 
@@ -55,32 +55,34 @@ class Pipeline(Operation):
         forwards = {}
         for i in range(len(source)):
             forwards[i] = {}
-
-            if isinstance(source[i], Transform) or isinstance(source[i], Pipeline):
+            outputs[i] = {}
+            if isinstance(source[i], Transform) or isinstance(
+                source[i], Pipeline
+            ):  # Fix Multiple Forwards
                 for output_index in list(outputs):
                     for argument in list(outputs[output_index]):
-                        print(source[i])
-                        if source[i].can_be_forwarded(
-                            argument, outputs[output_index][argument]
-                        ):
-                            if argument not in forwards[i]:
-                                forwards[i][argument] = output_index
-                                outputs[output_index].pop(argument)
-                                if not outputs[output_index]:
-                                    outputs.pop(output_index)
-
+                        for pos_arg in list(outputs[output_index][argument]):
+                            if source[i].can_be_forwarded(argument, pos_arg):
+                                if argument not in forwards[i]:  # ????
+                                    forwards[i][argument] = output_index
+                                    outputs[output_index][argument].pop(0)
+                                    if not outputs[output_index][argument]:
+                                        outputs[output_index].pop(argument)
+                                    if not outputs[output_index]:
+                                        outputs.pop(output_index)
+            missing_args = source[i].initialize(
+                index=i, forwarded=forwards[i].keys(), nested=True
+            )
             if isinstance(source[i], Transform):
                 # Add the missing args for forwarding
-                missing_args = source[i].initialize(
-                    index=i, forwarded=forwards[i].keys(), nested=True
-                )
+
                 if missing_args:
                     for arg in missing_args:
                         if arg not in self.arguments:
                             self.arguments[arg] = []
                         self.arguments[arg].append(missing_args[arg])
             elif isinstance(source[i], Pipeline):
-                args = source[i].arguments
+                args = missing_args
                 for arg in args:
                     if arg not in self.arguments:
                         self.arguments[arg] = []
@@ -90,7 +92,14 @@ class Pipeline(Operation):
                 raise InvalidPipelineInputSource()
 
             if source[i].outputs:
-                outputs[i] = source[i].outputs
+                for arg in source[i].outputs:
+                    if arg not in outputs[i]:
+                        outputs[i][arg] = []
+                    if isinstance(source[i].outputs[arg], list):
+                        outputs[i][arg] += source[i].outputs[arg]
+                    else:
+                        outputs[i][arg].append(source[i].outputs[arg])
+                print(outputs)
 
         return forwards, self.format_outputs(outputs)
 
@@ -107,9 +116,31 @@ class Pipeline(Operation):
         return f_outs
 
     def can_be_forwarded(self, arg_name, validator):
+        print(self)
         if arg_name in self.arguments:
-            return self.arguments[arg_name][0].accepts(validator)
+            if self.arguments[arg_name][0].accepts(validator):
+                if arg_name not in self.forwarded:
+                    self.forwarded[arg_name] = 0
+                if len(self.arguments[arg_name]) > self.forwarded[arg_name]:
+                    self.forwarded[arg_name] += 1
+                    return True
         return False
+
+    def initialize(self, index=None, forwarded=(), nested=False):
+        missing_args = {}
+        aux_1 = self.arguments.copy()
+        aux_2 = list(forwarded)
+        for arg in self.arguments:
+            if arg in forwarded:
+                aux_1[arg].pop()
+                aux_2.remove(arg)
+                if not aux_1:
+                    aux_1.pop(arg)
+            else:
+                if arg not in missing_args:
+                    missing_args[arg] = []
+                missing_args[arg] += self.arguments[arg]
+        return missing_args
 
     def __call__(self, image):
         if self._transforms:
