@@ -40,6 +40,13 @@ def running_on_notebook():
         return False
 
 
+def hamming_distance(a, b):
+    s = 0
+    for (a1, b1) in zip(a, b):
+        s += sum([1 for ones in list(bin(int(a1) ^ int(b1)))[2:] if ones == "1"])
+    return s
+
+
 interpolation_methods = {
     "nearest": cv2.INTER_NEAREST,
     "linear": cv2.INTER_LINEAR,
