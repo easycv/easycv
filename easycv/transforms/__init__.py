@@ -22,6 +22,7 @@ from easycv.transforms.color import (
     Brightness,
     Colorize,
     Quantitization,
+    Equalize
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -49,6 +50,7 @@ transforms = [
     Contrast,
     Crop,
     Eyes,
+    Equalize,
     Faces,
     Draw,
     Detect,
