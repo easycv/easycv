@@ -5,7 +5,10 @@ from easycv.errors import (
     UnsupportedArgumentError,
     InvalidMethodError,
     ArgumentNotProvidedError,
+    MissingArgumentError,
 )
+from easycv.utils import dict_lookup, inverse_dict_lookup
+from easycv.validators import Image as ImageVal
 
 
 class Metadata(type):
@@ -28,10 +31,19 @@ class Transform(Operation, metaclass=Metadata):
     default_method = None
     method_name = "method"
 
-    def __init__(self, **kwargs):
+    def __init__(self, r_in=(), r_out=(), **kwargs):
         self._method = self._extract_method(kwargs)
+        r_in = {} if not r_in else r_in
+        r_out = {} if not r_out else r_out
+        self.rename_in = {}
+        self.rename_out = {}
+
         self.arguments = self._extract_attribute("arguments", self._method)
         self.outputs = self._extract_attribute("outputs", self._method)
+
+        self.check_renames(r_in, r_out)
+
+        self.forwarded = {}
 
         if any(arg not in self.arguments for arg in kwargs):
             raise UnsupportedArgumentError(self, method=self._method)
@@ -50,6 +62,7 @@ class Transform(Operation, metaclass=Metadata):
         output = self.run(image, forwarded=forwarded)
 
         if isinstance(output, dict):
+            output.update({"image": image})  # maybe change
             return output
         else:
             if output.min() >= 0 and output.max() <= 255:
@@ -73,14 +86,15 @@ class Transform(Operation, metaclass=Metadata):
     def __str__(self):
         args_str = []
         for arg in self._args:
-            value = (
-                self._args[arg]
-                if isinstance(self._args[arg], (str, int, float))
-                else "(...)"
-            )
-            if arg == self.method_name:
-                arg = "method"
-            args_str.append("{}={}".format(arg, value))
+            if arg != "image":
+                value = (
+                    self._args[arg]
+                    if isinstance(self._args[arg], (str, int, float))
+                    else "(...)"
+                )
+                if arg == self.method_name:
+                    arg = "method"
+                args_str.append("{}={}".format(arg, value))
         return "{} ({})".format(self.__class__.__name__, ", ".join(args_str))
 
     @property
@@ -126,9 +140,11 @@ class Transform(Operation, metaclass=Metadata):
                     args = cls.methods[method].get(name)
                     if args is not None:
                         to_keep = args
-            return {key: collection[key] for key in to_keep}
+            aux = {"image": ImageVal(default=None)}
+            aux.update({key: collection[key] for key in to_keep})
+            return aux
         else:
-            return {}
+            return {"image": ImageVal(default=None)}
 
     def _extract_method(self, kwargs):
         if self.contains_methods():
@@ -153,5 +169,43 @@ class Transform(Operation, metaclass=Metadata):
         else:
             args = self._args.copy()
             args.update(forwarded)
+        args["image"] = image
+        return self.process(**args)
 
-        return self.process(image, **args)
+    def check_renames(self, r_in, r_out):
+        for arg in r_in:
+            if arg in self.arguments:
+                self.rename_in[arg] = r_in[
+                    arg
+                ]  # Maybe raise exception for invalid renames
+        for arg in r_out:
+            if arg in self.outputs:
+                self.rename_out[arg] = r_out[arg]
+
+    def can_be_forwarded(self, arg_name, validator):
+        tmp_arg = inverse_dict_lookup(self.rename_in, arg_name)
+        if tmp_arg in self.arguments and tmp_arg not in self._args:
+            if dict_lookup(self.rename_in, tmp_arg) == arg_name:
+                if tmp_arg not in self.forwarded and self.arguments[tmp_arg].accepts(
+                    validator
+                ):
+                    self.forwarded[tmp_arg] = 1
+                    return True
+        return False
+
+    def initialize(self, index=None, forwarded=(), nested=False):
+        missing_args = {}
+        for arg in self.arguments:
+            temp_arg = dict_lookup(self.rename_in, arg)
+            if arg not in self._args:
+                if (
+                    self.arguments[arg].default is None and temp_arg not in forwarded
+                ) and arg != "image":
+                    if nested:
+                        missing_args[temp_arg] = self.arguments[arg]
+                    else:
+                        raise MissingArgumentError(arg, index=index)
+                validator = self.arguments[arg]
+                self._args[arg] = validator.default
+        if nested:
+            return missing_args

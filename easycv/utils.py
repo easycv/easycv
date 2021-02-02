@@ -40,6 +40,15 @@ def running_on_notebook():
         return False
 
 
+def dict_lookup(renames, arg):
+    return renames[arg] if arg in renames else arg
+
+
+def inverse_dict_lookup(renames, arg):
+    inv_map = {v: k for k, v in renames.items()}
+    return inv_map[arg] if arg in inv_map else arg
+
+
 interpolation_methods = {
     "nearest": cv2.INTER_NEAREST,
     "linear": cv2.INTER_LINEAR,

@@ -158,14 +158,14 @@ class Image(Collection):
                 return Output(self._img, pending=transform)
         else:
             self.load()
-            if outputs == {}:  # If transform outputs an image
-                if in_place:
-                    self._img = transform(self._img)["image"]
-                else:
-                    new_image = transform(self._img.copy())["image"]
-                    return Image(new_image)
+
+            if in_place:
+                outs = transform(self._img)
+                self._img = outs["image"][0]
             else:
-                return transform(self._img)
+                outs = transform(self._img.copy())
+                new_image = outs["image"][0]
+            return outs
 
     def compute(self, in_place=True):
         """
