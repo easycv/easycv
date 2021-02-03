@@ -12,7 +12,7 @@ else:
     from tqdm import tqdm
 
 
-def create_resource(type='folder', show_progress=True):
+def create_resource(resource_type='folder', show_progress=True):
     """
     Interactive tool to create resources. Asks user to input details about the resource and the \
     files contained inside. Creates the YAML file and adds it into the correct sources folder.
@@ -21,22 +21,22 @@ def create_resource(type='folder', show_progress=True):
     :type show_progress: :class:`bool`, optional
     """
 
-    if type not in ["folder", "package", "keyvalue"]:
+    if resource_type not in ["folder", "package", "keyvalue"]:
         raise ValueError("Resource type doesn't exist! Valid types are folder, package and keyvalue")
 
     name = input("Resource name: ")
 
-    if type == 'package':
+    if resource_type == 'package':
         package_name = input("Package name: ")
         package_pip = input("Package name in pip: ")
         package_version = input("Package version: ")
-        data = {"type": type, "package-name": package_name, "pip-name": package_pip, "version": package_version}
-    elif type == 'keyvalue':
+        data = {"type": resource_type, "package-name": package_name, "pip-name": package_pip, "version": package_version}
+    elif resource_type == 'keyvalue':
         n = int(input("Number of keys: "))
         keys = []
         for i in range(n):
             keys.append({"key": input("Key: "), "type": input("Type: ")})
-        data = {"type": type, "keys": keys}
+        data = {"type": resource_type, "keys": keys}
     else:
         n_files = input("Number of files: ")
         files = []
@@ -62,7 +62,7 @@ def create_resource(type='folder', show_progress=True):
             )
             file["sha256"] = sha256
             (cwd / file["filename"]).unlink()
-        data = {"type": type, "files": files}
+        data = {"type": resource_type, "files": files}
 
 
     filename = str(
