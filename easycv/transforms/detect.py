@@ -6,6 +6,7 @@ from easycv.transforms.color import GrayScale
 from easycv.transforms.spatial import Crop
 from easycv.transforms.edges import Canny
 from easycv.resources import get_resource
+from easycv.transforms.spatial import Resize
 import easycv.transforms.filter
 from easycv.validators import Type, List, Number, File
 
@@ -452,3 +453,27 @@ class Detect(Transform):
                     boxes.append([[(startX, startY), (width, height)], color, label])
 
             return {"boxes": boxes}
+
+
+class Activity(Transform):
+
+    outputs = {"label": Type(str)}
+
+    @staticmethod
+    def classes():
+        path = get_resource('har', filename="action_recognition_kinetics.txt")
+        return open(path).read().strip().split("\n")
+
+    def process(self, image, **kwargs):
+        image = Resize(width=400, height=round(400 / (image.shape[1] / image.shape[0]))).apply(image)
+
+        model = get_resource('har', filename="resnet-34_kinetics.onnx")
+        net = cv2.dnn.readNet(str(model))
+
+        blob = cv2.dnn.blobFromImages(np.array([image] * 16), 1.0, (112, 112), (114.7748, 107.7354, 99.4750), swapRB=True, crop=False)
+        blob = np.transpose(blob, (1, 0, 2, 3))
+        blob = np.expand_dims(blob, axis=0)
+        net.setInput(blob)
+        outputs = net.forward()
+        label = Activity.classes()[np.argmax(outputs)]
+        return {"label": label}
