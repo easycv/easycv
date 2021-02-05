@@ -7,6 +7,7 @@ from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
 from easycv.transforms.color import (
+    ColorDetection,
     ColorPick,
     GammaCorrection,
     GrayScale,
