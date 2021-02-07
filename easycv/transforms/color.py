@@ -321,11 +321,8 @@ class ColorDetection(Transform):
     }
 
     def process(self, image, **kwargs):
-        lower = kwargs["lower"]
-        upper = kwargs["upper"]
-
-        lower = np.array(lower, dtype="uint8")
-        upper = np.array(upper, dtype="uint8")
+        lower = np.array(kwargs["lower"], dtype="uint8")
+        upper = np.array(kwargs["upper"], dtype="uint8")
 
         mask = cv2.inRange(image, lower, upper)
         if kwargs["inverted"]:
