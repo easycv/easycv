@@ -42,8 +42,9 @@ class Image(Collection):
             self._source = source
             self._img = None
         else:
-            self._img = self._pending(get_image_array(source))["image"]
+            self._img = self._pending.run(get_image_array(source))["image"]
             self._pending.clear()
+            pass
 
     @classmethod
     def random(cls, lazy=False):
@@ -160,11 +161,10 @@ class Image(Collection):
             self.load()
 
             if in_place:
-                outs = transform(self._img)
+                outs = transform.run(self._img)
                 self._img = outs["image"][0]
             else:
-                outs = transform(self._img.copy())
-                new_image = outs["image"][0]
+                outs = transform.run(self._img.copy())
             return outs
 
     def compute(self, in_place=True):
@@ -181,7 +181,7 @@ class Image(Collection):
         """
         self.load()
         if in_place:
-            self._img = self._pending(self._img)["image"]
+            self._img = self._pending.run(self._img)["image"]
             self._pending.clear()
             return self
         else:
