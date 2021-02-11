@@ -27,15 +27,26 @@ class Pipeline(Operation):
     :type name: :class:`str`, optional
     """
 
-    def __init__(self, source, name=None):
+    def __init__(self, source, name=None, arguments=()):
         if isinstance(source, list):
             self.arguments = {}
             self.forwarded = {}
-
+            self.allowed_outs = arguments
             self.forwards, self.outputs = self._calculate_forwards(source)
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
             self._args = {}
+
+            if type(arguments) == list:
+                for argument in list(self.arguments):
+                    if argument not in arguments and argument != "image":
+                        print(argument)
+                        flag = True
+                        for arg in self.arguments[argument]:
+                            if arg.default is None:
+                                flag = False
+                        if flag:
+                            self.arguments.pop(argument)
 
         elif isinstance(source, str) and os.path.isfile(source):
             try:
@@ -83,7 +94,7 @@ class Pipeline(Operation):
             for arg in missing_args:
                 if arg not in self.arguments:
                     self.arguments[arg] = []
-                if arg != "image" or "image" not in self.arguments:
+                if arg != "image" or len(self.arguments["image"]) == 0:
                     if isinstance(source[i], Pipeline):
                         self.arguments[arg] += missing_args[arg]
                     else:
@@ -91,9 +102,15 @@ class Pipeline(Operation):
                 if arg not in forwards[i]:
                     forwards[i][arg] = []
                 if isinstance(source[i], Pipeline):
-                    forwards[i][arg] += ["in"] * len(missing_args[arg])
+                    flag = False
+                    for pos_arg in missing_args[arg]:
+                        if pos_arg.default is None:
+                            flag = True
+                    if arg in self.allowed_outs or flag:
+                        forwards[i][arg] += ["in"] * len(missing_args[arg])
                 else:
-                    forwards[i][arg] += ["in"]
+                    if arg in self.allowed_outs or missing_args[arg].default is None:
+                        forwards[i][arg] += ["in"]
             source[i].forwarded = {}
 
             # Get the outputs of the source
@@ -124,7 +141,8 @@ class Pipeline(Operation):
                     forwards[0][arg] = ["in"] * len(source[0].arguments[arg])
                     if arg not in self.arguments:
                         self.arguments[arg] = []
-                    self.arguments[arg].append(source[0].arguments[arg])
+                    if arg != "image":
+                        self.arguments[arg].append(source[0].arguments[arg])
         return forwards, self.format_outputs(outputs)
 
     def format_outputs(self, outputs):
@@ -210,7 +228,7 @@ class Pipeline(Operation):
                     if new_self.arguments[arg_name][0].validate(arg) is None:
                         new_self._args[arg_name] += [arg]
                         new_self.arguments[arg_name].pop(0)
-                        if not self.arguments[arg_name]:
+                        if not new_self.arguments[arg_name]:
                             new_self.arguments.pop(arg_name)
                 elif arg_name not in self.arguments:
                     raise InvalidArgumentError("Invalid arg " + arg_name)
