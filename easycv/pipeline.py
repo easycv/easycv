@@ -31,16 +31,16 @@ class Pipeline(Operation):
         if isinstance(source, list):
             self.arguments = {}
             self.forwarded = {}
+            self.parent = None
             self.allowed_outs = arguments
-            self.forwards, self.outputs = self._calculate_forwards(source)
             self._name = name if name else "pipeline"
             self._transforms = deepcopy(source)
             self._args = {}
+            self.forwards, self.outputs = self._calculate_forwards(source)
 
             if type(arguments) == list:
                 for argument in list(self.arguments):
                     if argument not in arguments and argument != "image":
-                        print(argument)
                         flag = True
                         for arg in self.arguments[argument]:
                             if arg.default is None:
@@ -70,6 +70,9 @@ class Pipeline(Operation):
                 source[i], Transform
             ):
                 raise InvalidPipelineInputSource()
+            if isinstance(source[i], Pipeline):
+                self._transforms[i].parent = self
+
             forwards[i] = {}
             outputs[i] = {}
             # calculate forwards
@@ -99,17 +102,24 @@ class Pipeline(Operation):
                         self.arguments[arg] += missing_args[arg]
                     else:
                         self.arguments[arg].append(missing_args[arg])
-                if arg not in forwards[i]:
-                    forwards[i][arg] = []
+
                 if isinstance(source[i], Pipeline):
                     flag = False
                     for pos_arg in missing_args[arg]:
                         if pos_arg.default is None:
                             flag = True
-                    if arg in self.allowed_outs or flag:
+                    if not self.allowed_outs or arg in self.allowed_outs or flag:
+                        if arg not in forwards[i]:
+                            forwards[i][arg] = []
                         forwards[i][arg] += ["in"] * len(missing_args[arg])
                 else:
-                    if arg in self.allowed_outs or missing_args[arg].default is None:
+                    if (
+                        not self.allowed_outs
+                        or arg in self.allowed_outs
+                        or missing_args[arg].default is None
+                    ):
+                        if arg not in forwards[i]:
+                            forwards[i][arg] = []
                         forwards[i][arg] += ["in"]
             source[i].forwarded = {}
 
@@ -127,21 +137,7 @@ class Pipeline(Operation):
                         outputs[i][tmp_arg] += source[i].outputs[arg]
                     else:
                         outputs[i][tmp_arg].append(source[i].outputs[arg])
-        if source:
-            # only the need args
-            for arg in source[0].arguments:
-                if isinstance(source[0], Transform):
-                    if arg not in source[0]._args or arg == "image":
-                        forwards[0][arg] = ["in"]
-                        if arg not in self.arguments:
-                            self.arguments[arg] = []
-                        self.arguments[arg] += [source[0].arguments[arg]]
-                else:
-                    forwards[0][arg] = ["in"] * len(source[0].arguments[arg])
-                    if arg not in self.arguments:
-                        self.arguments[arg] = []
-                    if arg != "image":
-                        self.arguments[arg].append(source[0].arguments[arg])
+
         return forwards, self.format_outputs(outputs)
 
     def format_outputs(self, outputs):
@@ -355,6 +351,13 @@ class Pipeline(Operation):
                 num += 1
         return num
 
+    def partial_initialize(self):
+        self.arguments = {}
+        self.forwards, self.outputs = self._calculate_forwards(self._transforms)
+
+        if self.parent is not None:
+            self.parent.partial_initialize()
+
     def add_transform(self, transform, index=None):  # todo fix pls? Not yet
         """
         Adds a transform/pipeline to the **pipeline**. The new transform/pipeline is added in the \
@@ -371,7 +374,7 @@ class Pipeline(Operation):
                 self._transforms.insert(index, transform.copy())
             else:
                 self._transforms.append(transform.copy())
-            self.forwards = Pipeline._calculate_forwards(self._transforms)
+            self.partial_initialize()
         else:
             raise ValueError("Pipelines can only contain Transforms or other pipelines")
 

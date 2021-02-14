@@ -207,7 +207,7 @@ class Transform(Operation, metaclass=Metadata):
     def initialize(self, index=None, forwarded=(), nested=False):
         missing_args = {}
         for arg in self.arguments:
-            if arg != "image":
+            if arg != "image" or nested:
                 temp_arg = dict_lookup(self.rename_in, arg)
                 if arg not in self._args:
                     if temp_arg not in forwarded:
