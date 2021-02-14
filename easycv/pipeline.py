@@ -116,10 +116,9 @@ class Pipeline(Operation):
             # Get the outputs of the source
             if source[i].outputs:
                 for arg in source[i].outputs:
+                    tmp_arg = arg
                     if isinstance(source[i], Transform):
                         tmp_arg = dict_lookup(source[i].rename_out, arg)
-                    else:
-                        tmp_arg = arg
                     if tmp_arg not in outputs[i]:
                         outputs[i][tmp_arg] = []
                     if isinstance(
