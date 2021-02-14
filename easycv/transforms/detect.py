@@ -157,20 +157,16 @@ class Smile(Transform):
         for face in faces["rectangles"]:
             face_w = int((face[1][0] - face[0][0]) * min_size_w)
             face_h = int((face[1][1] - face[0][1]) * min_size_h)
-            print(face_w, face_h)
             face_image = Crop(rectangle=face).apply(image)
             smile = CascadeDetector(
                 cascade=str(cascade_file), min_size=(face_w, face_h), **kwargs
             ).apply(face_image)["rectangles"]
-            print(smile)
             if smile:
                 adjusted = []
-                for j in range(len(smile)):
+                for rectangle in smile:
                     rect = []
-                    for i in range(len(smile[0])):
-                        rect.append(
-                            (smile[j][i][0] + face[0][0], smile[j][i][1] + face[0][1])
-                        )
+                    for coord in rectangle:
+                        rect.append((coord[0] + face[0][0], coord[1] + face[0][1]))
                     adjusted.append(rect)
                 rectangles += adjusted
         return {"rectangles": rectangles}
