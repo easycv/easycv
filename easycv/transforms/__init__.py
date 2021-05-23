@@ -2,7 +2,7 @@ import sys
 from functools import wraps
 from types import FunctionType
 
-from easycv.transforms.noise import Noise
+from easycv.transforms.noise import Noise, Denoise
 from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
@@ -51,6 +51,7 @@ transforms = [
     ColorPick,
     ColorTransfer,
     Contrast,
+    Denoise,
     Crop,
     Eyes,
     Equalize,

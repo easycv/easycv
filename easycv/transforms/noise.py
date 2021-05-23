@@ -1,3 +1,5 @@
+import cv2
+
 from easycv.transforms.base import Transform
 
 from easycv.validators import Number, Type
@@ -62,3 +64,19 @@ class Noise(Transform):
         if kwargs["mode"] == "sp":
             kwargs["mode"] = "s&p"
         return random_noise(image, **kwargs)
+
+
+class Denoise(Transform):
+
+    arguments = {
+        "intensity": Number(min_value=0, default=7),
+        "intensity_color": Number(min_value=0, default=8),
+        "template_size": Number(min_value=1, only_odd=True, only_integer=True, default=7),
+        "search_size": Number(min_value=1, only_odd=True, only_integer=True, default=21),
+    }
+
+    def process(self, image, **kwargs):
+        if image.shape[2] == 1:
+            return cv2.fastNlMeansDenoising(image, None, kwargs["intensity"], kwargs["template_size"], kwargs["search_size"])
+        else:
+            return cv2.fastNlMeansDenoisingColored(image, None, kwargs["intensity"], kwargs["intensity_color"], kwargs["template_size"], kwargs["search_size"])
