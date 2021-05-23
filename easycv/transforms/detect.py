@@ -11,15 +11,6 @@ import easycv.transforms.filter
 from easycv.validators import Type, List, Number, File
 
 
-try:
-    from pyzbar import pyzbar
-except ImportError:
-    raise ImportError(
-        "Error importing pyzbar. Make sure you have zbar installed on your system. "
-        + "On linux you can simply run 'sudo apt-get install libzbar0'"
-    )
-
-
 class Scan(Transform):
     """
     Scan is a transform that scans and decodes all QR codes and barcodes in a image. The \
@@ -36,6 +27,15 @@ class Scan(Transform):
     }
 
     def process(self, image, **kwargs):
+
+        try:
+            from pyzbar import pyzbar
+        except ImportError:
+            raise ImportError(
+                "Error importing pyzbar. Make sure you have zbar installed on your system. "
+                + "On linux you can simply run 'sudo apt-get install libzbar0'"
+            )
+
         data = []
         rectangles = []
         decoded = pyzbar.decode(image)
@@ -87,6 +87,11 @@ class Faces(Transform):
     arguments = {
         "scale": Number(default=1.3),
         "min_neighbors": Number(min_value=0, only_integer=True, default=5),
+        "min_confidence": Number(min_value=0, max_value=1, default=0.5),
+    }
+    methods = {
+        "cascade": {"arguments": ["scale", "min_neighbors"]},
+        "ssd": {"arguments": ["min_confidence"]},
     }
 
     outputs = {
@@ -96,11 +101,32 @@ class Faces(Transform):
     }
 
     def process(self, image, **kwargs):
-        cascade_file = get_resource(
-            "haar-face-cascade", "haarcascade_frontalface_default.xml"
-        )
-        return CascadeDetector(cascade=str(cascade_file), **kwargs).apply(image)
+        if kwargs["method"] == "cascade":
+            cascade_file = get_resource(
+                "haar-face-cascade", "haarcascade_frontalface_default.xml"
+            )
+            kwargs.pop("method")
+            return CascadeDetector(cascade=str(cascade_file), **kwargs).apply(image)
+        else:
+            proto = get_resource("face_detection_ssd", "deploy.prototxt")
+            model = get_resource("face_detection_ssd", "res10_300x300_ssd_iter_140000.caffemodel")
+            net = cv2.dnn.readNetFromCaffe(str(proto), str(model))
 
+            (h, w) = image.shape[:2]
+            blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+            net.setInput(blob)
+            detections = net.forward()
+
+            rectangles = []
+            for i in range(0, detections.shape[2]):
+                confidence = detections[0, 0, i, 2]
+
+                if confidence > kwargs["min_confidence"]:
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")
+                    rectangles.append([(startX, startY), (endX, endY)])
+
+            return {"rectangles": rectangles}
 
 class Eyes(Transform):
 
