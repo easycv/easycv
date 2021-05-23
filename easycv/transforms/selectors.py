@@ -67,7 +67,7 @@ class Select(Transform):
     }
 
     def process(self, image, **kwargs):
-        if "DISPLAY" not in os.environ:
+        if os.name !=  "nt" and "DISPLAY" not in os.environ:
             raise Exception("Can't run selectors without a display!")
 
         if kwargs["method"] == "mask":
@@ -91,7 +91,7 @@ class Select(Transform):
                 return x, y
 
             cv2.namedWindow("Select Mask", cv2.WINDOW_KEEPRATIO)
-            cv2.resizeWindow("Select Mask", image.shape[0], image.shape[1])
+            cv2.resizeWindow("Select Mask", image.shape[1], image.shape[0])
             cv2.setMouseCallback("Select Mask", paint_draw)
 
             while cv2.getWindowProperty("Select Mask", cv2.WND_PROP_VISIBLE) >= 1:
