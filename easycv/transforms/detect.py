@@ -94,6 +94,8 @@ class Faces(Transform):
         "ssd": {"arguments": ["min_confidence"]},
     }
 
+    default_method = "ssd"
+    
     outputs = {
         "rectangles": List(
             List(List(Number(min_value=0, only_integer=True), length=2), length=2)
