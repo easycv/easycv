@@ -41,3 +41,10 @@ class ImageNotLoaded(Exception):
         super().__init__(
             "Images can only be created from a path/url or a numpy array representing the image"
         )
+
+
+class NoClassesGiven(Exception):
+    def __init__(self):
+        super().__init__(
+            "A dataset must have at least on class"
+        )

@@ -13,6 +13,7 @@ from easycv.errors.io import (
     ImageDecodeError,
     ImageSaveError,
     InvalidPipelineInputSource,
+    NoClassesGiven,
 )
 
 from easycv.errors.resources import (
@@ -22,9 +23,10 @@ from easycv.errors.resources import (
 )
 
 from easycv.errors.list import InvalidListInputSource
-
+from easycv.errors.dataset import InvalidClass
 
 __all__ = [
+    "InvalidClass",
     "InvalidArgumentError",
     "InvalidSelectionError",
     "ArgumentNotProvidedError",
@@ -41,4 +43,5 @@ __all__ = [
     "InvalidPipelineInputSource",
     "MissingArgumentError",
     "ValidatorError",
+    "NoClassesGiven",
 ]

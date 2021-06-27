@@ -126,6 +126,43 @@ def open_folder(list_source, recursive=False):
     return images
 
 
+def open_dataset(dataset_source, recursive=False):
+    """
+    Searches in the folder path given for the images present
+
+    :param list_source: Path to a folder of images
+    :type list_source: :class:`str`
+    :param recursive: Flag to allow search in the all directories of the folder
+    :type recursive: :class:`bool`
+    :return: list of images
+    :rtype: :class:`list`
+    """
+    paths = {}
+    if not recursive:
+        paths[dataset_source] = []
+        classes = next(os.walk(dataset_source))[1]
+        for cls in classes:
+            paths = {cls: [os.path.join(os.path.join(dataset_source, cls), fn) for fn in next(os.walk(os.path.join(dataset_source, cls)))[2]]}
+    else:
+        classes = next(os.walk(dataset_source))[1]
+        for cls in classes:
+            paths[cls] = []
+            for root, _, files in os.walk(os.path.join(dataset_source, cls)):
+                for filename in files:
+                    paths[cls].append(os.path.join(root, filename))
+    if not paths:
+        raise NoClassesGiven()
+    images = {}
+    for files in paths:
+        if paths[files]:
+            images[files] = []
+            for file in range(len(paths[files])):
+                tmp = get_image_array(paths[files][file])
+                if tmp is not None:
+                    images[files].append(tmp)
+    return images
+
+
 def get_image_list(list_source, recursive=False):
     """
     Gets all the images from a folder
