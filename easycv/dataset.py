@@ -1,7 +1,8 @@
-from easycv import Image, List
-from easycv.collection import Collection
-from easycv.io import open_dataset
-from easycv.errors.dataset import InvalidClass
+from easycv import List
+from easycv.collection import Collection, auto_compute
+from easycv.errors.dataset import InvalidClass, NoClassesGiven
+
+import os
 
 
 class Dataset(Collection):
@@ -9,27 +10,32 @@ class Dataset(Collection):
         super().__init__(pending=pipeline)
         self.path = path
         self.dataset = {}
-        self._size = 0
+        self._size = -1
         self.setup(path, recursive)
 
     def setup(self, path, recursive):
-        dataset = open_dataset(path, recursive)
-        for clas in dataset:
-            self.dataset[clas] = List([Image(img) for img in dataset[clas]])
-            self._size += len(self.dataset[clas])
+        classes = next(os.walk(path))[1]
+        if not classes:
+            raise NoClassesGiven()
+        for clas in classes:
+            self.dataset[clas] = List(os.path.join(path, clas), lazy=True, recursive=recursive)
 
     @property
     def classes(self):
         return list(self.dataset.keys())
 
+    @auto_compute
     def get(self, key):
         if key not in self.dataset:
             raise InvalidClass(key)
         return self.dataset[key]
 
     def size(self):
+        if self._size == -1:
+            self._size = sum([len(self.dataset[clas]) for clas in self.dataset])
         return self._size
 
+    @auto_compute
     def details(self):
         for clas in self.dataset:
             print(clas+":" + str(len(self.dataset[clas])))
@@ -45,3 +51,19 @@ class Dataset(Collection):
 
         if not in_place:
             return dataset
+
+    def compute(self, in_place=True, parallel=False):
+        if not in_place:
+            dataset = {}
+        for clas in list(self.dataset):
+            if in_place:
+                self.dataset[clas].compute(in_place=in_place, parallel=parallel)
+                if not len(self.dataset[clas]):
+                    self.dataset.pop(clas)
+            else:
+                dataset[clas] = self.dataset[clas].compute(in_place=in_place, parallel=parallel)
+                if not len(self.dataset[clas]):
+                    dataset[clas].pop(clas)
+        if not in_place:
+            return dataset
+
