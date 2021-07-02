@@ -1,24 +1,29 @@
 from easycv import List
 from easycv.collection import Collection, auto_compute
-from easycv.errors.dataset import InvalidClass, NoClassesGiven
+from easycv.errors.dataset import InvalidClassError, NoClassesGivenError
 
 import os
 
 
 class Dataset(Collection):
-    def __init__(self, path, pipeline=None, recursive=False):
+    def __init__(self, source, pipeline=None, recursive=False, lazy=False):
         super().__init__(pending=pipeline)
-        self.path = path
-        self.dataset = {}
         self._size = -1
-        self.setup(path, recursive)
+        if isinstance(source, dict):
+            self.dataset = source
+            self.size()
+        else:
+            self.dataset = {}
+            self.load_classes(source, recursive, lazy)
 
-    def setup(self, path, recursive):
+    def load_classes(self, path, recursive, lazy):
         classes = next(os.walk(path))[1]
         if not classes:
-            raise NoClassesGiven()
+            raise NoClassesGivenError()
         for clas in classes:
-            self.dataset[clas] = List(os.path.join(path, clas), lazy=True, recursive=recursive)
+            self.dataset[clas] = List(os.path.join(path, clas), lazy=lazy, recursive=recursive)
+        if not lazy:
+            self._size = self.size()
 
     @property
     def classes(self):
@@ -27,15 +32,17 @@ class Dataset(Collection):
     @auto_compute
     def get(self, key):
         if key not in self.dataset:
-            raise InvalidClass(key)
+            raise InvalidClassError(key)
         return self.dataset[key]
+
+    def __getitem__(self, key):
+        return self.get(key)
 
     def size(self):
         if self._size == -1:
             self._size = sum([len(self.dataset[clas]) for clas in self.dataset])
         return self._size
 
-    @auto_compute
     def details(self):
         for clas in self.dataset:
             print(clas+":" + str(len(self.dataset[clas])))
@@ -50,7 +57,7 @@ class Dataset(Collection):
                 dataset[clas] = self.dataset[clas].apply(operation, in_place=in_place, parallel=parallel)
 
         if not in_place:
-            return dataset
+            return Dataset(dataset)
 
     def compute(self, in_place=True, parallel=False):
         if not in_place:
@@ -65,5 +72,6 @@ class Dataset(Collection):
                 if not len(self.dataset[clas]):
                     dataset[clas].pop(clas)
         if not in_place:
-            return dataset
+            return Dataset(dataset)
+
 
