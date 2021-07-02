@@ -9,11 +9,13 @@ from easycv.image import Image
 from easycv.pipeline import Pipeline
 from easycv.list import List
 from easycv.video import Video
+from easycv.dataset import Dataset
+
 
 import os
 
 os.environ["SESSION_MANAGER"] = ""
-__all__ = ["Image", "Pipeline", "List", "Video"]
+__all__ = ["Image", "Pipeline", "List", "Video", "Dataset"]
 
 
 @atexit.register
