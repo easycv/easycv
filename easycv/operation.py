@@ -1,14 +1,14 @@
 from copy import copy
 
 import easycv.image
-from easycv.errors import MissingArgumentError
 
 
 class Operation:
     arguments = None  # Validators for arguments
     outputs = None  # Validators for outputs
-
     _args = None  # Argument values
+
+    forwarded = None
 
     @property
     def args(self):
@@ -22,7 +22,7 @@ class Operation:
         """
         return self._args
 
-    def initialize(self, index=None, forwarded=()):
+    def initialize(self, index=None, forwarded=(), nested=False):
         """
         Initializes the operation. Initializing is verifying if the operation has all the \
         required arguments to run and adding the default values for the arguments that were not \
@@ -34,14 +34,7 @@ class Operation:
         :param forwarded: List of arguments forwarded to the operation, defaults to no forwards
         :type forwarded: :class:`list`/:class:`tuple`, optional
         """
-
-        for arg in self.arguments:
-            if arg not in self._args:
-                if self.arguments[arg].default is None and arg not in forwarded:
-                    raise MissingArgumentError(arg, index=index)
-
-                validator = self.arguments[arg]
-                self._args[arg] = validator.default
+        pass
 
     def can_be_forwarded(self, arg_name, validator):
         """
@@ -56,10 +49,7 @@ class Operation:
         :return: *True* if the argument can be forwarded into the operation *False* otherwise
         :rtype: :class:`bool`
         """
-
-        if arg_name in self.arguments and arg_name not in self._args:
-            return self.arguments[arg_name].accepts(validator)
-        return False
+        pass
 
     def run(self, image, forwarded=None):
         """

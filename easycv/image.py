@@ -42,8 +42,9 @@ class Image(Collection):
             self._source = source
             self._img = None
         else:
-            self._img = self._pending(get_image_array(source))["image"]
+            self._img = self._pending.run(get_image_array(source))["image"]
             self._pending.clear()
+            pass
 
     @classmethod
     def random(cls, lazy=False):
@@ -158,14 +159,13 @@ class Image(Collection):
                 return Output(self._img, pending=transform)
         else:
             self.load()
-            if outputs == {}:  # If transform outputs an image
-                if in_place:
-                    self._img = transform(self._img)["image"]
-                else:
-                    new_image = transform(self._img.copy())["image"]
-                    return Image(new_image)
+
+            if in_place:
+                outs = transform.run(self._img)
+                self._img = outs["image"][0]
             else:
-                return transform(self._img)
+                outs = transform.run(self._img.copy())
+            return outs
 
     def compute(self, in_place=True):
         """
@@ -181,7 +181,7 @@ class Image(Collection):
         """
         self.load()
         if in_place:
-            self._img = self._pending(self._img)["image"]
+            self._img = self._pending.run(self._img)["image"]
             self._pending.clear()
             return self
         else:

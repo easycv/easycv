@@ -40,6 +40,15 @@ def running_on_notebook():
         return False
 
 
+def dict_lookup(renames, arg):
+    return renames[arg] if arg in renames else arg
+
+
+def inverse_dict_lookup(renames, arg):
+    inv_map = {v: k for k, v in renames.items()}
+    return inv_map[arg] if arg in inv_map else arg
+
+
 def hamming_distance(a, b):
     s = 0
     for (a1, b1) in zip(a, b):
