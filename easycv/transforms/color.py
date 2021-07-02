@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 
 from color_transfer import color_transfer
-from easycv.validators import Option, List, Number, Image
+from easycv.validators import Option, List, Number, Image, Type
 from easycv.transforms.base import Transform
 from easycv.transforms.selectors import Select
 from easycv.transforms.spatial import Crop
@@ -282,6 +282,7 @@ class Quantitization(Transform):
 
         return quant
 
+
 class Equalize(Transform):
     """
     Equalize is a Transform that performs histogram equalization on an image
@@ -306,3 +307,27 @@ class Equalize(Transform):
         else:
             clahe = cv2.createCLAHE(clipLimit=kwargs["clip"], tileGridSize=tuple(kwargs["size"]))
             return clahe.apply(gray)
+
+
+class ColorDetection(Transform):
+    """
+
+    """
+
+    arguments = {
+        "lower": List(Number(min_value=0, max_value=255, only_integer=True), length=3),
+        "upper": List(Number(min_value=0, max_value=255, only_integer=True), length=3),
+        "inverted": Type(bool, default=False),
+    }
+
+    def process(self, image, **kwargs):
+        lower = np.array(kwargs["lower"], dtype="uint8")
+        upper = np.array(kwargs["upper"], dtype="uint8")
+
+        mask = cv2.inRange(image, lower, upper)
+        if kwargs["inverted"]:
+            mask = cv2.bitwise_not(mask)
+        output = cv2.bitwise_and(image, image, mask=mask)
+
+        return output
+
