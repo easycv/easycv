@@ -51,8 +51,8 @@ def open_image(path):
     :rtype: :class:`~numpy:numpy.ndarray`
     """
     try:
-        if os.path.isfile(path):
-            img = cv2.imread(path)
+        if os.path.isfile(str(path)):
+            img = cv2.imread(str(path))
         else:
             response = urlopen(path)
             if response.getcode() != 200:

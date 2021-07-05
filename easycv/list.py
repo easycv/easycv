@@ -8,7 +8,7 @@ from easycv.collection import auto_compute
 from easycv.transforms.base import Transform
 from easycv.errors.list import InvalidListInputSource
 from easycv.utils import hamming_distance
-
+from pathlib import PosixPath
 
 class List:
     """
@@ -26,10 +26,10 @@ class List:
             isinstance(i, easycv.image.Image) for i in source
         ):
             self._images = source
-        elif isinstance(source, str):
+        elif isinstance(source, str) or isinstance(source, PosixPath):
             images = [
                 easycv.image.Image(img, lazy=lazy)
-                for img in get_image_list(source, recursive=recursive)
+                for img in get_image_list(str(source), recursive=recursive)
             ]
             self._images = images
         else:

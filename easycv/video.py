@@ -43,7 +43,7 @@ def generate_ffmpeg_cmd(width, height, fps, preset):
 
 class Video:
     def __init__(self, path, temporary=False):
-        self.path = path
+        self.path = str(path)
         self.temporary = temporary
         self._uuid = None
 
