@@ -6,6 +6,7 @@ from json import loads
 
 import cv2
 import numpy as np
+from pathlib import PosixPath
 
 from easycv.errors.io import ImageDownloadError, InvalidPathError
 
@@ -36,9 +37,10 @@ def valid_image_source(source):
     :return: Returns `True` if a source is valid, otherwise `False`
     :rtype: :class:`bool`
     """
+    source_is_posix_path = isinstance(source, PosixPath)
     source_is_str = isinstance(source, str)
     source_is_array = isinstance(source, np.ndarray)
-    return source_is_str or (source_is_array and valid_image_array(source))
+    return source_is_posix_path or source_is_str or (source_is_array and valid_image_array(source))
 
 
 def open_image(path):

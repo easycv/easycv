@@ -42,7 +42,7 @@ class Image(Collection):
             self._source = source
             self._img = None
         else:
-            self._img = self._pending(get_image_array(source))["image"]
+            self._img = self._pending(get_image_array(str(source)))["image"]
             self._pending.clear()
 
     @classmethod
