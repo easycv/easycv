@@ -2,7 +2,7 @@ import sys
 from functools import wraps
 from types import FunctionType
 
-from easycv.transforms.noise import Noise
+from easycv.transforms.noise import Noise, Denoise
 from easycv.transforms.filter import Blur, Sharpness, Sharpen
 from easycv.transforms.perspective import Perspective
 from easycv.transforms.edges import Gradient, GradientAngle, Canny
@@ -22,6 +22,7 @@ from easycv.transforms.color import (
     Brightness,
     Colorize,
     Quantitization,
+    Equalize
 )
 from easycv.transforms.spatial import (
     Resize,
@@ -32,12 +33,15 @@ from easycv.transforms.spatial import (
     Translate,
     Paste,
 )
-from easycv.transforms.selectors import Select, Mask, Inpaint
-from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect
+from easycv.transforms.mask import Mask, Inpaint
+from easycv.transforms.selectors import Select
+from easycv.transforms.detect import Scan, Eyes, Faces, Smile, Lines, Circles, Detect, Activity
 from easycv.transforms.draw import Draw
 from easycv.transforms.morphological import Erode, Dilate, Morphology
+from easycv.transforms.style import StyleTransfer
 
 transforms = [
+    Activity,
     Brightness,
     Blur,
     Canny,
@@ -47,8 +51,10 @@ transforms = [
     ColorPick,
     ColorTransfer,
     Contrast,
+    Denoise,
     Crop,
     Eyes,
+    Equalize,
     Faces,
     Draw,
     Detect,
@@ -62,6 +68,7 @@ transforms = [
     Hue,
     Hsv,
     Inpaint,
+    StyleTransfer,
     Mask,
     Paste,
     Mirror,

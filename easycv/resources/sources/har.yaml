@@ -1,0 +1,8 @@
+files:
+- filename: resnet-34_kinetics.onnx
+  sha256: b3f49d3423267207050c9b6344baab19f68e716465041402643a4a75daaa69da
+  url: https://github.com/shuvamdas/human-activity-recognition/raw/master/resnet-34_kinetics.onnx
+- filename: action_recognition_kinetics.txt
+  sha256: e9f2806fe9109b851a80a74841244f6f8c9d10917fa0229cd82bab67f2f8e28f
+  url: https://raw.githubusercontent.com/shuvamdas/human-activity-recognition/master/action_recognition_kinetics.txt
+type: folder

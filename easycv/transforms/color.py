@@ -281,3 +281,28 @@ class Quantitization(Transform):
         quant = cv2.cvtColor(quant, cv2.COLOR_LAB2BGR)
 
         return quant
+
+class Equalize(Transform):
+    """
+    Equalize is a Transform that performs histogram equalization on an image
+    """
+
+    methods = {
+        "simple": {"arguments": []},
+        "adaptive": {},
+    }
+    default_method = "simple"
+
+    arguments = {
+        "clip": Number(only_integer=True, default=2),
+        "size": List(Number(only_integer=True, min_value=0), default=(8, 8), length=2)
+    }
+
+    def process(self, image, **kwargs):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        if kwargs["method"] == "simple":
+            return cv2.equalizeHist(gray)
+        else:
+            clahe = cv2.createCLAHE(clipLimit=kwargs["clip"], tileGridSize=tuple(kwargs["size"]))
+            return clahe.apply(gray)

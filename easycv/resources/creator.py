@@ -12,7 +12,7 @@ else:
     from tqdm import tqdm
 
 
-def create_resource(show_progress=True):
+def create_resource(resource_type='folder', show_progress=True):
     """
     Interactive tool to create resources. Asks user to input details about the resource and the \
     files contained inside. Creates the YAML file and adds it into the correct sources folder.
@@ -20,37 +20,56 @@ def create_resource(show_progress=True):
     :param show_progress: True to display progress bar, False otherwise, defaults to True
     :type show_progress: :class:`bool`, optional
     """
+
+    if resource_type not in ["folder", "package", "keyvalue"]:
+        raise ValueError("Resource type doesn't exist! Valid types are folder, package and keyvalue")
+
     name = input("Resource name: ")
-    n_files = input("Number of files: ")
-    files = []
 
-    for i in range(int(n_files)):
-        filename = input("File {} name: ".format(i + 1))
-        url = input("File {} url: ".format(i + 1))
-        files.append({"filename": filename, "url": url})
+    if resource_type == 'package':
+        package_name = input("Package name: ")
+        package_pip = input("Package name in pip: ")
+        package_version = input("Package version: ")
+        data = {"type": resource_type, "package-name": package_name, "pip-name": package_pip, "version": package_version}
+    elif resource_type == 'keyvalue':
+        n = int(input("Number of keys: "))
+        keys = []
+        for i in range(n):
+            keys.append({"key": input("Key: "), "type": input("Type: ")})
+        data = {"type": resource_type, "keys": keys}
+    else:
+        n_files = input("Number of files: ")
+        files = []
 
-    print("Downloading/hashing files...")
+        for i in range(int(n_files)):
+            filename = input("File {} name: ".format(i + 1))
+            url = input("File {} url: ".format(i + 1))
+            files.append({"filename": filename, "url": url})
 
-    files_iter = files
-    if show_progress:
-        files_iter = tqdm(
-            files, bar_format="{percentage:3.0f}% {bar} {n_fmt}/{total_fmt}"
-        )
+        print("Downloading/hashing files...")
 
-    cwd = pathlib.Path(os.getcwd())
+        files_iter = files
+        if show_progress:
+            files_iter = tqdm(
+                files, bar_format="{percentage:3.0f}% {bar} {n_fmt}/{total_fmt}"
+            )
 
-    for file in files_iter:
-        sha256 = download_file(
-            file["filename"], file["url"], cwd, show_progress=show_progress
-        )
-        file["sha256"] = sha256
-        (cwd / file["filename"]).unlink()
+        cwd = pathlib.Path(os.getcwd())
+
+        for file in files_iter:
+            sha256 = download_file(
+                file["filename"], file["url"], cwd, show_progress=show_progress
+            )
+            file["sha256"] = sha256
+            (cwd / file["filename"]).unlink()
+        data = {"type": resource_type, "files": files}
+
 
     filename = str(
         pathlib.Path(__file__).parent.absolute() / "sources" / (name.lower() + ".yaml")
     )
     with open(filename, "w") as file:
-        yaml.dump({"type": "folder", "files": files}, file)
+        yaml.dump(data, file)
 
     print("Resource created successfully!")
 

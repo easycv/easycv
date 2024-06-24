@@ -85,3 +85,4 @@ def download_resource(resource_name, show_progress=False):
         print("Abort: " + str(e))
         print("Cleaning up...")
         shutil.rmtree(resource_folder)
+        raise Exception(str(e))
